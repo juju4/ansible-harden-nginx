@@ -1,0 +1,21 @@
+---
+
+hardenwebserver_nginx_stapling: false
+
+ssl_user: root
+ssl_dir: /etc/pki/tls
+ssl_privatedir: /etc/pki/tls/private
+
+www_user: nginx
+apache_svc: nginx
+apache_confdir: /etc/nginx/default.d
+apache_sitedir: /etc/nginx/conf.d
+apacheconf: /etc/nginx/nginx.conf
+#apachesslconf: /etc/apache2/sites-enabled/default-ssl.conf
+hardenwebserver_rootdir: /usr/share/nginx/html
+hardenwebserver_nginx_naxsi: false
+
+hardenwebserver_packages:
+    - python-passlib
+    - nginx
+

@@ -1,0 +1,115 @@
+---
+
+- name: restrict permissions on nginx configuration dir
+  file: dest=/etc/nginx mode=0750 state=directory owner=root group={{ www_user }}
+- name: restrict permissions on few nginx configuration files
+  file: dest={{ item }} mode=0640 state=file owner=root group={{ www_user }} follow=yes
+  with_items:
+    - /etc/nginx/nginx.conf
+
+- name: HTTP Public Key Pinning (HPKP) hash extraction
+  shell: >
+    openssl req -in {{ ssl_dir }}/{{ ansible_fqdn }}.csr -pubkey -noout | openssl rsa -pubin -outform der | openssl dgst -sha256 -binary | openssl enc -base64
+  register: hardenwebserver_cert_pinning_value
+  changed_when: false
+
+- name: nginx configuration file update
+  template: src=harden-cache
+    dest={{ apache_confdir }}/harden-cache
+    owner=0 group=0 mode=0644
+
+- name: review nginx main configuration
+  template: "src=harden-nginx-server.j2 dest={{ apache_confdir }}/harden-nginx-server mode=0644"
+- name: enable nginx gzip compression
+  template: "src=harden-nginx-gzip.j2 dest={{ apache_confdir }}/harden-nginx-gzip mode=0644"
+
+- name: harden template for tls servers
+  template: "src=harden-nginx-https.j2 dest={{ apache_confdir }}/../harden-nginx-https mode=0644"
+- name: harden template common for any servers
+  template: "src=harden-nginx-common.j2 dest={{ apache_confdir }}/../harden-nginx-common mode=0644"
+- name: harden template for fastcgi
+  template: "src=harden-nginx-fastcgi_params.j2 dest={{ apache_confdir }}/../harden-nginx-fastcgi_params mode=0644"
+
+
+- include: certificate-selfsigned.yml
+  when: hardenwebserver_cert is defined and hardenwebserver_cert == 'selfsigned'
+
+## size should be >= certificate key size
+- name: generate ssl dhparam key
+#  command: "openssl dhparam -out {{ ssl_privatedir }}/dhparam4.pem 4096 creates=/etc/nginx/ssl/dhparam4.pem"
+  command: "openssl dhparam -dsaparam -out {{ ssl_privatedir }}/dhparam4.pem 4096 creates={{ ssl_privatedir }}/dhparam4.pem"
+- name: ensure good permissions for ssl dhparam key
+  file: "dest={{ ssl_privatedir }}/dhparam4.pem mode=0440 owner=root group={{ www_user }}"
+
+## when using letsencrypt, http verification implies default/http site to be available
+##  and disable https to ensure no start error
+- block:
+    - name: debian | nginx check default site present
+      file:
+        src: "{{ apachedefault }}"
+        dest: /etc/nginx/sites-enabled/default
+        state: link
+      notify:
+        - restart nginx
+    - name: debian | nginx disable https during letsencrypt validation
+      file: dest="/etc/nginx/sites-enabled/https" state=absent
+      notify:
+        - restart nginx
+  when: hardenwebserver_cert is defined and hardenwebserver_cert == 'letsencrypt' and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+- block:
+    - name: redhat | ensure nginx default/http site present
+      file: dest="{{ apacheconf }}" state=file
+  when: hardenwebserver_cert is defined and hardenwebserver_cert == 'letsencrypt' and (ansible_os_family == 'RedHat')
+- include: certificate-letsencrypt.yml
+  when: hardenwebserver_cert is defined and hardenwebserver_cert == 'letsencrypt'
+
+- block:
+    - name: nginx https configuration
+      template: src=https.j2
+        dest={{ apache_sitedir }}/https
+        owner=0 group=0 mode=0644
+      notify:
+        - restart nginx
+    - name: enable https
+      file: src="{{ apache_sitedir }}/https" dest="/etc/nginx/sites-enabled/https" state=link
+      notify:
+        - restart nginx
+      when: hardenwebserver_https_noconfig is not defined or not hardenwebserver_https_noconfig
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+
+- block:
+    - name: debian | nginx remove default site
+      file: dest=/etc/nginx/sites-enabled/default
+        state=absent
+      notify:
+        - restart nginx
+      when: hardenwebserver_disable_http is defined and hardenwebserver_disable_http
+    - name: debian | nginx check default site present
+      file:
+        src: "{{ apache_sitedir }}/default"
+        dest: /etc/nginx/sites-enabled/default
+        state: link
+      notify:
+        - restart nginx
+      when: hardenwebserver_disable_http is not defined or not hardenwebserver_disable_http
+## https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-naxsi-on-ubuntu-14-04
+    - block:
+        - name: download nxtool.py to help whitelisting
+          get_url: url=https://raw.githubusercontent.com/nbs-system/naxsi/master/nxapi/nxtool.py dest=/usr/local/bin/nxtool.py mode=0755 sha256sum='a4d4248f755260458b9771727ac6dd2d910f06c2a8b30ec8c4fbbd51ecbc1d39'
+        - name: debian | nginx enable naxsi
+          replace: "dest={{ apacheconf }} regexp='^       #include /etc/nginx/naxsi_core.rules' replace='       include /etc/nginx/naxsi_core.rules'"
+      when: hardenwebserver_nginx_debian_pkg is defined and hardenwebserver_nginx_debian_pkg == 'nginx-naxsi'
+
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: nginx https configuration
+  template:
+    src: https.j2
+    dest: "{{ apache_sitedir }}/https.conf"
+    owner: 0
+    group: 0
+    mode: 0644
+  notify:
+    - restart nginx
+  when: ansible_os_family == "RedHat" or ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+

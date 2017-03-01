@@ -1,0 +1,80 @@
+
+location = /favicon.ico {
+    log_not_found off;
+    access_log off;
+}
+        
+location = /robots.txt {
+    allow all;
+    log_not_found off;
+#    access_log off;
+}
+location ~* /\. {
+    deny all;
+}
+location ~* \.(inc|old|svn|git|pub|sec|gpg)$ {
+    deny all;
+}
+location ~* /(?:upload|files|pub)/.*\.php$ {
+    deny all;
+}
+
+{% if hardenwebserver_cert is defined and hardenwebserver_cert == 'letsencrypt' %}
+location ~ /\.well-known/acme-challenge {
+    allow all;
+}
+
+{% endif %}
+{% if hardenwebserver_cachecontrol is defined and hardenwebserver_cachecontrol %}
+# Set cache control
+## FIXME! in some context, resulting in files as 404
+location ~* \.(?:js|css|png|jpe?g|gif|ico|woff|ttf|otf|svg|woff2|eot|flv|swf)$ {
+    expires 7d;
+    add_header Pragma "public";
+    add_header Cache-Control "public, must-revalidate, proxy-revalidate";
+}
+{% endif %}
+
+
+# deny scripts inside writable directories
+location ~* /(images|cache|media|logs|tmp)/.*.(php|pl|py|jsp|asp|sh|cgi)$ {
+    return 403;
+    error_page 403 /403_error.html;
+}
+
+## VA Scan
+if ($http_user_agent ~* sqlmap|nikto|nmap|nessus|mysqloit|acunetix|w3af) {
+    return 403;
+}
+
+{% if hardenwebserver_block_downloadagents is defined and hardenwebserver_block_downloadagents %}
+## Block download agent
+if ($http_user_agent ~* LWP::Simple|wget|libwww-perl|curl) {
+    return 403;
+}
+{% endif %}
+
+## Block some nasty robots
+if ($http_user_agent ~ (msnbot|Purebot|Baiduspider|Lipperhey|Mail.Ru|scrapbot) ) {
+    return 403;
+}
+
+## Deny referal spam
+if ( $http_referer ~* (jewelry|viagra|nude|girl|nudit|casino|poker|porn|sex|teen|babes) ) {
+    return 403; 
+}
+
+## Block attackers based on GeoIP countries, require maxmind db
+#geoip_country /etc/nginx/GeoIP.dat;
+#if ($geoip_country_code ~ (CN|KR|UK) ) {
+#    return 403;
+#}
+
+## Stop Hotlinking
+#location ~ .(gif|png|jpe?g)$ {
+#     valid_referers none blocked mywebsite.com *.mywebsite.com;
+#     if ($invalid_referer) {
+#        return   403;
+#    }
+#}
+

@@ -1,0 +1,58 @@
+
+# HTTPS server
+#
+server {
+    listen 443 ssl;
+    # Nginx < 1.9.5
+    #listen 443 ssl spdy;
+    #listen [::]:443 ssl spdy;
+    #spdy_headers_comp 9;
+
+    # Nginx >= 1.9.5
+    #listen 443 ssl http2;
+    #listen [::]:443 ssl http2;
+
+    server_name localhost;
+    server_tokens off;
+
+    root html;
+    index index.html index.htm;
+
+    include /etc/nginx/harden-nginx-https;
+    ssl_certificate {{ ssl_dir }}/{{ ansible_fqdn }}.crt;
+    ssl_certificate_key {{ ssl_privatedir }}/{{ ansible_fqdn }}.key;
+
+    add_header Strict-Transport-Security "max-age=63072000; includeSubdomains; preload";
+    add_header X-Frame-Options SAMEORIGIN;
+    add_header X-Content-Type-Options nosniff;
+    add_header X-XSS-Protection "1; mode=block";
+
+## sensitive get/no logging: http://stackoverflow.com/questions/19265766/how-to-not-log-a-get-request-parameter-in-the-nginx-access-logs
+
+    keepalive_timeout   70;
+
+## rate-limiting
+## https://nginx.org/en/docs/http/ngx_http_limit_req_module.html
+## https://www.howtoforge.com/rate-limiting-with-nginx
+## burst 50req + 1req/sec/IP after (see down into location block too)
+    limit_req_zone $binary_remote_addr zone=one:10m rate=1r/s;
+    ## if high traffic
+    #limit_req_zone $binary_remote_addr zone=one:50m rate=100r/s;
+
+    include /etc/nginx/harden-nginx-common;
+
+
+    location / {
+        root /usr/share/nginx/html;
+{% if hardenwebserver_nginx_debian_pkg is defined and hardenwebserver_nginx_debian_pkg == 'nginx-naxsi' and hardenwebserver_nginx_naxsi is defined and hardenwebserver_nginx_naxsi %}
+            include /etc/nginx/naxsi.rules;
+{% endif %}
+{% if hardenwebserver_nginx_with_fastcgi is defined and hardenwebserver_nginx_with_fastcgi %}
+#            include /etc/nginx/harden-nginx-fastcgi_params;
+{% endif %}
+
+        limit_req zone=one burst=50;
+
+        }
+        
+}

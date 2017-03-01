@@ -1,0 +1,56 @@
+---
+
+hardenwebserver_disable_http: false
+## set to true if your https config is coming from another role
+##  in this case role 'https' config will be installed but not enabled
+hardenwebserver_https_noconfig: false
+
+## curl, wget, perl...
+hardenwebserver_block_downloadagents: false
+hardenwebserver_cachecontrol: false
+
+## if defined, restrict webserver listen interface (only support one interface)
+#hardenwebserver_bind: 192.168.1.1
+
+hardenwebserver_cert: selfsigned
+hardenwebserver_certinfo: '/C=US/ST=CA/L=San Francisco/O=Ansible'
+hardenwebserver_certduration: 1095
+## Ansible v2.2 module. will use hostname fqdn. REQUIRE publicly accessible host w public domain
+#hardenwebserver_cert: letsencrypt
+# path on orchestrator, if empty will be created
+hardenwebserver_letsencrypt_user_key: ''
+## staging or production url
+hardenwebserver_letsencrypt_acme_dir: 'https://acme-staging.api.letsencrypt.org/directory'
+#hardenwebserver_letsencrypt_acme_dir: 'https://acme-v01.api.letsencrypt.org/directory'
+
+#hardenwebserver_nginx_resolver: '$DNS-IP-1 $DNS-IP-2'
+## example: Google, OpenDNS, Dyn DNS servers
+#hardenwebserver_nginx_resolver: '8.8.8.8 8.8.4.4 208.67.222.222 208.67.220.220 216.146.35.35 216.146.36.36'
+
+hardenwebserver_cert_pinning: false
+hardenwebserver_cert_pinning_value: 'pin-sha256=\"eZ2mT3Q9rS+P5WO3beF1Du9Jojk2oaO3eM0BYjl+uKk=\"; pin-sha256=\"2RvDQRJ3jUJaIvGRBMATMgSMrTecA3HXQXeUgRFKIcc=\"; max-age=5184000; includeSubDomains'
+
+hardenwebserver_nginx_sessiontickets: false
+
+## naxsi only available on debian wheezy and ubuntu precise+trusty, not supporting uwsgi
+## https://packages.debian.org/jessie/nginx-full
+## https://packages.debian.org/jessie/nginx-light
+## https://packages.debian.org/wheezy/nginx-naxsi
+#hardenwebserver_nginx_debian_pkg: 'nginx-naxsi'
+#hardenwebserver_nginx_debian_pkg: 'nginx-full'
+hardenwebserver_nginx_debian_pkg: 'nginx-light'
+hardenwebserver_nginx_naxsi_learningmode: true
+hardenwebserver_nginx_with_fastcgi: false
+
+## https://scotthelme.co.uk/a-new-security-header-referrer-policy/
+harden_webserver_header_refpolicy: strict-origin-when-cross-origin
+#harden_webserver_header_refpolicy: no-referrer-when-downgrade
+
+## https://content-security-policy.com/
+## https://githubengineering.com/githubs-post-csp-journey/
+#hardenwebserver_header_csp: "default-src self"
+hardenwebserver_header_csp: "default-src 'none'; script-src 'self'; connect-src 'self'; img-src 'self'; style-src 'self';"
+#hardenwebserver_header_csp: "default-src 'none'; script-src 'self www.google-analytics.com ajax.googleapis.com'; connect-src 'self'; img-src 'self'; style-src 'self';"
+#hardenwebserver_header_csp: "default-src 'none'; script-src 'self www.google-analytics.com ajax.googleapis.com'; connect-src 'self'; img-src 'self'; style-src 'self'; report-uri https://xxxx.report-uri.io/r/default/csp/enforce"
+#hardenwebserver_header_csp: "default-src 'none'; script-src 'self www.google-analytics.com ajax.googleapis.com'; connect-src 'self'; img-src 'self'; style-src 'self'; report-uri-report-only https://xxxx.report-uri.io/r/default/csp/reportOnly"
+

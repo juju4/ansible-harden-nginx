@@ -1,0 +1,15 @@
+### PHP
+
+## HTTPoxy, 201607, https://httpoxy.org/
+fastcgi_param HTTP_PROXY "";
+
+## https://www.nginx.com/blog/mitigating-the-httpoxy-vulnerability-with-nginx/
+# define 'proxylog' format in the http{} context:
+log_format proxylog '$remote_addr - $remote_user [$time_local] '
+                    '"$request" $status $body_bytes_sent '
+                    '"$http_referer" "$http_user_agent" '
+                    '"$http_proxy"';
+
+# log requests with a Proxy header using the 'proxylog' format
+access_log /var/log/nginx/httpoxy.log proxylog if=$http_proxy;
+
