@@ -31,14 +31,6 @@ server {
 
     keepalive_timeout   70;
 
-## rate-limiting
-## https://nginx.org/en/docs/http/ngx_http_limit_req_module.html
-## https://www.howtoforge.com/rate-limiting-with-nginx
-## burst 50req + 1req/sec/IP after (see down into location block too)
-    limit_req_zone $binary_remote_addr zone=one:10m rate=1r/s;
-    ## if high traffic
-    #limit_req_zone $binary_remote_addr zone=one:50m rate=100r/s;
-
     include /etc/nginx/harden-nginx-common;
 
 
@@ -50,8 +42,6 @@ server {
 {% if hardenwebserver_nginx_with_fastcgi is defined and hardenwebserver_nginx_with_fastcgi %}
 #            include /etc/nginx/harden-nginx-fastcgi_params;
 {% endif %}
-
-        limit_req zone=one burst=50;
 
         }
         

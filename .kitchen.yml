@@ -46,6 +46,11 @@ suites:
       - ubuntu-14.04
       - centos-7
       - centos-6
+  - name: default-nginx-full
+    run_list:
+    includes:
+      - ubuntu-16.04
+      - ubuntu-14.04
   - name: default-vascan
     run_list:
     includes:

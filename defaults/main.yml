@@ -38,6 +38,7 @@ hardenwebserver_nginx_sessiontickets: false
 ## https://packages.debian.org/wheezy/nginx-naxsi
 #hardenwebserver_nginx_debian_pkg: 'nginx-naxsi'
 #hardenwebserver_nginx_debian_pkg: 'nginx-full'
+## Note: nginx-light --without-http_limit_req_module
 hardenwebserver_nginx_debian_pkg: 'nginx-light'
 hardenwebserver_nginx_naxsi_learningmode: true
 hardenwebserver_nginx_with_fastcgi: false

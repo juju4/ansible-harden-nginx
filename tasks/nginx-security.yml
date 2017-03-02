@@ -22,6 +22,9 @@
   template: "src=harden-nginx-server.j2 dest={{ apache_confdir }}/harden-nginx-server mode=0644"
 - name: enable nginx gzip compression
   template: "src=harden-nginx-gzip.j2 dest={{ apache_confdir }}/harden-nginx-gzip mode=0644"
+- name: enable nginx limit_req - nginx-full only
+  template: "src=harden-nginx-limit_req.j2 dest={{ apache_confdir }}/harden-nginx-limit_req mode=0644"
+  when: hardenwebserver_nginx_debian_pkg == 'nginx-full' or ansible_os_family == 'RedHat'
 
 - name: harden template for tls servers
   template: "src=harden-nginx-https.j2 dest={{ apache_confdir }}/../harden-nginx-https mode=0644"
