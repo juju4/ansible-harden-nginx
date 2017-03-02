@@ -61,8 +61,8 @@ script:
   - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm ansible-playbook /etc/ansible/roles/juju4.harden-nginx/test/integration/default/default.yml -vv'
 
   # Debug
-  - 'sudo docker exec --tty "$(cat ${container_id})" systemctl status nginx.service'
-  - 'sudo docker exec --tty "$(cat ${container_id})" journalctl -xe'
+#  - 'sudo docker exec --tty "$(cat ${container_id})" systemctl status nginx.service'
+#  - 'sudo docker exec --tty "$(cat ${container_id})" journalctl -xe'
 
   # Test role idempotence.
   - >
