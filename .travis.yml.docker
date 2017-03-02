@@ -16,10 +16,11 @@ env:
     init: /lib/systemd/systemd
     run_opts: "'--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro'"
 #    run_opts: "--cap-add SYS_ADMIN"
-  - distribution: ubuntu
-    version: 14.04
-    init: /sbin/init
-    run_opts: ""
+## Travis stalling https://travis-ci.org/juju4/ansible-harden-nginx/jobs/206877294
+#  - distribution: ubuntu
+#    version: 14.04
+#    init: /sbin/init
+#    run_opts: ""
 #  - distribution: ubuntu
 #    version: 12.04
 #    init: /sbin/init
@@ -59,6 +60,10 @@ script:
 
   # Test role.
   - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm ansible-playbook /etc/ansible/roles/juju4.harden-nginx/test/integration/default/default.yml -vv'
+
+  # Debug
+#  - 'sudo docker exec --tty "$(cat ${container_id})" systemctl status nginx.service'
+#  - 'sudo docker exec --tty "$(cat ${container_id})" journalctl -xe'
 
   # Test role idempotence.
   - >
