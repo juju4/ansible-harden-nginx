@@ -18,4 +18,6 @@ hardenwebserver_nginx_naxsi: true
 hardenwebserver_packages:
     - python-passlib
     - "{{ hardenwebserver_nginx_debian_pkg }}"
+## for Docker & netstat call in serverspec
+    - net-tools
 
