@@ -10,7 +10,7 @@ add_header X-Frame-Options SAMEORIGIN;
 add_header Strict-Transport-Security "max-age=63072000; includeSubdomains; preload";
 add_header X-XSS-Protection "1; mode=block";
 add_header Content-Security-Policy "{{ hardenwebserver_header_csp }}";
-add_header Referrer-Policy {{ harden_webserver_header_refpolicy }}
+add_header Referrer-Policy "{{ harden_webserver_header_refpolicy }}";
 ## only if proxy: force cookie as secure+httponly. might break some app...
 ## + SameSite https://scotthelme.co.uk/csrf-is-dead/
 #proxy_cookie_path / "/; secure; HttpOnly; SameSite";
