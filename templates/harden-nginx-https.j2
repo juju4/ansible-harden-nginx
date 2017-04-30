@@ -7,11 +7,9 @@ ssl on;
 ssl_session_cache   shared:SSL:10m;
 ssl_session_timeout 10m;
 
-ssl_protocols TLSv1.2;
+ssl_protocols {{ harden_nginx_sslprotocol }};
 ssl_prefer_server_ciphers on;
-## https://cipherli.st/
-ssl_ciphers "EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH";
-#ssl_ciphers "ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS";
+ssl_ciphers "{{ harden_nginx_sslciphersuite }}";
 ssl_ecdh_curve secp384r1; # Requires nginx >= 1.1.0
 ssl_dhparam {{ ssl_privatedir }}/dhparam4.pem;
 
@@ -42,6 +40,7 @@ resolver_timeout 5s;
 ## https://scotthelme.co.uk/hpkp-http-public-key-pinning/
 ## https://news.netcraft.com/archives/2016/03/30/http-public-key-pinning-youre-doing-it-wrong.html
 ## https://community.letsencrypt.org/t/hpkp-best-practices-if-you-choose-to-implement/4625          = not recommended/on your own
+## https://blog.qualys.com/ssllabs/2016/09/06/is-http-public-key-pinning-dead
 add_header Public-Key-Pins 'pin-sha256="{{ hardenwebserver_cert_pinning_value.stdout }}"; max-age value 5184000; includeSubDomains'
 {% endif %}
 

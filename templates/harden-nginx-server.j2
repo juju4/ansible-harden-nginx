@@ -8,6 +8,11 @@ add_header X-Content-Type-Options nosniff;
 add_header X-Frame-Options SAMEORIGIN;
 #add_header X-Frame-Options DENY;
 add_header Strict-Transport-Security "max-age=63072000; includeSubdomains; preload";
+## https://www.w3.org/TR/upgrade-insecure-requests/
+if ($http_upgrade_insecure_requests = "1") {
+    add_header Vary Upgrade-Insecure-Requests;
+    return 307 https://$host$request_uri;
+}
 add_header X-XSS-Protection "1; mode=block";
 add_header Content-Security-Policy "{{ hardenwebserver_header_csp }}";
 add_header Referrer-Policy "{{ harden_webserver_header_refpolicy }}";
