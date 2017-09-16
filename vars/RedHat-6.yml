@@ -14,6 +14,7 @@ apacheconf: /etc/nginx/nginx.conf
 #apachesslconf: /etc/apache2/sites-enabled/default-ssl.conf
 hardenwebserver_rootdir: /usr/share/nginx/html
 hardenwebserver_nginx_naxsi: false
+nginx_conf_suffix: ".conf"
 
 hardenwebserver_packages:
     - python-passlib

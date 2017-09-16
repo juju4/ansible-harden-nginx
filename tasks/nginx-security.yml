@@ -19,20 +19,30 @@
     owner=0 group=0 mode=0644
 
 - name: review nginx main configuration
-  template: "src=harden-nginx-server.j2 dest={{ apache_confdir }}/harden-nginx-server mode=0644"
-- name: enable nginx gzip compression
-  template: "src=harden-nginx-gzip.j2 dest={{ apache_confdir }}/harden-nginx-gzip mode=0644"
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ apache_confdir }}/{{ item }}{{ nginx_conf_suffix }}"
+    mode: '0644'
+  with_items:
+    - harden-nginx-server
+    - harden-nginx-gzip
+
 - name: enable nginx limit_req - nginx-full only
-  template: "src=harden-nginx-limit_req.j2 dest={{ apache_confdir }}/harden-nginx-limit_req mode=0644"
+  template:
+    src: harden-nginx-limit_req.j2
+    dest: "{{ apache_confdir }}/harden-nginx-limit_req{{ nginx_conf_suffix }}"
+    mode: '0644'
   when: hardenwebserver_nginx_debian_pkg == 'nginx-full' or ansible_os_family == 'RedHat'
 
-- name: harden template for tls servers
-  template: "src=harden-nginx-https.j2 dest={{ apache_confdir }}/../harden-nginx-https mode=0644"
-- name: harden template common for any servers
-  template: "src=harden-nginx-common.j2 dest={{ apache_confdir }}/../harden-nginx-common mode=0644"
-- name: harden template for fastcgi
-  template: "src=harden-nginx-fastcgi_params.j2 dest={{ apache_confdir }}/../harden-nginx-fastcgi_params mode=0644"
-
+- name: harden template for tls servers, common, fastcgi
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ apache_confdir }}/../{{ item }}"
+    mode: '0644'
+  with_items:
+    - harden-nginx-https
+    - harden-nginx-common
+    - harden-nginx-fastcgi_params
 
 - include: certificate-selfsigned.yml
   when: hardenwebserver_cert is defined and hardenwebserver_cert == 'selfsigned'
