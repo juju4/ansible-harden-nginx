@@ -27,12 +27,13 @@
     - harden-nginx-server
     - harden-nginx-gzip
 
+## centos7 = nginx 1.12. location" directive is not allowed here in /etc/nginx/conf.d/harden-nginx-limit_req.conf
 - name: enable nginx limit_req - nginx-full only
   template:
     src: harden-nginx-limit_req.j2
     dest: "{{ apache_confdir }}/harden-nginx-limit_req{{ nginx_conf_suffix }}"
     mode: '0644'
-  when: hardenwebserver_nginx_debian_pkg == 'nginx-full' or ansible_os_family == 'RedHat'
+  when: hardenwebserver_nginx_debian_pkg == 'nginx-full' or (ansible_os_family == 'RedHat' and ansible_distribution_major_version|int > 7)
 
 - name: harden template for tls servers, common, fastcgi
   template:
