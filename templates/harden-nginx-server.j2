@@ -1,7 +1,9 @@
 
 large_client_header_buffers 2 1k;
 client_header_buffer_size 1k;
+{% if not (ansible_os_family == 'RedHat' and ansible_distribution_major_version|int <= 7) %}
 client_max_body_size 5m;
+{% endif %}
 client_body_buffer_size 10k;
 
 add_header X-Content-Type-Options nosniff;
@@ -9,10 +11,12 @@ add_header X-Frame-Options SAMEORIGIN;
 #add_header X-Frame-Options DENY;
 add_header Strict-Transport-Security "max-age=63072000; includeSubdomains; preload";
 ## https://www.w3.org/TR/upgrade-insecure-requests/
+{% if not (ansible_os_family == 'RedHat' and ansible_distribution_major_version|int <= 7) %}
 if ($http_upgrade_insecure_requests = "1") {
     add_header Vary Upgrade-Insecure-Requests;
     return 307 https://$host$request_uri;
 }
+{% endif %}
 add_header X-XSS-Protection "1; mode=block";
 add_header Content-Security-Policy "{{ hardenwebserver_header_csp }}";
 add_header Referrer-Policy "{{ harden_webserver_header_refpolicy }}";
