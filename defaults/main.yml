@@ -68,3 +68,5 @@ harden_nginx_sslciphersuite: 'EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH'
 harden_nginx_sslprotocol: 'TLSv1.2'
 #harden_nginx_sslprotocol: 'TLSv1.2 TLSv1.1'
 
+# https://www.ietf.org/id/draft-foudil-securitytxt-00.txt
+harden_nginx_securitytxt_template: security.txt.j2
