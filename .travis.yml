@@ -19,11 +19,11 @@ env:
     run_opts: "'--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro'"
     suite: default
 ## Travis stalling https://travis-ci.org/juju4/ansible-harden-nginx/jobs/206877294
-  - distribution: ubuntu
-    version: 14.04
-    init: /sbin/init
-    run_opts: ""
-    suite: default
+#  - distribution: ubuntu
+#    version: 14.04
+#    init: /sbin/init
+#    run_opts: ""
+#    suite: default
 #  - distribution: ubuntu
 #    version: 12.04
 #    init: /sbin/init
