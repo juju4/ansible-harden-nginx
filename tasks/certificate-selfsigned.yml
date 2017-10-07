@@ -8,9 +8,9 @@
 
 - name: Generate SSL self-signed certificate
   command: >
-    openssl req -x509 -nodes -sha256 -days {{ hardenwebserver_certduration }} -newkey rsa:2048 
-        -subj "{{ hardenwebserver_certinfo }}/CN={{ certificate_cn }}" 
-        -keyout {{ ssl_privatedir }}/{{ ansible_fqdn }}.key 
+    openssl req -x509 -nodes -sha256 -days {{ hardenwebserver_certduration }} -newkey rsa:2048
+        -subj "{{ hardenwebserver_certinfo }}/CN={{ certificate_cn }}"
+        -keyout {{ ssl_privatedir }}/{{ ansible_fqdn }}.key
         -out {{ ssl_dir }}/{{ ansible_fqdn }}.crt
         creates={{ ssl_dir }}/{{ ansible_fqdn }}.crt
 
