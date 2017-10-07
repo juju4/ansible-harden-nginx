@@ -76,6 +76,9 @@ $ vagrant ssh
 
 ## Troubleshooting & Known issues
 
+## Extras
+
+* If you want to warn users who use old browsers, the following projects are among the options to add little warnings: (browser-update.org)[https://browser-update.org/], (outdatedbrowser.com)[http://outdatedbrowser.com/]
 
 ## License
 
