@@ -45,3 +45,7 @@ resolver_timeout 5s;
 add_header Public-Key-Pins 'pin-sha256="{{ hardenwebserver_cert_pinning_value.stdout }}"; max-age value 5184000; includeSubDomains'
 {% endif %}
 
+## https://community.qualys.com/thread/12758
+#if ($ssl_protocol != "TLSv1.2") {
+#   return 302 https://example.com/outdated.html;
+#}
