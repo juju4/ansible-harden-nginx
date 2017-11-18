@@ -15,6 +15,7 @@ server {
 
     server_name localhost;
     server_tokens off;
+    etag off;
 
     root html;
     index index.html index.htm;
@@ -27,6 +28,8 @@ server {
     add_header X-Frame-Options SAMEORIGIN;
     add_header X-Content-Type-Options nosniff;
     add_header X-XSS-Protection "1; mode=block";
+    # want to be indexed by search engine?
+    add_header X-Robots-Tag none;
 
 ## sensitive get/no logging: http://stackoverflow.com/questions/19265766/how-to-not-log-a-get-request-parameter-in-the-nginx-access-logs
 
