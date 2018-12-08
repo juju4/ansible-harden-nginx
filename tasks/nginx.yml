@@ -1,10 +1,19 @@
 ---
 
-- fail: msg="nginx-naxsi package not available on target distribution"
-  when: hardenwebserver_nginx_debian_pkg is defined and hardenwebserver_nginx_debian_pkg == 'nginx-naxsi' and not ((ansible_distribution == 'Debian' and ansible_distribution_release == "wheezy") or (ansible_distribution == 'Ubuntu' and (ansible_distribution_release == 'precise' or ansible_distribution_release == 'trusty')))
+- name: Naxsi not available
+  fail: msg="nginx-naxsi package not available on target distribution"
+  when: >
+    hardenwebserver_nginx_debian_pkg is defined and
+    hardenwebserver_nginx_debian_pkg == 'nginx-naxsi' and
+    not (
+          (ansible_distribution == 'Debian' and ansible_distribution_release == "wheezy") or
+          (ansible_distribution == 'Ubuntu' and
+            (ansible_distribution_release == 'precise' or ansible_distribution_release == 'trusty')
+          )
+        )
 
 - name: nginx packages install
-  package: name={{item}} state=present
+  package: name={{ item }} state=present
   with_items: "{{ hardenwebserver_packages }}"
 
 - include: nginx-security.yml

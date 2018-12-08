@@ -9,7 +9,10 @@
 
 - name: HTTP Public Key Pinning (HPKP) hash extraction
   shell: >
-    openssl req -in {{ ssl_dir }}/{{ ansible_fqdn }}.csr -pubkey -noout | openssl rsa -pubin -outform der | openssl dgst -sha256 -binary | openssl enc -base64
+    openssl req -in {{ ssl_dir }}/{{ ansible_fqdn }}.csr -pubkey -noout |
+      openssl rsa -pubin -outform der |
+      openssl dgst -sha256 -binary |
+      openssl enc -base64
   register: hardenwebserver_cert_pinning_value
   changed_when: false
 
@@ -33,7 +36,9 @@
     src: harden-nginx-limit_req.j2
     dest: "{{ apache_confdir }}/harden-nginx-limit_req{{ nginx_conf_suffix }}"
     mode: '0644'
-  when: hardenwebserver_nginx_debian_pkg == 'nginx-full' or (ansible_os_family == 'RedHat' and ansible_distribution_major_version|int > 7)
+  when: >
+    hardenwebserver_nginx_debian_pkg == 'nginx-full' or
+    (ansible_os_family == 'RedHat' and ansible_distribution_major_version|int > 7)
 
 - name: harden template for tls servers, common, fastcgi
   template:
@@ -51,7 +56,10 @@
 ## size should be >= certificate key size
 - name: generate ssl dhparam key
 #  command: "openssl dhparam -out {{ ssl_privatedir }}/dhparam4.pem 4096 creates=/etc/nginx/ssl/dhparam4.pem"
-  command: "openssl dhparam -dsaparam -out {{ ssl_privatedir }}/dhparam4.pem 4096 creates={{ ssl_privatedir }}/dhparam4.pem"
+  command: >
+    openssl dhparam -dsaparam -out {{ ssl_privatedir }}/dhparam4.pem 4096
+  args:
+    creates: "{{ ssl_privatedir }}/dhparam4.pem"
 - name: ensure good permissions for ssl dhparam key
   file: "dest={{ ssl_privatedir }}/dhparam4.pem mode=0440 owner=root group={{ www_user }}"
 
@@ -69,10 +77,15 @@
       file: dest="/etc/nginx/sites-enabled/https" state=absent
       notify:
         - restart nginx
-  when: hardenwebserver_cert is defined and hardenwebserver_cert == 'letsencrypt' and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  when: >
+    hardenwebserver_cert is defined and
+    hardenwebserver_cert == 'letsencrypt' and
+    (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
 - block:
     - name: redhat | ensure nginx default/http site present
-      file: dest="{{ apacheconf }}" state=file
+      file:
+        dest: "{{ apacheconf }}"
+        state: file
   when: hardenwebserver_cert is defined and hardenwebserver_cert == 'letsencrypt' and (ansible_os_family == 'RedHat')
 - include: certificate-letsencrypt.yml
   when: hardenwebserver_cert is defined and hardenwebserver_cert == 'letsencrypt'
@@ -109,9 +122,16 @@
 ## https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-naxsi-on-ubuntu-14-04
     - block:
         - name: download nxtool.py to help whitelisting
-          get_url: url=https://raw.githubusercontent.com/nbs-system/naxsi/master/nxapi/nxtool.py dest=/usr/local/bin/nxtool.py mode=0755 sha256sum='a4d4248f755260458b9771727ac6dd2d910f06c2a8b30ec8c4fbbd51ecbc1d39'
+          get_url:
+            url: https://raw.githubusercontent.com/nbs-system/naxsi/master/nxapi/nxtool.py
+            dest: /usr/local/bin/nxtool.py
+            mode: '0755'
+            sha256sum: 'a4d4248f755260458b9771727ac6dd2d910f06c2a8b30ec8c4fbbd51ecbc1d39'
         - name: debian | nginx enable naxsi
-          replace: "dest={{ apacheconf }} regexp='^       #include /etc/nginx/naxsi_core.rules' replace='       include /etc/nginx/naxsi_core.rules'"
+          replace:
+            dest: "{{ apacheconf }}"
+            regexp: '^       #include /etc/nginx/naxsi_core.rules'
+            replace: '       include /etc/nginx/naxsi_core.rules'
       when: hardenwebserver_nginx_debian_pkg is defined and hardenwebserver_nginx_debian_pkg == 'nginx-naxsi'
 
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
@@ -125,5 +145,4 @@
     mode: 0644
   notify:
     - restart nginx
-  when: ansible_os_family == "RedHat" or ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
-
+  when: ansible_os_family == "RedHat"

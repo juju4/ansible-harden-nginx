@@ -21,4 +21,3 @@ nginx_conf_suffix: ".conf"
 hardenwebserver_packages:
     - python-passlib
     - nginx
-

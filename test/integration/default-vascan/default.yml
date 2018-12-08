@@ -11,6 +11,5 @@
     - w3af_pull: false
     - w3af_pulldir: tmp/
   roles:
-    - juju4.harden-nginx
+    - juju4.harden_nginx
     - juju4.w3af
-
