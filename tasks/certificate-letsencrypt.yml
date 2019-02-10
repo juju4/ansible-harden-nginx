@@ -24,7 +24,7 @@
             creates={{ ssl_privatedir }}/user.pub
     - name: ensure correct permissions of user key
       file: "dest={{ ssl_privatedir }}/user.key owner=root group={{ ssl_user }} mode=0440"
-  when: hardenwebserver_letsencrypt_user_key is not defined or hardenwebserver_letsencrypt_user_key
+  when: hardenwebserver_letsencrypt_user_key is not defined or not hardenwebserver_letsencrypt_user_key
 
 - name: generate certificate csr to submit
   command: >
@@ -50,7 +50,7 @@
   when: not rootchain.stat.exists or rootchain.stat.size == 0
 
 - name: register letsencrypt challenge
-  letsencrypt:
+  acme_certificate:
     account_key: "{{ ssl_privatedir }}/user.key"
     csr: "{{ ssl_dir }}/{{ ansible_fqdn }}.csr"
     dest: "{{ ssl_dir }}/{{ ansible_fqdn }}.crt"
@@ -66,7 +66,7 @@
 
 ## Note: validation is over http... can't remove http before this task.
 - name: validate letsencrypt challenge
-  letsencrypt:
+  acme_certificate:
     account_key: "{{ ssl_privatedir }}/user.key"
     csr: "{{ ssl_dir }}/{{ ansible_fqdn }}.csr"
     dest: "{{ ssl_dir }}/{{ ansible_fqdn }}.crt"
