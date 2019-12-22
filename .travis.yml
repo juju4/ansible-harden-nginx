@@ -91,6 +91,7 @@ after_failure:
   - 'docker exec --tty "$(cat ${container_id})" env TERM=xterm journalctl -xe --no-pager'
 
 after_script:
+  - 'docker exec --tty "$(cat ${container_id})" env TERM=xterm nginx -V'
   # Clean up
   - 'sudo docker stop "$(cat ${container_id})"'
 
