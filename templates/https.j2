@@ -42,7 +42,7 @@ server {
     keepalive_timeout   70;
 
     include /etc/nginx/harden-nginx-common;
-{% if hardenwebserver_nginx_debian_pkg == 'nginx-full' and ansible_distribution == 'Debian' %}
+{% if hardenwebserver_nginx_debian_pkg == 'nginx-full' and ansible_distribution == 'Debian' and false %}
     include /etc/nginx/harden-nginx-limit_req;
 {% endif %}
 
