@@ -1,5 +1,10 @@
 ---
 
+- name: Ensure pip is available
+  package:
+    name: "{{ python_pip | default('python-pip') }}"
+    state: present
+
 # https://github.com/yandex/gixy
 - name: Install gixy
   pip:
