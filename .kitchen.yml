@@ -9,8 +9,6 @@ provisioner:
   name: ansible_playbook
   roles_path: ../
   hosts: all
-## FIXME! ansible 2.2.2.0? ERROR! Unexpected Exception: 'Host' object has no attribute 'remove_group'
-#  ansible_version: 2.2.1.0
 #  ansible_verbose: true
   ansible_verbose: false
   ansible_verbosity: 3
