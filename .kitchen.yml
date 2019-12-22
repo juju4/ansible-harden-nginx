@@ -20,8 +20,6 @@ provisioner:
 platforms:
   - name: ubuntu-18.04
   - name: ubuntu-16.04
-  - name: ubuntu-14.04
-#  - name: ubuntu-12.04
   - name: centos-8
   - name: centos-7
 ## httpd/centos7/capability issue on lxc
@@ -30,35 +28,16 @@ platforms:
     driver:
       config:
         security.privileged: true
-## centos6 default still is 2.1.x
-## + workaround Ansible 2.2+/cryptography: https://github.com/ansible/ansible/issues/276
-## ~ need to disable call to letsencrypt module: nginx-security.yml 46,64s/^/#/
-#  - name: centos-6
-#    provisioner:
-## Desired version, only affects apt-get installs
-#      ansible_version: 2.1.2.0		## NOK
-#      ansible_version: 2.1.2.0-1	## NOK
-#      ansible_version: 2.1.2.0-1.el6	## NOK
 #  - name: alpine-3.4
 
 
 suites:
   - name: default
     run_list:
-    includes:
-      - ubuntu-16.04
-      - ubuntu-14.04
-      - centos-7
-      - centos-6
+    attributes:
   - name: default-nginx-full
     run_list:
-    includes:
-      - ubuntu-16.04
-      - ubuntu-14.04
+    attributes:
   - name: default-vascan
     run_list:
-    includes:
-      - ubuntu-16.04
-      - ubuntu-14.04
-      - centos-7
-      - centos-6
+    attributes:
