@@ -12,7 +12,7 @@ add_header X-Frame-Options SAMEORIGIN;
 #add_header X-Frame-Options DENY;
 add_header Strict-Transport-Security "max-age=63072000; includeSubdomains; preload";
 ## https://www.w3.org/TR/upgrade-insecure-requests/
-{% if not (ansible_os_family == 'RedHat' and ansible_distribution_major_version|int <= 7) %}
+{% if not (ansible_os_family == 'RedHat' and ansible_distribution_major_version|int <= 8) %}
 if ($http_upgrade_insecure_requests = "1") {
     add_header Vary Upgrade-Insecure-Requests;
     return 307 https://$host$request_uri;
