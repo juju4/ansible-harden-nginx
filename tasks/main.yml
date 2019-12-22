@@ -16,3 +16,6 @@
 - include: slow.yml
 
 - include: security-txt.yml
+
+- include: testing.yml
+  when: harden_nginx_testing|bool

@@ -3,5 +3,6 @@
 - hosts: all
   vars:
     - hardenwebserver_nginx_debian_pkg: 'nginx-full'
+    - harden_nginx_testing: true
   roles:
     - juju4.harden_nginx

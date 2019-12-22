@@ -92,6 +92,7 @@ after_failure:
 
 after_script:
   - 'docker exec --tty "$(cat ${container_id})" env TERM=xterm nginx -V'
+  - 'docker exec --tty "$(cat ${container_id})" env TERM=xterm cat /var/log/gixy.log'
   # Clean up
   - 'sudo docker stop "$(cat ${container_id})"'
 

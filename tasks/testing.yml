@@ -1,0 +1,12 @@
+---
+
+# https://github.com/yandex/gixy
+- name: Install gixy
+  pip:
+    name: gixy
+    state: present
+
+- name: Validate nginx config with gixy
+  shell: gixy /etc/nginx/nginx.conf | tee /var/log/gixy.log
+  args:
+    creates: /var/log/gixy.log
