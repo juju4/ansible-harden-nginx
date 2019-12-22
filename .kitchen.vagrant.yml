@@ -27,3 +27,9 @@ suites:
   - name: default
     run_list:
     attributes:
+  - name: default-nginx-full
+    run_list:
+    attributes:
+    includes:
+      - ubuntu-18.04
+      - ubuntu-16.04
