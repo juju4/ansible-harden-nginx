@@ -23,6 +23,11 @@ env:
     init: /lib/systemd/systemd
     run_opts: "'--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro'"
     suite: default
+  - distribution: debian
+    version: buster
+    init: /lib/systemd/systemd
+    run_opts: "'--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro'"
+    suite: default
 ## Travis stalling https://travis-ci.org/juju4/ansible-harden-nginx/jobs/206877294
 #  - distribution: ubuntu
 #    version: 14.04
@@ -50,6 +55,11 @@ env:
     suite: default-nginx-full
   - distribution: ubuntu
     version: 16.04
+    init: /lib/systemd/systemd
+    run_opts: "'--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro'"
+    suite: default-nginx-full
+  - distribution: debian
+    version: buster
     init: /lib/systemd/systemd
     run_opts: "'--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro'"
     suite: default-nginx-full

@@ -30,6 +30,7 @@ platforms:
 # https://github.com/test-kitchen/kitchen-docker/issues/285
       provision_command: mkdir -p /run/sshd
   - name: ubuntu-16.04
+  - name: debian-buster
   - name: centos-8
 ## FIXME! fatal: [localhost]: FAILED! => {"changed": false, "failed": true, "msg": "no service or tool found for: nginx"}
 #  - name: centos-7
@@ -46,3 +47,4 @@ suites:
     includes:
       - ubuntu-18.04
       - ubuntu-16.04
+      - debian-buster
