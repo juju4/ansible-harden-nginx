@@ -1,58 +1,61 @@
 ---
-## require ansible v2.2 for letsencrypt module
+# https://docs.ansible.com/ansible/latest/modules/acme_certificate_module.html
+# https://docs.ansible.com/ansible/latest/modules/openssl_csr_module.html
 
 - name: apt | certificate packages dependencies
   apt: name=ssl-cert state=present update_cache=yes cache_valid_time=3600
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+  register: pkg_result
+  until: pkg_result is success
 - name: install deps
   package: name=openssl state=present
+  register: pkg_result
+  until: pkg_result is success
 
-- block:
-    - name: creating letsencrypt user key
-      shell: >
-        openssl genrsa 4096 > {{ ssl_privatedir }}/user.key
-            creates={{ ssl_privatedir }}/user.key
-      register: userkey
-#    - debug: var=userkey
-    - name: export public user key
-      shell: >
-        openssl rsa -in {{ ssl_privatedir }}/user.key
-            -pubout
-            > {{ ssl_privatedir }}/user.pub
-            creates={{ ssl_privatedir }}/user.pub
-    - name: ensure correct permissions of user key
-      file: "dest={{ ssl_privatedir }}/user.key owner=root group={{ ssl_user }} mode=0440"
+- name: Generate an OpenSSL private key for letsencrypt
+  openssl_privatekey:
+    path: "{{ ssl_privatedir }}/user.key"
+    size: 4096
   when: hardenwebserver_letsencrypt_user_key is not defined or not hardenwebserver_letsencrypt_user_key
 
-- name: generate certificate csr to submit
-  command: >
-    openssl req -sha256 -nodes -newkey rsa:4096
-        -keyout {{ ssl_privatedir }}/{{ ansible_fqdn }}.key
-        -subj "{{ hardenwebserver_certinfo }}/CN={{ certificate_cn }}"
-        -out {{ ssl_dir }}/{{ ansible_fqdn }}.csr
-        creates={{ ssl_dir }}/{{ ansible_fqdn }}.csr
+- debug: var=hardenwebserver_letsencrypt_acme_dir
+- name: Ensure have letsencrypt account
+  acme_account:
+    acme_directory: "{{ hardenwebserver_letsencrypt_acme_dir }}"
+    acme_version: 2
+    #account_key_src: "{{ hardenwebserver_letsencrypt_user_key | default(ssl_privatedir + '/user.key') }}"
+    account_key_src: "{{ ssl_privatedir }}/user.key"
+    state: present
+    terms_agreed: yes
+    contact:
+      - "mailto:{{ hardenwebserver_letsencrypt_email }}"
 
-## https://letsencrypt.org/certificates/
-- name: create root chain file for ssl stapling
-  shell: >
-    curl https://letsencrypt.org/certs/isrgrootx1.pem
-        https://letsencrypt.org/certs/lets-encrypt-x3-cross-signed.pem
-        https://letsencrypt.org/certs/lets-encrypt-x4-cross-signed.pem | tee {{ ssl_dir }}/ca-certs.pem > /dev/null
-  args:
-    creates: "{{ ssl_dir }}/ca-certs.pem"
-- name: ensure root chain file not empty
-  stat: path={{ ssl_dir }}/ca-certs.pem
-  register: rootchain
-- name: failure
-  fail: msg="FATAL! root chain file generation fails."
-  when: not rootchain.stat.exists or rootchain.stat.size == 0
+- name: Generate an OpenSSL private key with the default values (4096 bits, RSA)
+  openssl_privatekey:
+    path: "{{ ssl_privatedir }}/{{ ansible_fqdn }}.key"
+    size: 4096
+
+- name: Generate an OpenSSL Certificate Signing Request with Subject information
+  openssl_csr:
+    path: "{{ ssl_dir }}/{{ ansible_fqdn }}.csr"
+    privatekey_path: "{{ ssl_privatedir }}/{{ ansible_fqdn }}.key"
+    country_name: "{{ hardenwebserver_letsencrypt_country | default('US') }}"
+    organization_name: "{{ hardenwebserver_letsencrypt_org_name }}"
+    email_address: "{{ hardenwebserver_letsencrypt_email }}"
+    common_name: "{{ certificate_cn }}"
+    subject_alt_name: "{{ hardenwebserver_letsencrypt_san | default(omit) }}"
+    # defaults
+    #digest: sha256
 
 - name: register letsencrypt challenge
   acme_certificate:
     account_key: "{{ ssl_privatedir }}/user.key"
+    acme_version: 2
     csr: "{{ ssl_dir }}/{{ ansible_fqdn }}.csr"
     dest: "{{ ssl_dir }}/{{ ansible_fqdn }}.crt"
+    fullchain_dest: "{{ ssl_dir }}/ca-certs.pem"
     acme_directory: "{{ hardenwebserver_letsencrypt_acme_dir }}"
+  register: le_challenge
   notify:
     - add public file to www dir to fullfill letsencrypt challenge
 
@@ -66,7 +69,9 @@
 - name: validate letsencrypt challenge
   acme_certificate:
     account_key: "{{ ssl_privatedir }}/user.key"
+    acme_version: 2
     csr: "{{ ssl_dir }}/{{ ansible_fqdn }}.csr"
     dest: "{{ ssl_dir }}/{{ ansible_fqdn }}.crt"
+    fullchain_dest: "{{ ssl_dir }}/ca-certs.pem"
     data: "{{ le_challenge }}"
     acme_directory: "{{ hardenwebserver_letsencrypt_acme_dir }}"
