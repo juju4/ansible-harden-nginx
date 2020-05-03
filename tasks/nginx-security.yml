@@ -123,7 +123,7 @@
       lineinfile:
         dest: /etc/nginx/sites-available/default
         line: "\treturn 301 https://$host$request_uri;"
-        insertafter: "\tlisten [::]:80 default_server;"
+        insertafter: "^\tlisten \\[::\\]:80 default_server;"
       when: hardenwebserver_http_redirect_to_https
 ## https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-naxsi-on-ubuntu-14-04
     - block:
