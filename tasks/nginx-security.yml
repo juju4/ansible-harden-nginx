@@ -122,8 +122,8 @@
     - name: debian | nginx redirect http to https
       lineinfile:
         dest: /etc/nginx/sites-available/default
-        line: '        return 301 https://$host$request_uri;'
-        insertafter: '^       listen [::]:80 default_server;'
+        line: "\treturn 301 https://$host$request_uri;"
+        insertafter: "\tlisten [::]:80 default_server;"
       when: hardenwebserver_http_redirect_to_https
 ## https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-naxsi-on-ubuntu-14-04
     - block:
