@@ -1,6 +1,7 @@
 ---
 
 hardenwebserver_disable_http: false
+hardenwebserver_http_redirect_to_https: true
 ## set to true if your https config is coming from another role
 ##  in this case role 'https' config will be installed but not enabled
 hardenwebserver_https_noconfig: false
