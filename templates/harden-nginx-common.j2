@@ -13,7 +13,7 @@ location = /robots.txt {
 location ~* /\. {
     deny all;
 }
-location ~* \.(inc|old|svn|git|pub|sec|gpg)$ {
+location ~* \.(inc|old|svn|git|pub|sec|gpg|swp|bak|orig|disabled)$ {
     deny all;
 }
 location ~* /(?:upload|files|pub)/.*\.php$ {
