@@ -11,12 +11,12 @@ server {
 {% elif ansible_distribution_release == 'xenial' %}
 # https://bugs.launchpad.net/ubuntu/+source/nginx/+bug/1552949
     # Nginx >= 1.9.5
-    listen 443 ssl;
-    listen [::]:443 ssl;
+    listen {{ harden_nginx_https_port | default('443') }} ssl;
+    listen [::]:{{ harden_nginx_https_port | default('443') }} ssl;
 {% else %}
     # Nginx >= 1.9.5
-    listen 443 ssl http2;
-    listen [::]:443 ssl http2;
+    listen {{ harden_nginx_https_port | default('443') }} ssl http2;
+    listen [::]:{{ harden_nginx_https_port | default('443') }} ssl http2;
 {% endif %}
 
     server_name localhost;
@@ -45,6 +45,12 @@ server {
 {% if hardenwebserver_nginx_debian_pkg == 'nginx-full' and ansible_distribution == 'Debian' and false %}
     include /etc/nginx/harden-nginx-limit_req;
 {% endif %}
+
+    # https://www.bjornjohansen.com/restrict-allowed-http-methods-in-nginx
+    error_page 405 @error405;
+    location @error405 {
+        add_header Allow "GET, POST, HEAD" always;
+    }
 
     location / {
         root /usr/share/nginx/html;
