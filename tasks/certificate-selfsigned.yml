@@ -2,7 +2,11 @@
 
 - name: Ensure openssl is present
   package:
-    name: openssl
+    name:
+      - openssl
+      - python3-pip
+      - python3-setuptools
+      - python3-openssl
     state: present
   register: pkg_result
   until: pkg_result is success
@@ -16,6 +20,18 @@
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
   register: pkg_result
   until: pkg_result is success
+
+- name: Ensure python cryptography is present
+  pip:
+    name: cryptography
+    state: present
+    executable: pip3
+
+- name: Ensure target directory exists
+  file:
+    dest: "{{ ssl_privatedir | dirname }}"
+    state: directory
+    mode: '0755'
 
 - name: Check if OpenSSL private key exists
   stat:
