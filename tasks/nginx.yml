@@ -18,5 +18,7 @@
 
 - include: nginx-security.yml
 
+- include: systemd.yml
+
 - name: ensure nginx is enabled and started
   service: name={{ apache_svc }} state=started enabled=yes

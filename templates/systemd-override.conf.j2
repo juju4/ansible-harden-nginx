@@ -1,0 +1,31 @@
+# https://medium.com/@nickodell/sandboxing-nginx-with-systemd-80441923c555
+[Service]
+# Run fully unprivileged
+User={% if ansible_os_family == 'RedHat' %}nginx{% else %}www-data{% endif %}
+Group={% if ansible_os_family == 'RedHat' %}nginx{% else %}www-data{% endif %}
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+CapabilityBoundingSet=CAP_NET_BIND_SERVICE
+RuntimeDirectory=nginx
+PIDFile=/run/nginx/nginx.pid
+NoNewPrivileges=yes
+# Reduce Attack Surface
+PrivateTmp=true
+ProtectHome=yes
+ProtectSystem=full
+{% if (ansible_os_family == 'RedHat' and ansible_distribution_major_version|int >= 7) or (ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int >= 18) %}
+ProtectKernelTunables=true
+ProtectKernelModules=yes
+RestrictRealtime=true
+{% endif %}
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+LockPersonality=true
+{% if not (ansible_virtualization_type is defined and
+          (ansible_virtualization_type == "lxc" or ansible_virtualization_type == "docker")
+        ) and
+      not (ansible_os_family == 'RedHat' and ansible_distribution_major_version|int < 8) %}
+{% if (ansible_os_family == 'RedHat' and ansible_distribution_major_version|int >= 8) or (ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int >= 18) %}
+SystemCallFilter=@system-service
+# When system call is disallowed, return error code instead of killing process 
+SystemCallErrorNumber=EPERM
+{% endif %}
+{% endif %}

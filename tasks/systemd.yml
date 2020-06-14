@@ -1,0 +1,56 @@
+---
+
+- name: Ensure override folder exists
+  file:
+    dest: /etc/systemd/system/nginx.service.d
+    state: directory
+    mode: '0755'
+
+# if issue, check /var/log/audit/audit.log
+- name: Review nginx systemd options
+  template:
+    src: systemd-override.conf.j2
+    dest: /etc/systemd/system/nginx.service.d/override.conf
+    mode: '0644'
+  notify:
+    - reload systemd
+    - restart nginx
+
+- name: Align pid path in nginx.conf
+  replace:
+    dest: /etc/nginx/nginx.conf
+    regexp: '^pid .*'
+    replace: 'pid /run/nginx/nginx.pid;'
+
+- name: Ensure /run/nginx exists
+  file:
+    path: /run/nginx
+    state: directory
+    mode: '0755'
+    owner: "{% if ansible_os_family == 'RedHat' %}nginx{% else %}www-data{% endif %}"
+
+- name: Ensure no conflicting pid path
+  replace:
+    dest: /lib/systemd/system/nginx.service
+    regexp: '^PIDFile=/run/nginx.pid'
+    replace: '#PIDFile=/run/nginx.pid'
+  notify:
+    - reload systemd
+    - restart nginx
+  register: nginx_systemd
+  ignore_errors: true
+
+- block:
+    - include: "immutable.yml target_dir=/lib/systemd/system state=pre"
+    - include: "immutable.yml target_dir=/lib/systemd/system/nginx.service state=pre"
+    - name: Ensure no conflicting pid path (immutable)
+      replace:
+        dest: /lib/systemd/system/nginx.service
+        regexp: '^PIDFile=/run/nginx.pid'
+        replace: '#PIDFile=/run/nginx.pid'
+      notify:
+        - reload systemd
+        - restart nginx
+    - include: "immutable.yml target_dir=/lib/systemd/system state=post"
+    - include: "immutable.yml target_dir=/lib/systemd/system/nginx.service state=post"
+  when: nginx_systemd is failed

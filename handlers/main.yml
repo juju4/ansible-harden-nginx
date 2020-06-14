@@ -7,3 +7,9 @@
   copy:
      dest: "{{ hardenwebserver_rootdir }}/{{ le_challenge['challenge_data'][ certificate_cn ]['http-01']['resource'] }}"
      content: "{{ le_challenge['challenge_data'][ certificate_cn ]['http-01']['resource_value'] }}"
+
+- name: reload systemd
+  systemd:
+    daemon_reload: yes
+  when: >
+    not (ansible_virtualization_type is defined and (ansible_virtualization_type == "docker"))
