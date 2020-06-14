@@ -3,5 +3,7 @@
 - hosts: all
   vars:
     harden_nginx_testing: true
+    hardenwebserver_nginx_with_log_combined: true
+    hardenwebserver_nginx_with_log_json: true
   roles:
     - juju4.harden_nginx
