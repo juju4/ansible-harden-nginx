@@ -25,6 +25,6 @@ hardenwebserver_packages:
 python_pip: python36-pip
 openssl_pkgs:
   - openssl
-  - python36-pip
-  - python36-setuptools
-  - python36-pyopenssl
+  - python3-pip
+  - python3-setuptools
+  - pyOpenSSL
