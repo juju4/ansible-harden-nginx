@@ -6,4 +6,5 @@
     hardenwebserver_nginx_with_log_combined: true
     hardenwebserver_nginx_with_log_json: true
   roles:
+    - { role: juju4.redhat_epel, when: ansible_os_family == "RedHat" }
     - juju4.harden_nginx

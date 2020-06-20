@@ -5,4 +5,5 @@
     - hardenwebserver_nginx_debian_pkg: 'nginx-full'
     - harden_nginx_testing: true
   roles:
+    - { role: juju4.redhat_epel, when: ansible_os_family == "RedHat" }
     - juju4.harden_nginx
