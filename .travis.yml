@@ -18,11 +18,13 @@ env:
     init: /lib/systemd/systemd
     run_opts: "'--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro'"
     suite: default
+    ANSIBLE_EXTRA_FLAGS: "'-e ansible_python_interpreter=/usr/bin/python3'"
   - distribution: ubuntu
     version: 18.04
     init: /lib/systemd/systemd
     run_opts: "'--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro'"
     suite: default
+    ANSIBLE_EXTRA_FLAGS: "'-e ansible_python_interpreter=/usr/bin/python3'"
   - distribution: debian
     version: buster
     init: /lib/systemd/systemd
@@ -38,6 +40,7 @@ env:
     init: /lib/systemd/systemd
     run_opts: "'--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro'"
     suite: default-nginx-full
+    ANSIBLE_EXTRA_FLAGS: "'-e ansible_python_interpreter=/usr/bin/python3'"
   - distribution: debian
     version: buster
     init: /lib/systemd/systemd
@@ -70,7 +73,7 @@ script:
   - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm ansible-playbook /etc/ansible/roles/juju4.harden_nginx/test/integration/${suite}/default.yml --syntax-check'
 
   # Test role.
-  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm ansible-playbook /etc/ansible/roles/juju4.harden_nginx/test/integration/${suite}/default.yml -vv'
+  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm ansible-playbook /etc/ansible/roles/juju4.harden_nginx/test/integration/${suite}/default.yml -vv ${ANSIBLE_EXTRA_FLAGS}'
 
   # Test role idempotence.
   - >
