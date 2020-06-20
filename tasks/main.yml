@@ -18,6 +18,7 @@
 
 - include: slow.yml
 
+- include: aide-hids.yml
 - include: security-txt.yml
 
 - include: testing.yml

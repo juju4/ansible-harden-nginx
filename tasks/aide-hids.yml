@@ -1,0 +1,14 @@
+---
+
+- block:
+    - name: ensure aide.conf.d directory exists
+      file:
+        dest: /etc/aide/aide.conf.d
+        state: directory
+        mode: '0755'
+    - name: add additional aide HIDS configuration
+      copy:
+        src: 99_aide_local_nginx
+        dest: /etc/aide/aide.conf.d/99_aide_local_nginx
+        mode: '0644'
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
