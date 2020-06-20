@@ -2,11 +2,7 @@
 
 - name: Ensure openssl is present
   package:
-    name:
-      - openssl
-      - python3-pip
-      - python3-setuptools
-      - python3-openssl
+    name: "{{ openssl_pkgs | default(['openssl', 'python3-pip', 'python3-setuptools', 'python3-openssl' ]) }}"
     state: present
   register: pkg_result
   until: pkg_result is success

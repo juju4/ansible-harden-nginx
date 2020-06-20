@@ -21,3 +21,10 @@ nginx_conf_suffix: ".conf"
 hardenwebserver_packages:
     - python-passlib
     - nginx
+
+python_pip: python36-pip
+openssl_pkgs:
+  - openssl
+  - python36-pip
+  - python36-setuptools
+  - python36-pyopenssl

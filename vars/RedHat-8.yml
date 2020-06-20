@@ -23,3 +23,8 @@ hardenwebserver_packages:
     - nginx
 
 python_pip: python3-pip
+openssl_pkgs:
+  - openssl
+  - python3-pip
+  - python3-setuptools
+  - python3-pyopenssl
