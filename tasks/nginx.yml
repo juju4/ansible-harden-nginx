@@ -20,5 +20,7 @@
 
 - include: systemd.yml
 
+- meta: flush_handlers
+
 - name: ensure nginx is enabled and started
   service: name={{ apache_svc }} state=started enabled=yes
