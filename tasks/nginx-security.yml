@@ -159,9 +159,9 @@
   template:
     src: https.j2
     dest: "{{ apache_sitedir }}/https.conf"
-    owner: 0
-    group: 0
-    mode: 0644
+    owner: '0'
+    group: '0'
+    mode: '0644'
   notify:
     - restart nginx
   when: ansible_os_family == "RedHat"
