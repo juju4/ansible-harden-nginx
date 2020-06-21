@@ -12,6 +12,15 @@ hardenwebserver_nginx_https_server_include: []
 hardenwebserver_block_downloadagents: false
 hardenwebserver_cachecontrol: false
 
+hardenwebserver_nginx_systemd_hardening: true
+hardenwebserver_systemd_files_acl:
+    - { p: "/etc/ssl/private", perm: rx }
+    - { p: "/etc/ssl/private/{{ ansible_fqdn }}.key", perm: r }
+    - { p: "/var/log/nginx", perm: rwx }
+#    - { p: /etc/letsencrypt/archive, perm: rx }
+#    - { p: /etc/letsencrypt/live, perm: rx }
+#    - { p: "/etc/letsencrypt/archive/{{ ansible_fqdn }}/privkey1.pem", perm: r }
+
 ## if defined, restrict webserver listen interface (only support one interface)
 #hardenwebserver_bind: 192.168.1.1
 

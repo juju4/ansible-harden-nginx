@@ -2,7 +2,9 @@
 [Service]
 # Run fully unprivileged
 User={% if ansible_os_family == 'RedHat' %}nginx{% else %}www-data{% endif %}
+
 Group={% if ansible_os_family == 'RedHat' %}nginx{% else %}www-data{% endif %}
+
 AmbientCapabilities=CAP_NET_BIND_SERVICE
 CapabilityBoundingSet=CAP_NET_BIND_SERVICE
 RuntimeDirectory=nginx

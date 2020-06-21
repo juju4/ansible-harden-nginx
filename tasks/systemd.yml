@@ -16,6 +16,12 @@
     - reload systemd
     - restart nginx
 
+- name: Remove user/group in nginx.conf as in systemd
+  replace:
+    dest: /etc/nginx/nginx.conf
+    regexp: '^user www-data;'
+    replace: '#user www-data;'
+
 - name: Align pid path in nginx.conf
   replace:
     dest: /etc/nginx/nginx.conf
@@ -32,13 +38,25 @@
 - name: Ensure no conflicting pid path
   replace:
     dest: /lib/systemd/system/nginx.service
-    regexp: '^PIDFile=/run/nginx.pid'
-    replace: '#PIDFile=/run/nginx.pid'
+    regexp: "{{ item.re }}"
+    replace: "{{ item.rep }}"
+  with_items:
+    - { re: '^PIDFile=/run/nginx.pid', rep: '#PIDFile=/run/nginx.pid' }
+    - { re: '--pidfile /run/nginx.pid', rep: '--pidfile /run/nginx/nginx.pid' }
   notify:
     - reload systemd
     - restart nginx
   register: nginx_systemd
   ignore_errors: true
+
+- name: Ensure certificates files and log directory are accessible to www-data
+  acl:
+    path: "{{ item.p }}"
+    entity: "{{ www_user }}"
+    etype: user
+    permissions: "{{ item.perm }}"
+    state: present
+  with_items: "{{ hardenwebserver_systemd_files_acl }}"
 
 - block:
     - include: "immutable.yml target_dir=/lib/systemd/system state=pre"
