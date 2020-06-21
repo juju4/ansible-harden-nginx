@@ -102,16 +102,19 @@
 
 - block:
     - name: nginx https configuration
-      template: src=https.j2
-        dest={{ apache_sitedir }}/https
-        owner=0 group=0 mode=0644
+      template:
+        src: https.j2
+        dest: "{{ apache_sitedir }}/https"
+        owner: '0'
+        group: '0'
+        mode: '0644'
       notify:
         - restart nginx
     - name: enable https
       file: src="{{ apache_sitedir }}/https" dest="/etc/nginx/sites-enabled/https" state=link
       notify:
         - restart nginx
-      when: hardenwebserver_https_noconfig is not defined or not hardenwebserver_https_noconfig
+      when: hardenwebserver_https_noconfig is not defined or not hardenwebserver_https_noconfig|bool
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
 
 - block:
