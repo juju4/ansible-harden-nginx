@@ -43,6 +43,8 @@
   with_items:
     - { re: '^PIDFile=/run/nginx.pid', rep: '#PIDFile=/run/nginx.pid' }
     - { re: '--pidfile /run/nginx.pid', rep: '--pidfile /run/nginx/nginx.pid' }
+    # Centos 7
+    - { re: '^ExecStartPre=/usr/bin/rm -f /run/nginx.pid', rep: 'ExecStartPre=/usr/bin/rm -f /run/nginx/nginx.pid' }
   notify:
     - reload systemd
     - restart nginx
