@@ -21,16 +21,10 @@ env:
     ANSIBLE_EXTRA_FLAGS: "'-e ansible_python_interpreter=/usr/bin/python3'"
 #  - distribution: alpine
 #    version: 3.4
-  - distribution: debian
-    version: buster
-    suite: default
   - distribution: ubuntu
     version: 18.04
     suite: default-nginx-full
     ANSIBLE_EXTRA_FLAGS: "'-e ansible_python_interpreter=/usr/bin/python3'"
-  - distribution: debian
-    version: buster
-    suite: default-nginx-full
 
 before_install:
   - env
