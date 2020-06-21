@@ -22,11 +22,12 @@ RestrictRealtime=true
 RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
 LockPersonality=true
 {% if not (ansible_virtualization_type is defined and
-          (ansible_virtualization_type == "lxc" or ansible_virtualization_type == "docker")
-        ) and
-      not (ansible_os_family == 'RedHat' and ansible_distribution_major_version|int < 8) %}
+          ansible_virtualization_type == "docker"
+        )
+%}
 {% if (ansible_os_family == 'RedHat' and ansible_distribution_major_version|int >= 8) or (ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int >= 18) %}
 SystemCallFilter=@system-service
+SystemCallFilter=~@debug @mount @cpu-emulation @obsolete @privileged
 # When system call is disallowed, return error code instead of killing process 
 SystemCallErrorNumber=EPERM
 {% endif %}
