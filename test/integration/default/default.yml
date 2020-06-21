@@ -5,6 +5,21 @@
     harden_nginx_testing: true
     hardenwebserver_nginx_with_log_combined: true
     hardenwebserver_nginx_with_log_json: true
+  pre_tasks:
+    - name: Redhat | set extra permissions for systemd hardening
+      set_fact:
+        hardenwebserver_systemd_files_acl:
+          - { p: "/etc/pki/tls/private", perm: rx }
+          - { p: "/etc/pki/tls/private/{{ ansible_fqdn }}.key", perm: r }
+          - { p: "/var/log/nginx", perm: rwx }
+      when: ansible_os_family == "RedHat"
+    - name: Redhat | set extra permissions for systemd hardening
+      set_fact:
+        hardenwebserver_systemd_files_acl:
+          - { p: "/etc/ssl/private", perm: rx }
+          - { p: "/etc/ssl/private/{{ ansible_fqdn }}.key", perm: r }
+          - { p: "/var/log/nginx", perm: rwx }
+      when: ansible_os_family == "Debian"
   roles:
     - { role: juju4.redhat_epel, when: ansible_os_family == "RedHat" }
     - juju4.harden_nginx
