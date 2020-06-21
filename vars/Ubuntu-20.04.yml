@@ -21,5 +21,6 @@ python_pip: python3-pip
 hardenwebserver_packages:
     - python-passlib
     - "{{ hardenwebserver_nginx_debian_pkg }}"
+    - acl
 ## for Docker & netstat call in serverspec
     - net-tools
