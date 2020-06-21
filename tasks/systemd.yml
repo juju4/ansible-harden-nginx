@@ -19,8 +19,8 @@
 - name: Remove user/group in nginx.conf as in systemd
   replace:
     dest: /etc/nginx/nginx.conf
-    regexp: '^user www-data;'
-    replace: '#user www-data;'
+    regexp: '^user (.*);'
+    replace: '#user \1;'
 
 - name: Align pid path in nginx.conf
   replace:
