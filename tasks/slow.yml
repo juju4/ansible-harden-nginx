@@ -4,7 +4,7 @@
 - name: lower tcp keepalive time against slow attacks
   sysctl:
     name: "net.ipv4.tcp_keepalive_time"
-    value: 90
+    value: '90'
     sysctl_set: yes
     state: present
     reload: yes
