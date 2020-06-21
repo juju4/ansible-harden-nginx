@@ -31,3 +31,6 @@ SystemCallFilter=@system-service
 SystemCallErrorNumber=EPERM
 {% endif %}
 {% endif %}
+CPUShares={{ nginx_cgroups_cpushares | default('1024') }}
+CPUQuota={{ nginx_cgroups_cpuquota | default('80%') }}
+MemoryLimit={{ nginx_cgroups_memorylimit | default('4G') }}
