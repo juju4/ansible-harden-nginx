@@ -64,7 +64,7 @@ server {
         }
 
 {% for f in hardenwebserver_nginx_https_server_include %}
-    include /etc/nginx/{{ f }};
+    include /etc/nginx/{{ f.name }};
 {% endfor %}
         
 }

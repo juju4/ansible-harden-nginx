@@ -40,6 +40,16 @@
     hardenwebserver_nginx_debian_pkg == 'nginx-full' or
     (ansible_os_family == 'RedHat' and ansible_distribution_major_version|int > 7)
 
+- name: Ensure extra configs are present
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ apache_confdir }}/../{{ item.name }}{{ nginx_conf_suffix }}"
+    mode: '0644'
+  notify:
+    - restart nginx
+  with_items: "{{ hardenwebserver_nginx_https_server_include }}"
+  when: hardenwebserver_nginx_https_server_include
+
 - name: harden template for tls servers, common, fastcgi
   template:
     src: "{{ item }}.j2"

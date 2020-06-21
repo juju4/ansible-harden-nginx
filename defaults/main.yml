@@ -6,6 +6,7 @@ hardenwebserver_http_redirect_to_https: true
 ##  in this case role 'https' config will be installed but not enabled
 hardenwebserver_https_noconfig: false
 hardenwebserver_nginx_https_server_include: []
+#  - { name: service, src: template_filename.j2 }
 
 ## curl, wget, perl...
 hardenwebserver_block_downloadagents: false
