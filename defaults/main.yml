@@ -14,8 +14,8 @@ hardenwebserver_cachecontrol: false
 
 hardenwebserver_nginx_systemd_hardening: true
 hardenwebserver_systemd_files_acl:
-    - { p: "/etc/ssl/private", perm: rx }
-    - { p: "/etc/ssl/private/{{ ansible_fqdn }}.key", perm: r }
+#    - { p: "/etc/ssl/private", perm: rx }
+#    - { p: "/etc/ssl/private/{{ ansible_fqdn }}.key", perm: r }
     - { p: "/var/log/nginx", perm: rwx }
 #    - { p: /etc/letsencrypt/archive, perm: rx }
 #    - { p: /etc/letsencrypt/live, perm: rx }
