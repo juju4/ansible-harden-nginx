@@ -21,6 +21,16 @@
 - include: systemd.yml
   when: hardenwebserver_nginx_systemd_hardening
 
+- block:
+    - name: Centos7 | systemd reload - workaround
+      command: systemctl daemon-reload
+    - name: Centos7 | restart nginx 1
+      command: systemctl restart nginx
+      ignore_errors: true
+    - name: Centos7 | restart nginx 2
+      command: systemctl restart nginx
+  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == '7'
+
 - meta: flush_handlers
 
 - name: ensure nginx is enabled and started
