@@ -48,7 +48,6 @@
   notify:
     - restart nginx
   with_items: "{{ hardenwebserver_nginx_https_server_include }}"
-  when: hardenwebserver_nginx_https_server_include|bool
 
 - name: harden template for tls servers, common, fastcgi
   template:
