@@ -12,7 +12,9 @@ PIDFile=/run/nginx/nginx.pid
 NoNewPrivileges=yes
 # Reduce Attack Surface
 PrivateTmp=true
+{% if (ansible_os_family == 'RedHat' and ansible_distribution_major_version|int > 7) or (ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int > 18) %}
 PrivateDevices=yes
+{% endif %}
 ProtectHome=yes
 ProtectSystem=full
 {% if (ansible_os_family == 'RedHat' and ansible_distribution_major_version|int > 7) or (ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int >= 18) %}
