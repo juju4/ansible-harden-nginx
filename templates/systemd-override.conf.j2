@@ -12,12 +12,16 @@ PIDFile=/run/nginx/nginx.pid
 NoNewPrivileges=yes
 # Reduce Attack Surface
 PrivateTmp=true
+PrivateDevices=yes
 ProtectHome=yes
 ProtectSystem=full
 {% if (ansible_os_family == 'RedHat' and ansible_distribution_major_version|int > 7) or (ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int >= 18) %}
+InaccessiblePaths=/proc
 ProtectKernelTunables=true
 ProtectKernelModules=yes
+ProtectControlGroups=true
 RestrictRealtime=true
+RestrictNamespaces=~user mnt
 LockPersonality=true
 {% endif %}
 RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
@@ -26,11 +30,9 @@ RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
         )
 %}
 {% if (ansible_os_family == 'RedHat' and ansible_distribution_major_version|int >= 8) or (ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int >= 18) %}
-{% if not (ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int == 18) %}
 SystemCallFilter=@system-service
-{% endif %}
 SystemCallFilter=~@debug @mount @cpu-emulation @obsolete @privileged
-# When system call is disallowed, return error code instead of killing process 
+# When system call is disallowed, return error code instead of killing process
 SystemCallErrorNumber=EPERM
 {% endif %}
 {% endif %}
