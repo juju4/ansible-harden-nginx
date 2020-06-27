@@ -22,3 +22,4 @@ hardenwebserver_packages:
     - acl
 ## for Docker & netstat call in serverspec
     - net-tools
+openssl_pkgs: ['openssl', 'python-pip', 'python-setuptools', 'python-openssl' ]
