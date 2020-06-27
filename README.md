@@ -53,6 +53,20 @@ hardenwebserver_letsencrypt_acme_dir: 'https://acme-staging.api.letsencrypt.org/
 hardenwebserver_rootdir: /var/www/html
 ```
 
+*Pay attention to following defaults variables*
+This leverage systemd to reduce nginx privileges but it requires some files to get extra acl to work, typically ssl certificate and key or logs
+
+```
+hardenwebserver_nginx_systemd_hardening: true
+hardenwebserver_systemd_files_acl:
+#    - { p: "/etc/ssl/private", perm: rx }
+#    - { p: "/etc/ssl/private/{{ ansible_fqdn }}.key", perm: r }
+    - { p: "/var/log/nginx", perm: rwx }
+#    - { p: /etc/letsencrypt/archive, perm: rx }
+#    - { p: /etc/letsencrypt/live, perm: rx }
+#    - { p: "/etc/letsencrypt/archive/{{ ansible_fqdn }}/privkey1.pem", perm: r }
+```
+
 
 ## Continuous integration
 
