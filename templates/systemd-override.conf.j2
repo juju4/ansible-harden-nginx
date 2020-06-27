@@ -31,12 +31,12 @@ RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
           ansible_virtualization_type == "docker"
         )
 %}
-{% if (ansible_os_family == 'RedHat' and ansible_distribution_major_version|int >= 8) or (ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int >= 18) %}
+{% if (ansible_os_family == 'RedHat' and ansible_distribution_major_version|int >= 8) or (ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int > 18) %}
 SystemCallFilter=@system-service
+{% endif %}
 SystemCallFilter=~@debug @mount @cpu-emulation @obsolete @privileged
 # When system call is disallowed, return error code instead of killing process
 SystemCallErrorNumber=EPERM
-{% endif %}
 {% endif %}
 CPUShares={{ nginx_cgroups_cpushares | default('1024') }}
 CPUQuota={{ nginx_cgroups_cpuquota | default('80%') }}
