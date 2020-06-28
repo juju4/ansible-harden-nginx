@@ -86,6 +86,13 @@
       file: dest="/etc/nginx/sites-enabled/https" state=absent
       notify:
         - restart nginx
+    - name: debian | ensure no redirect http to https - letsencrypt
+      lineinfile:
+        dest: /etc/nginx/sites-available/default
+        regexp: "^\treturn 301 https://\\$host\\$request_uri;"
+        state: absent
+      notify:
+        - restart nginx
   when: >
     hardenwebserver_cert is defined and
     hardenwebserver_cert == 'letsencrypt' and
@@ -134,6 +141,7 @@
     - name: debian | nginx redirect http to https
       lineinfile:
         dest: /etc/nginx/sites-available/default
+        regexp: "^\treturn 301 https://$host$request_uri;"
         line: "\treturn 301 https://$host$request_uri;"
         insertafter: "^\tlisten \\[::\\]:80 default_server;"
       when: hardenwebserver_http_redirect_to_https
