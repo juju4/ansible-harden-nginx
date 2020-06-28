@@ -34,6 +34,7 @@
   openssl_privatekey:
     path: "{{ ssl_privatedir }}/{{ ansible_fqdn }}.key"
     size: 4096
+    backup: "{{ hardenwebserver_backup | default(true) }}"
 
 - name: Generate an OpenSSL Certificate Signing Request with Subject information
   openssl_csr:
@@ -44,6 +45,7 @@
     email_address: "{{ hardenwebserver_letsencrypt_email }}"
     common_name: "{{ certificate_cn }}"
     subject_alt_name: "{{ hardenwebserver_letsencrypt_san | default(omit) }}"
+    backup: "{{ hardenwebserver_backup | default(true) }}"
     # defaults
     #digest: sha256
 
