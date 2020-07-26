@@ -53,12 +53,12 @@ end
 describe command('curl -vk https://localhost/nonexistent') do
   its(:stdout) { should match /<title>404 Not Found<\/title>/ }
   its(:stderr) { should match /HTTP\/.* 404/ }
-  its(:exit_status) { should != 0 }
+  its(:exit_status) { should_not eq 0 }
 end
 describe command('curl -vk -X OPTIONS https://localhost') do
   its(:stdout) { should match /<title>405 Not Allowed<\/title>/ }
   its(:stderr) { should match /HTTP\/.* 405/ }
-  its(:exit_status) { should != 0 }
+  its(:exit_status) { should_not eq 0 }
 end
 
 describe command('openssl s_client -connect localhost:443 < /dev/null 2>/dev/null | openssl x509 -text -in /dev/stdin') do
