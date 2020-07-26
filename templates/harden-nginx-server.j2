@@ -33,7 +33,7 @@ add_header Referrer-Policy "{{ harden_webserver_header_refpolicy }}";
 
 {% if hardenwebserver_nginx_with_log_combined is defined and hardenwebserver_nginx_with_log_combined|bool %}
 ## Note cookie are selective and must update $cookie_COOKIE to $cookie_target
-log_format combined_long '$remote_addr - $remote_user [$time_local]  '
+log_format combined_long '$remote_addr - $remote_user [$time_local] '
     '"$request" $status $body_bytes_sent '
     '"$http_referer" "$http_user_agent" "$cookie_COOKIE"';
 access_log /var/log/nginx/access-long.log combined_long;
