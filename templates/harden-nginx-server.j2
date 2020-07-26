@@ -53,7 +53,7 @@ log_format combined_json escape=json
     '"status": "$status",'
     '"body_bytes_sent":"$body_bytes_sent",'
     '"http_referrer":"$http_referer",'
-    '"http_user_agent":"$http_user_agent"'
+    '"http_user_agent":"$http_user_agent",'
     '"cookie_COOKIE":"$cookie_COOKIE"'
   '}';
 access_log /var/log/nginx/access_json.log combined_json;
