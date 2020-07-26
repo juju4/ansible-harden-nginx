@@ -3,6 +3,12 @@ require 'serverspec'
 # Required by serverspec
 set :backend, :exec
 
+if (os[:family] == 'redhat')
+  set root_title = 'Test Page for the Nginx HTTP Server on Red Hat Enterprise Linux'
+else
+  set root_title = 'Welcome to nginx!'
+end
+
 describe package('nginx'), :if => os[:family] == 'redhat' do
   it { should be_installed }
 end
@@ -45,7 +51,7 @@ describe file('/etc/nginx/sites-enabled/https'), :if => os[:family] == 'ubuntu' 
 end
 
 describe command('curl -vk https://localhost') do
-  its(:stdout) { should match /<title>Welcome to nginx!<\/title>/ }
+  its(:stdout) { should match /<title>#{root_title}<\/title>/ }
   its(:stderr) { should match /SSL connection using TLSv1.2/ }
   its(:stderr) { should match /HTTP\/.* 200/ }
   its(:exit_status) { should eq 0 }
@@ -53,12 +59,12 @@ end
 describe command('curl -vk https://localhost/nonexistent') do
   its(:stdout) { should match /<title>404 Not Found<\/title>/ }
   its(:stderr) { should match /HTTP\/.* 404/ }
-  its(:exit_status) { should_not eq 0 }
+  its(:exit_status) { should eq 0 }
 end
 describe command('curl -vk -X OPTIONS https://localhost') do
   its(:stdout) { should match /<title>405 Not Allowed<\/title>/ }
   its(:stderr) { should match /HTTP\/.* 405/ }
-  its(:exit_status) { should_not eq 0 }
+  its(:exit_status) { should eq 0 }
 end
 
 describe command('openssl s_client -connect localhost:443 < /dev/null 2>/dev/null | openssl x509 -text -in /dev/stdin') do
