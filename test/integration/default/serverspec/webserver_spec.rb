@@ -3,7 +3,7 @@ require 'serverspec'
 # Required by serverspec
 set :backend, :exec
 
-if (os[:family] == 'redhat' && os[:release].scan(/^7\./))
+if (os[:family] == 'redhat' && os[:release].scan(/^7\./) != [])
   set root_title = 'Welcome to CentOS'
   set ssl_match = 'SSL connection using TLS_'
 elsif (os[:family] == 'redhat')
