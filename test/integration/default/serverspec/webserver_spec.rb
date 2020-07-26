@@ -3,10 +3,15 @@ require 'serverspec'
 # Required by serverspec
 set :backend, :exec
 
-if (os[:family] == 'redhat')
+if (os[:family] == 'redhat' and os[:release] == '7')
+  set root_title = 'Welcome to CentOS'
+  set ssl_match = 'SSL connection using TLS_'
+elsif (os[:family] == 'redhat')
   set root_title = 'Test Page for the Nginx HTTP Server on Red Hat Enterprise Linux'
+  set ssl_match = 'SSL connection using TLSv1.2'
 else
   set root_title = 'Welcome to nginx!'
+  set ssl_match = 'SSL connection using TLSv1.2'
 end
 
 describe package('nginx'), :if => os[:family] == 'redhat' do
@@ -52,7 +57,7 @@ end
 
 describe command('curl -vk https://localhost') do
   its(:stdout) { should match /<title>#{root_title}<\/title>/ }
-  its(:stderr) { should match /SSL connection using TLSv1.2/ }
+  its(:stderr) { should match ssl_match }
   its(:stderr) { should match /HTTP\/.* 200/ }
   its(:exit_status) { should eq 0 }
 end
