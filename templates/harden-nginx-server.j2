@@ -41,8 +41,6 @@ access_log /var/log/nginx/access-long.log combined_long;
 {% endif %}
 {% if hardenwebserver_nginx_with_log_json is defined and hardenwebserver_nginx_with_log_json|bool %}
 # https://nginx.org/en/docs/http/ngx_http_log_module.html#log_format
-#    '"x_forwarded_for": "$http_x_forwarded_for",'
-#    '"vhost": "$server_name",'
 log_format combined_json escape=json
   '{'
     '"time":"$time_iso8601",'
@@ -51,14 +49,16 @@ log_format combined_json escape=json
     '"remote_user":"$remote_user",'
     '"request":"$request",'
     '"request_method":"$request_method",'
-    '"uri": "$uri",'
-    '"query_parameters": "$query_string",'
-    '"protocol": "$server_protocol",'
+    '"uri":"$uri",'
+    '"query_parameters":"$query_string",'
+    '"protocol":"$server_protocol",'
     '"request_time":"$request_time",'
-    '"status": "$status",'
+    '"status":"$status",'
     '"body_bytes_sent":"$body_bytes_sent",'
     '"http_referrer":"$http_referer",'
     '"http_user_agent":"$http_user_agent",'
+    '"vhost":"$server_name",'
+    '"xff":"$http_x_forwarded_for",'
     '"cookie_COOKIE":"$cookie_COOKIE"'
   '}';
 access_log /var/log/nginx/access_json.log combined_json;
