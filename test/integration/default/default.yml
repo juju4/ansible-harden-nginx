@@ -11,6 +11,7 @@
         hardenwebserver_systemd_files_acl:
           - { p: "/etc/pki/tls/private", perm: rx }
           - { p: "/etc/pki/tls/private/{{ ansible_fqdn }}.key", perm: r }
+          - { p: "/etc/pki/tls/certs/{{ ansible_fqdn }}.crt", perm: r }
           - { p: "/var/log/nginx", perm: rwx }
       when: ansible_os_family == "RedHat"
     - name: Debian | set extra permissions for systemd hardening
@@ -18,6 +19,7 @@
         hardenwebserver_systemd_files_acl:
           - { p: "/etc/ssl/private", perm: rx }
           - { p: "/etc/ssl/private/{{ ansible_fqdn }}.key", perm: r }
+          - { p: "/etc/ssl/{{ ansible_fqdn }}.crt", perm: r }
           - { p: "/var/log/nginx", perm: rwx }
       when: ansible_os_family == "Debian"
   roles:
