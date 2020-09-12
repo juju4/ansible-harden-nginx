@@ -18,6 +18,9 @@
 
 - include: slow.yml
 
+- include: php.yml
+  when: harden_nginx_php_enable
+
 - include: aide-hids.yml
 - include: security-txt.yml
 

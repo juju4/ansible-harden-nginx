@@ -23,3 +23,12 @@ hardenwebserver_packages:
 ## for Docker & netstat call in serverspec
     - net-tools
 openssl_pkgs: ['openssl', 'python-pip', 'python-setuptools', 'python-openssl' ]
+
+harden_nginx_php:
+  - php
+  - php-fpm
+harden_nginx_phpdir: /etc/php/7.0
+php_confext: ini
+_harden_nginx_php_variants: "{{ harden_nginx_php_variants | default(['fpm', 'cli']) }}"
+snuffleupagus_pkgs:
+  - php7.0-dev
