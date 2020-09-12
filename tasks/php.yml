@@ -20,59 +20,59 @@
 
 - name: PHP | Disable expose php
   replace:
-    dest: "{{ harden_apache_phpini | default(harden_apache_phpdir + '/' + item + '/php.ini') }}"
+    dest: "{{ harden_nginx_phpini | default(harden_nginx_phpdir + '/' + item + '/php.ini') }}"
     regexp: '^expose_php = .*'
     replace: "expose_php = {{ harden_php_expose_php }}"
-  with_items: "{{ _harden_apache_php_variants }}"
+  with_items: "{{ _harden_nginx_php_variants }}"
 
 - name: PHP | Disable url_fopen
   replace:
-    dest: "{{ harden_apache_phpini | default(harden_apache_phpdir + '/' + item + '/php.ini') }}"
+    dest: "{{ harden_nginx_phpini | default(harden_nginx_phpdir + '/' + item + '/php.ini') }}"
     regexp: '^allow_url_fopen = .*'
     replace: "allow_url_fopen = {{ harden_php_allow_url_fopen }}"
-  with_items: "{{ _harden_apache_php_variants }}"
+  with_items: "{{ _harden_nginx_php_variants }}"
 
 - name: PHP | Disable many dangerous functions
   replace:
-    dest: "{{ harden_apache_phpini | default(harden_apache_phpdir + '/' + item + '/php.ini') }}"
+    dest: "{{ harden_nginx_phpini | default(harden_nginx_phpdir + '/' + item + '/php.ini') }}"
     regexp: '^disable_functions =.*'
     replace: "disable_functions = {{ harden_php_disable_functions }}"
-  with_items: "{{ _harden_apache_php_variants }}"
+  with_items: "{{ _harden_nginx_php_variants }}"
 
 - name: PHP | Memory limit
   replace:
-    dest: "{{ harden_apache_phpini | default(harden_apache_phpdir + '/' + item + '/php.ini') }}"
+    dest: "{{ harden_nginx_phpini | default(harden_nginx_phpdir + '/' + item + '/php.ini') }}"
     regexp: '^memory_limit = .*'
     replace: "memory_limit = {{ harden_php_memory_limit }}"
-  with_items: "{{ _harden_apache_php_variants }}"
+  with_items: "{{ _harden_nginx_php_variants }}"
 
 - name: PHP | Include path
   lineinfile:
-    dest: "{{ harden_apache_phpini | default(harden_apache_phpdir + '/' + item + '/php.ini') }}"
+    dest: "{{ harden_nginx_phpini | default(harden_nginx_phpdir + '/' + item + '/php.ini') }}"
     regexp: '^include_path = .*'
     line: "include_path = {{ harden_php_include_path }}"
-  with_items: "{{ _harden_apache_php_variants }}"
+  with_items: "{{ _harden_nginx_php_variants }}"
 
 - name: PHP | session.use_strict_mode
   replace:
-    dest: "{{ harden_apache_phpini | default(harden_apache_phpdir + '/' + item + '/php.ini') }}"
+    dest: "{{ harden_nginx_phpini | default(harden_nginx_phpdir + '/' + item + '/php.ini') }}"
     regexp: '^session.use_strict_mode = .*'
     replace: "session.use_strict_mode = {{ harden_php_session_use_strict_mode }}"
-  with_items: "{{ _harden_apache_php_variants }}"
+  with_items: "{{ _harden_nginx_php_variants }}"
 
 - name: PHP | session.cookie_secure
   lineinfile:
-    dest: "{{ harden_apache_phpini | default(harden_apache_phpdir + '/' + item + '/php.ini') }}"
+    dest: "{{ harden_nginx_phpini | default(harden_nginx_phpdir + '/' + item + '/php.ini') }}"
     regexp: '^session.cookie_secure =.*'
     line: "session.cookie_secure = {{ harden_php_session_cookie_secure }}"
-  with_items: "{{ _harden_apache_php_variants }}"
+  with_items: "{{ _harden_nginx_php_variants }}"
 
 - name: PHP | session.cookie_httponly
   replace:
-    dest: "{{ harden_apache_phpini | default(harden_apache_phpdir + '/' + item + '/php.ini') }}"
+    dest: "{{ harden_nginx_phpini | default(harden_nginx_phpdir + '/' + item + '/php.ini') }}"
     regexp: '^session.cookie_httponly =.*'
     replace: "session.cookie_httponly = {{ harden_php_session_cookie_httponly }}"
-  with_items: "{{ _harden_apache_php_variants }}"
+  with_items: "{{ _harden_nginx_php_variants }}"
 
 #- import_tasks: php7-snuffleupagus.yml
 #  when: >
