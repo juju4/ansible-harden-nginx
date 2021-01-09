@@ -24,7 +24,6 @@ if ($http_upgrade_insecure_requests = "1") {
     return 307 https://$host$request_uri;
 }
 {% endif %}
-add_header X-XSS-Protection "1; mode=block";
 add_header Content-Security-Policy "{{ hardenwebserver_header_csp }}";
 add_header Referrer-Policy "{{ harden_webserver_header_refpolicy }}";
 ## only if proxy: force cookie as secure+httponly. might break some app...
