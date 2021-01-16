@@ -40,6 +40,7 @@ hardenwebserver_letsencrypt_country: US
 # hardenwebserver_letsencrypt_acme_dir: 'https://acme-v01.api.letsencrypt.org/directory'
 hardenwebserver_letsencrypt_acme_dir: 'https://acme-staging-v02.api.letsencrypt.org/directory'
 # hardenwebserver_letsencrypt_acme_dir: 'https://acme-v02.api.letsencrypt.org/directory'
+harden_nginx_hpkp_enable: false
 
 # hardenwebserver_nginx_resolver: '$DNS-IP-1 $DNS-IP-2'
 ## example: Google, OpenDNS, Dyn DNS servers

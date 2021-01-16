@@ -18,6 +18,7 @@
     executable: /bin/bash
   register: hardenwebserver_cert_pinning_value
   changed_when: false
+  when: harden_nginx_hpkp_enable
 
 - name: nginx configuration file update
   template: src=harden-cache
