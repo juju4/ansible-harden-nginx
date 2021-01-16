@@ -21,12 +21,14 @@
     dest: /etc/nginx/nginx.conf
     regexp: '^user (.*);'
     replace: '#user \1;'
+    mode: '0644'
 
 - name: Align pid path in nginx.conf
   replace:
     dest: /etc/nginx/nginx.conf
     regexp: '^pid .*'
     replace: 'pid /run/nginx/nginx.pid;'
+    mode: '0644'
 
 - name: Ensure /run/nginx exists
   file:
@@ -40,6 +42,7 @@
     dest: /lib/systemd/system/nginx.service
     regexp: "{{ item.re }}"
     replace: "{{ item.rep }}"
+    mode: '0644'
   with_items:
     - { re: '^PIDFile=/run/nginx.pid', rep: '#PIDFile=/run/nginx.pid' }
     - { re: '--pidfile /run/nginx.pid', rep: '--pidfile /run/nginx/nginx.pid' }
@@ -68,6 +71,7 @@
         dest: /lib/systemd/system/nginx.service
         regexp: '^PIDFile=/run/nginx.pid'
         replace: '#PIDFile=/run/nginx.pid'
+        mode: '0644'
       notify:
         - reload systemd
         - restart nginx

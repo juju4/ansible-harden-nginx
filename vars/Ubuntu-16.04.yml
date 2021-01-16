@@ -17,12 +17,12 @@ hardenwebserver_nginx_naxsi: true
 nginx_conf_suffix: ''
 
 hardenwebserver_packages:
-    - python-passlib
-    - "{{ hardenwebserver_nginx_debian_pkg }}"
-    - acl
-## for Docker & netstat call in serverspec
-    - net-tools
-openssl_pkgs: ['openssl', 'python-pip', 'python-setuptools', 'python-openssl' ]
+  - python-passlib
+  - "{{ hardenwebserver_nginx_debian_pkg }}"
+  - acl
+  ## for Docker & netstat call in serverspec
+  - net-tools
+openssl_pkgs: ['openssl', 'python-pip', 'python-setuptools', 'python-openssl']
 
 harden_nginx_php:
   - php

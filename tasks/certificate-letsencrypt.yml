@@ -23,7 +23,7 @@
   acme_account:
     acme_directory: "{{ hardenwebserver_letsencrypt_acme_dir }}"
     acme_version: 2
-    #account_key_src: "{{ hardenwebserver_letsencrypt_user_key | default(ssl_privatedir + '/user.key') }}"
+    # account_key_src: "{{ hardenwebserver_letsencrypt_user_key | default(ssl_privatedir + '/user.key') }}"
     account_key_src: "{{ ssl_privatedir }}/user.key"
     state: present
     terms_agreed: yes
@@ -47,7 +47,7 @@
     subject_alt_name: "{{ hardenwebserver_letsencrypt_san | default(omit) }}"
     backup: "{{ hardenwebserver_backup | default(true) }}"
     # defaults
-    #digest: sha256
+    # digest: sha256
 
 - name: register letsencrypt challenge
   acme_certificate:
@@ -61,7 +61,7 @@
   notify:
     - add public file to www dir to fullfill letsencrypt challenge
 
-#- debug: var=le_challenge
+# - debug: var=le_challenge
 - name: ensure letsencrypt directory exists
   file: "dest={{ hardenwebserver_rootdir }}/.well-known/acme-challenge state=directory mode=0755"
 

@@ -8,11 +8,14 @@
     - /etc/nginx/nginx.conf
 
 - name: HTTP Public Key Pinning (HPKP) hash extraction
-  shell: >
+  shell: |
+    set -o pipefail
     openssl req -in {{ ssl_dir }}/{{ ansible_fqdn }}.csr -pubkey -noout |
       openssl rsa -pubin -outform der |
       openssl dgst -sha256 -binary |
       openssl enc -base64
+  args:
+    executable: /bin/bash
   register: hardenwebserver_cert_pinning_value
   changed_when: false
 
@@ -64,7 +67,7 @@
 
 ## size should be >= certificate key size
 - name: generate ssl dhparam key
-#  command: "openssl dhparam -out {{ ssl_privatedir }}/dhparam4.pem 4096 creates=/etc/nginx/ssl/dhparam4.pem"
+  # command: "openssl dhparam -out {{ ssl_privatedir }}/dhparam4.pem 4096 creates=/etc/nginx/ssl/dhparam4.pem"
   command: >
     openssl dhparam -dsaparam -out {{ ssl_privatedir }}/dhparam4.pem 4096
   args:
@@ -79,6 +82,7 @@
       file:
         src: "{{ apachedefault }}"
         dest: /etc/nginx/sites-enabled/default
+        mode: '0644'
         state: link
       notify:
         - restart nginx
@@ -101,6 +105,7 @@
     - name: redhat | ensure nginx default/http site present
       file:
         dest: "{{ apacheconf }}"
+        mode: '0644'
         state: file
   when: hardenwebserver_cert is defined and hardenwebserver_cert == 'letsencrypt' and (ansible_os_family == 'RedHat')
 - include: certificate-letsencrypt.yml
@@ -117,7 +122,11 @@
       notify:
         - restart nginx
     - name: enable https
-      file: src="{{ apache_sitedir }}/https" dest="/etc/nginx/sites-enabled/https" state=link
+      file:
+        src: "{{ apache_sitedir }}/https"
+        dest: "/etc/nginx/sites-enabled/https"
+        state: link
+        mode: '0644'
       notify:
         - restart nginx
       when: hardenwebserver_https_noconfig is not defined or not hardenwebserver_https_noconfig|bool
@@ -134,6 +143,7 @@
       file:
         src: "{{ apache_sitedir }}/default"
         dest: /etc/nginx/sites-enabled/default
+        mode: '0644'
         state: link
       notify:
         - restart nginx
@@ -143,9 +153,10 @@
         dest: /etc/nginx/sites-available/default
         regexp: "^\treturn 301 https://$host$request_uri;"
         line: "\treturn 301 https://$host$request_uri;"
+        mode: '0644'
         insertafter: "^\tlisten \\[::\\]:80 default_server;"
       when: hardenwebserver_http_redirect_to_https
-## https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-naxsi-on-ubuntu-14-04
+    ## https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-naxsi-on-ubuntu-14-04
     - block:
         - name: download nxtool.py to help whitelisting
           get_url:

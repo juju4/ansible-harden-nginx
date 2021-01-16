@@ -19,11 +19,11 @@ nginx_conf_suffix: '.conf'
 python_pip: python3-pip
 
 hardenwebserver_packages:
-    - python-passlib
-    - "{{ hardenwebserver_nginx_debian_pkg }}"
-    - acl
-## for Docker & netstat call in serverspec
-    - net-tools
+  - python-passlib
+  - "{{ hardenwebserver_nginx_debian_pkg }}"
+  - acl
+  ## for Docker & netstat call in serverspec
+  - net-tools
 
 harden_nginx_php:
   - php

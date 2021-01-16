@@ -14,36 +14,36 @@ hardenwebserver_cachecontrol: false
 
 hardenwebserver_nginx_systemd_hardening: true
 hardenwebserver_systemd_files_acl:
-#    - { p: "/etc/ssl/private", perm: rx }
-#    - { p: "/etc/ssl/private/{{ ansible_fqdn }}.key", perm: r }
-    - { p: "/var/log/nginx", perm: rwx }
-#    - { p: /etc/letsencrypt/archive, perm: rx }
-#    - { p: /etc/letsencrypt/live, perm: rx }
-#    - { p: "/etc/letsencrypt/archive/{{ ansible_fqdn }}/privkey1.pem", perm: r }
+  # - { p: "/etc/ssl/private", perm: rx }
+  # - { p: "/etc/ssl/private/{{ ansible_fqdn }}.key", perm: r }
+  - { p: "/var/log/nginx", perm: rwx }
+  # - { p: /etc/letsencrypt/archive, perm: rx }
+  # - { p: /etc/letsencrypt/live, perm: rx }
+  # - { p: "/etc/letsencrypt/archive/{{ ansible_fqdn }}/privkey1.pem", perm: r }
 
 ## if defined, restrict webserver listen interface (only support one interface)
-#hardenwebserver_bind: 192.168.1.1
+# hardenwebserver_bind: 192.168.1.1
 
 hardenwebserver_cert: selfsigned
 hardenwebserver_certinfo: '/C=US/ST=CA/L=San Francisco/O=Ansible'
 hardenwebserver_certduration: 1095
 ## Ansible v2.2 module. will use hostname fqdn. REQUIRE publicly accessible host w public domain
-#hardenwebserver_cert: letsencrypt
+# hardenwebserver_cert: letsencrypt
 # path on orchestrator, if empty will be created
 hardenwebserver_letsencrypt_user_key: ''
 hardenwebserver_letsencrypt_org_name: Webserver by Ansible
 hardenwebserver_letsencrypt_email: john@example.com
 hardenwebserver_letsencrypt_country: US
-#hardenwebserver_letsencrypt_san:
+# hardenwebserver_letsencrypt_san:
 ## staging or production url
-#hardenwebserver_letsencrypt_acme_dir: 'https://acme-staging.api.letsencrypt.org/directory'
-#hardenwebserver_letsencrypt_acme_dir: 'https://acme-v01.api.letsencrypt.org/directory'
+# hardenwebserver_letsencrypt_acme_dir: 'https://acme-staging.api.letsencrypt.org/directory'
+# hardenwebserver_letsencrypt_acme_dir: 'https://acme-v01.api.letsencrypt.org/directory'
 hardenwebserver_letsencrypt_acme_dir: 'https://acme-staging-v02.api.letsencrypt.org/directory'
-#hardenwebserver_letsencrypt_acme_dir: 'https://acme-v02.api.letsencrypt.org/directory'
+# hardenwebserver_letsencrypt_acme_dir: 'https://acme-v02.api.letsencrypt.org/directory'
 
-#hardenwebserver_nginx_resolver: '$DNS-IP-1 $DNS-IP-2'
+# hardenwebserver_nginx_resolver: '$DNS-IP-1 $DNS-IP-2'
 ## example: Google, OpenDNS, Dyn DNS servers
-#hardenwebserver_nginx_resolver: '8.8.8.8 8.8.4.4 208.67.222.222 208.67.220.220 216.146.35.35 216.146.36.36'
+# hardenwebserver_nginx_resolver: '8.8.8.8 8.8.4.4 208.67.222.222 208.67.220.220 216.146.35.35 216.146.36.36'
 
 hardenwebserver_cert_pinning: false
 hardenwebserver_cert_pinning_value: 'pin-sha256=\"xxxx\"; pin-sha256=\"yyyy\"; max-age=5184000; includeSubDomains'
@@ -54,8 +54,8 @@ hardenwebserver_nginx_sessiontickets: false
 ## https://packages.debian.org/jessie/nginx-full
 ## https://packages.debian.org/jessie/nginx-light
 ## https://packages.debian.org/wheezy/nginx-naxsi
-#hardenwebserver_nginx_debian_pkg: 'nginx-naxsi'
-#hardenwebserver_nginx_debian_pkg: 'nginx-full'
+# hardenwebserver_nginx_debian_pkg: 'nginx-naxsi'
+# hardenwebserver_nginx_debian_pkg: 'nginx-full'
 ## Note: nginx-light --without-http_limit_req_module
 hardenwebserver_nginx_debian_pkg: 'nginx-light'
 hardenwebserver_nginx_naxsi_learningmode: true
@@ -64,15 +64,15 @@ hardenwebserver_nginx_with_fastcgi: false
 ## https://content-security-policy.com/
 ## https://githubengineering.com/githubs-post-csp-journey/
 ## https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy
-#hardenwebserver_header_csp: "default-src self"
+# hardenwebserver_header_csp: "default-src self"
 hardenwebserver_header_csp: "default-src 'none'; script-src 'self'; connect-src 'self'; img-src 'self'; style-src 'self'; upgrade-insecure-requests;"
-#hardenwebserver_header_csp: "default-src 'none'; script-src 'self www.google-analytics.com ajax.googleapis.com'; connect-src 'self'; img-src 'self'; style-src 'self';"
-#hardenwebserver_header_csp: "default-src 'none'; script-src 'self www.google-analytics.com ajax.googleapis.com'; connect-src 'self'; img-src 'self'; style-src 'self'; report-uri https://xxxx.report-uri.io/r/default/csp/enforce"
-#hardenwebserver_header_csp: "default-src 'none'; script-src 'self www.google-analytics.com ajax.googleapis.com'; connect-src 'self'; img-src 'self'; style-src 'self'; report-uri-report-only https://xxxx.report-uri.io/r/default/csp/reportOnly"
+# hardenwebserver_header_csp: "default-src 'none'; script-src 'self www.google-analytics.com ajax.googleapis.com'; connect-src 'self'; img-src 'self'; style-src 'self';"
+# hardenwebserver_header_csp: "default-src 'none'; script-src 'self www.google-analytics.com ajax.googleapis.com'; connect-src 'self'; img-src 'self'; style-src 'self'; report-uri https://xxxx.report-uri.io/r/default/csp/enforce"
+# hardenwebserver_header_csp: "default-src 'none'; script-src 'self www.google-analytics.com ajax.googleapis.com'; connect-src 'self'; img-src 'self'; style-src 'self'; report-uri-report-only https://xxxx.report-uri.io/r/default/csp/reportOnly"
 
 ## https://scotthelme.co.uk/a-new-security-header-referrer-policy/
 harden_webserver_header_refpolicy: strict-origin-when-cross-origin
-#harden_webserver_header_refpolicy: no-referrer-when-downgrade
+# harden_webserver_header_refpolicy: no-referrer-when-downgrade
 
 ## https://cipherli.st/
 ## https://wiki.mozilla.org/Security/Server_Side_TLS
@@ -82,9 +82,9 @@ harden_webserver_header_refpolicy: strict-origin-when-cross-origin
 ## https://www.ssi.gouv.fr/uploads/2017/02/security-recommendations-for-tls_v1.1.pdf
 ## https://bettercrypto.org/static/applied-crypto-hardening.pdf
 harden_nginx_sslciphersuite: 'EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH'
-#harden_nginx_sslciphersuite: 'ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS'
+# harden_nginx_sslciphersuite: 'ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS'
 harden_nginx_sslprotocol: 'TLSv1.2'
-#harden_nginx_sslprotocol: 'TLSv1.2 TLSv1.1'
+# harden_nginx_sslprotocol: 'TLSv1.2 TLSv1.1'
 
 ## review php settings?
 harden_nginx_php_enable: true
