@@ -1,5 +1,9 @@
 [![Build Status - Master](https://travis-ci.org/juju4/ansible-harden-nginx.svg?branch=master)](https://travis-ci.org/juju4/ansible-harden-nginx)
 [![Build Status - Devel](https://travis-ci.org/juju4/ansible-harden-nginx.svg?branch=devel)](https://travis-ci.org/juju4/ansible-harden-nginx/branches)
+
+[![Actions Status - Master](https://github.com/juju4/ansible-harden-nginx/workflows/AnsibleCI/badge.svg)](https://github.com/juju4/ansible-harden-nginx/actions?query=branch%3Amaster)
+[![Actions Status - Devel](https://github.com/juju4/ansible-harden-nginx/workflows/AnsibleCI/badge.svg?branch=devel)](https://github.com/juju4/ansible-harden-nginx/actions?query=branch%3Adevel)
+
 # Nginx webserver hardening ansible role
 
 Ansible role to harden nginx webserver.
