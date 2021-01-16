@@ -21,7 +21,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          path: juju4.harden-nginx
+          path: juju4.harden_nginx
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
@@ -31,20 +31,20 @@ jobs:
           python3 -m pip install --upgrade pip
           pip3 install ansible-lint flake8 yamllint
           ansible --version
-          cd $GITHUB_WORKSPACE/juju4.harden-nginx
+          cd $GITHUB_WORKSPACE/juju4.harden_nginx
           [ -f get-dependencies.sh ] && sh -x get-dependencies.sh
           { echo '[defaults]'; echo 'callback_whitelist = profile_tasks, timer'; echo 'roles_path = ../'; echo 'ansible_python_interpreter: /usr/bin/python3'; } >> ansible.cfg
       - name: yamllint
         run: |
           pwd
           find -ls
-          cd $GITHUB_WORKSPACE/juju4.harden-nginx && yamllint .
+          cd $GITHUB_WORKSPACE/juju4.harden_nginx && yamllint .
       - name: ansible-lint
         run: |
-          cd $GITHUB_WORKSPACE/juju4.harden-nginx && ansible-lint
+          cd $GITHUB_WORKSPACE/juju4.harden_nginx && ansible-lint
       - name: run test
         run: |
-          cd $GITHUB_WORKSPACE/juju4.harden-nginx && ansible-playbook -i localhost, --connection=local --become -vvv test/integration/default/default.yml ${ANSIBLE_EXTRA_VARS}
+          cd $GITHUB_WORKSPACE/juju4.harden_nginx && ansible-playbook -i localhost, --connection=local --become -vvv test/integration/default/default.yml ${ANSIBLE_EXTRA_VARS}
         env:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
@@ -67,6 +67,7 @@ jobs:
           ps axuw
           netstat -anp
         if: ${{ failure() }}
+        continue-on-error: true
       - name: After script - systemd
         run: |
           systemctl -l --no-pager status nginx || true
