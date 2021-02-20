@@ -92,7 +92,7 @@
       notify:
         - restart nginx
     - name: debian | ensure no redirect http to https - letsencrypt
-      lineinfile:
+      lineinfile:  # noqa no-tabs
         dest: /etc/nginx/sites-available/default
         regexp: "^\treturn 301 https://\\$host\\$request_uri;"
         state: absent
@@ -150,7 +150,7 @@
         - restart nginx
       when: hardenwebserver_disable_http is not defined or not hardenwebserver_disable_http
     - name: debian | nginx redirect http to https
-      lineinfile:
+      lineinfile:  # noqa no-tabs
         dest: /etc/nginx/sites-available/default
         regexp: "^\treturn 301 https://$host$request_uri;"
         line: "\treturn 301 https://$host$request_uri;"
