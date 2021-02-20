@@ -88,14 +88,17 @@ jobs:
           systemd-analyze security || true
           rsyslogd -v
           nginx -V
+        if: ${{ always() }}
         continue-on-error: true
       - name: After script - etc
         run: |
           cat /etc/nginx/nginx.conf
+        if: ${{ always() }}
         continue-on-error: true
       - name: After script - files
         run: |
           find /etc/nginx -type f -ls
+        if: ${{ always() }}
         continue-on-error: true
       - name: After script - curl
         run: |
@@ -106,10 +109,12 @@ jobs:
           curl -vk -H Referer:http://www.example.com -H X-Forwarded-For:127.0.0.128 https://localhost/
           curl -vk --cookie COOKIE=test_cookie https://localhost
           curl -vk https://localhost
+        if: ${{ always() }}
         continue-on-error: true
       - name: After script - logs
         run: |
           ls -la /var/log/nginx
           find /var/log/nginx -type f -exec tail -50 {} \;
           cat /var/log/gixy.log
+        if: ${{ always() }}
         continue-on-error: true
