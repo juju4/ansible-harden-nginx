@@ -56,7 +56,7 @@ if ($http_user_agent ~* LWP::Simple|wget|libwww-perl|curl) {
 {% endif %}
 
 ## Block some nasty robots
-if ($http_user_agent ~ (^$|EasouSpider|Add Catalog|PaperLiBot|Spiceworks|ZumBot|RU_Bot|Wget|Java/1.7.0_25|Slurp|FunWebProducts|80legs|Aboundex|AcoiRobot|Acoon Robot|AhrefsBot|aihit|AlkalineBOT|AnzwersCrawl|Arachnoidea|ArchitextSpider|archive|Autonomy Spider|Baiduspider|BecomeBot|benderthewebrobot|BlackWidow|Bork-edition|Bot mailto:craftbot@yahoo.com|botje|catchbot|changedetection|Charlotte|ChinaClaw|commoncrawl|ConveraCrawler|Covario|crawler|curl|Custo|data mining development project|DigExt|DISCo|discobot|discoveryengine|DOC|DoCoMo|DotBot|Download Demon|Download Ninja|eCatch|EirGrabber|EmailSiphon|EmailWolf|eurobot|Exabot|Express WebPictures|ExtractorPro|EyeNetIE|Ezooms|Fetch|Fetch API|filterdb|findfiles|findlinks|FlashGet|flightdeckreports|FollowSite Bot|Gaisbot|genieBot|GetRight|GetWeb!|gigablast|Gigabot|Go-Ahead-Got-It|Go!Zilla|GrabNet|Grafula|GT::WWW|hailoo|heritrix|HMView|houxou|HTTP::Lite|HTTrack|ia_archiver|IBM EVV|id-search|IDBot|Image Stripper|Image Sucker|Indy Library|InterGET|Internet Ninja|internetmemory|ISC Systems iRc Search 2.1|JetCar|JOC Web Spider|k2spider|larbin|larbin|LeechFTP|libghttp|libwww|libwww-perl|linko|LinkWalker|lwp-trivial|Mass Downloader|metadatalabs|MFC_Tear_Sample|Microsoft URL Control|MIDown tool|Missigua|Missigua Locator|Mister PiX|MJ12bot|MOREnet|MSIECrawler|msnbot|naver|Navroad|NearSite|Net Vampire|NetAnts|NetSpider|NetZIP|NextGenSearchBot|NPBot|Nutch|Octopus|Offline Explorer|Offline Navigator|omni-explorer|PageGrabber|panscient|panscient.com|Papa Foto|pavuk|pcBrowser|PECL::HTTP|PHP/|PHPCrawl|picsearch|pipl|pmoz|PredictYourBabySearchToolbar|RealDownload|Referrer Karma|ReGet|reverseget|rogerbot|ScoutJet|SearchBot|seexie|seoprofiler|Servage Robot|SeznamBot|shopwiki|sindice|sistrix|SiteSnagger|SiteSnagger|smart.apnoti.com|SmartDownload|Snoopy|Sosospider|spbot|suggybot|SuperBot|SuperHTTP|SuperPagesUrlVerifyBot|Surfbot|SurveyBot|SurveyBot|swebot|Synapse|Tagoobot|tAkeOut|Teleport|Teleport Pro|TeleportPro|TweetmemeBot|TwengaBot|twiceler|UbiCrawler|uptimerobot|URI::Fetch|urllib|User-Agent|VoidEYE|VoilaBot|WBSearchBot|Web Image Collector|Web Sucker|WebAuto|WebCopier|WebCopier|WebFetch|WebGo IS|WebLeacher|WebReaper|WebSauger|Website eXtractor|Website Quester|WebStripper|WebStripper|WebWhacker|WebZIP|WebZIP|Wells Search II|WEP Search|Widow|winHTTP|WWWOFFLE|Xaldon WebSpider|Xenu|yacybot|yandex|YandexBot|YandexImages|yBot|YesupBot|YodaoBot|yolinkBot|youdao|Zao|Zealbot|Zeus|ZyBORG|Purebot|Lipperhey|Mail.Ru|scrapbot) ) {
+if ($http_user_agent ~ (msnbot|Purebot|Baiduspider|Lipperhey|Mail.Ru|scrapbot) ) {
     return 403;
 }
 
@@ -64,13 +64,6 @@ if ($http_user_agent ~ (^$|EasouSpider|Add Catalog|PaperLiBot|Spiceworks|ZumBot|
 if ( $http_referer ~* (jewelry|viagra|nude|girl|nudit|casino|poker|porn|sex|teen|babes) ) {
     return 403;
 }
-
-## https://twitter.com/ryancdotorg/status/1358499667273805825
-## Low effort blocking of simple bots for nginx
-if ($http_accept = "") { return 400; }
-if ($http_accept_language = "") { return 400; }
-## don't care about legacy IE:
-if ($http_accept_encoding !~* br) { return 400; }
 
 ## Block attackers based on GeoIP countries, require maxmind db
 #geoip_country /etc/nginx/GeoIP.dat;
