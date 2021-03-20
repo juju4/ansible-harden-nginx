@@ -1,6 +1,6 @@
 ---
 galaxy_info:
-  role_name: harden-nginx
+  role_name: harden_nginx
   author: juju4
   description: Nginx Webserver Hardening role
   license: BSD

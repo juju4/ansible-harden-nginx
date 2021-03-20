@@ -18,7 +18,8 @@
     size: 4096
   when: hardenwebserver_letsencrypt_user_key is not defined or not hardenwebserver_letsencrypt_user_key
 
-- debug: var=hardenwebserver_letsencrypt_acme_dir
+- name: Debug | hardenwebserver_letsencrypt_acme_dir var
+  debug: var=hardenwebserver_letsencrypt_acme_dir
 - name: Ensure have letsencrypt account
   acme_account:
     acme_directory: "{{ hardenwebserver_letsencrypt_acme_dir }}"
@@ -65,7 +66,8 @@
 - name: ensure letsencrypt directory exists
   file: "dest={{ hardenwebserver_rootdir }}/.well-known/acme-challenge state=directory mode=0755"
 
-- meta: flush_handlers
+- name: Flush handlers
+  meta: flush_handlers
 
 ## Note: validation is over http... can't remove http before this task.
 - name: validate letsencrypt challenge
