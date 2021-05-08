@@ -79,7 +79,7 @@ jobs:
       - name: After script - systemd
         run: |
           systemctl -l --no-pager status nginx || true
-          systemd-analyze security || true
+          systemd-analyze --no-pager security || true
           rsyslogd -v
           nginx -V
         if: ${{ always() }}
