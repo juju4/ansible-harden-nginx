@@ -64,7 +64,7 @@
 
 # - debug: var=le_challenge
 - name: ensure letsencrypt directory exists
-  file: "dest={{ hardenwebserver_rootdir }}/.well-known/acme-challenge state=directory mode=0755"
+  file: "dest={{ hardenwebserver_rootdir | default(_hardenwebserver_rootdir) }}/.well-known/acme-challenge state=directory mode=0755"
 
 - name: Flush handlers
   meta: flush_handlers

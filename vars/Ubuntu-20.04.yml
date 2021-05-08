@@ -12,7 +12,7 @@ apache_confdir: /etc/nginx/conf.d
 apache_sitedir: /etc/nginx/sites-available
 apacheconf: /etc/nginx/nginx.conf
 apachedefault: /etc/nginx/sites-available/default
-hardenwebserver_rootdir: /var/www/html
+_hardenwebserver_rootdir: /var/www/html
 hardenwebserver_nginx_naxsi: true
 nginx_conf_suffix: '.conf'
 
