@@ -10,22 +10,28 @@ location = /robots.txt {
     log_not_found off;
 #    access_log off;
 }
-location ~* /\. {
-    deny all;
-}
-location ~* \.(inc|old|svn|git|pub|sec|gpg|sql|sqlite|swp|bak|orig|disabled|env)$ {
-    deny all;
-}
-location ~* /(?:upload|files|pub)/.*\.php$ {
-    deny all;
-}
 
 {% if hardenwebserver_cert is defined and hardenwebserver_cert == 'letsencrypt' %}
-location ~ /\.well-known/acme-challenge {
+location ~ /.well-known/acme-challenge/ {
     allow all;
 }
 
 {% endif %}
+# below is included in following statement
+location ~* \.(inc|old|svn|git|pub|sec|gpg|sql|sqlite|swp|bak|orig|disabled|env)$ {
+    deny all;
+}
+
+location ~* /\. {
+    # access_log off;
+    # log_not_found off;
+    deny all;
+}
+
+location ~* /(?:upload|files|pub)/.*\.php$ {
+    deny all;
+}
+
 {% if hardenwebserver_cachecontrol is defined and hardenwebserver_cachecontrol %}
 # Set cache control
 ## FIXME! in some context, resulting in files as 404
@@ -35,7 +41,6 @@ location ~* \.(?:js|css|png|jpe?g|gif|ico|woff|ttf|otf|svg|woff2|eot|flv|swf)$ {
     add_header Cache-Control "public, must-revalidate, proxy-revalidate";
 }
 {% endif %}
-
 
 # deny scripts inside writable directories
 location ~* /(images|cache|media|logs|tmp)/.*.(php|pl|py|jsp|asp|sh|cgi)$ {
