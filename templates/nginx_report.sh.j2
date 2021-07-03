@@ -1,0 +1,101 @@
+#!/bin/sh
+
+export export PATH=/usr/bin:/bin
+umask 077
+
+date=$(date +%Y%m%d)
+f=/var/log/nginx/access_json.log
+echo
+echo
+echo "      NGINX DAILY REPORT ${date} for ${f}"
+echo
+echo
+
+echo "** Source IP 200"
+jq -r 'select(.status == "200") | .remote_addr' "${f}" | sort | uniq -c | sort -nr | head -10
+echo "** Source IP 30x"
+jq -r 'select(.status | startswith("30")) | .remote_addr' "${f}" | sort | uniq -c | sort -nr | head -10
+echo "** Source IP 40x"
+jq -r 'select(.status | startswith("40")) | .remote_addr' "${f}" | sort | uniq -c | sort -nr | head -10
+echo "** Source IP 50x error"
+jq -r 'select(.status | startswith("50")) | .remote_addr' "${f}" | sort | uniq -c | sort -nr | head -10
+echo "** Source IP others"
+jq -r 'select(.status != "200" and (.status | startswith("50") | not) and (.status | startswith("40") | not) and (.status | startswith("30") | not)) | .remote_addr' "${f}" | sort | uniq -c | sort -nr | head -10
+echo
+echo
+
+echo "** Top User-agent 200"
+jq -r 'select(.status == "200") | .http_user_agent' "${f}" | sort | uniq -c | sort -nr | head -10
+echo "** Top User-agent 30x"
+jq -r 'select(.status | startswith("30")) | .http_user_agent' "${f}" | sort | uniq -c | sort -nr | head -10
+echo "** Top User-agent 40x"
+jq -r 'select(.status | startswith("40")) | .http_user_agent' "${f}" | sort | uniq -c | sort -nr | head -10
+echo "** Top User-agent 50x"
+jq -r 'select(.status | startswith("50")) | .http_user_agent' "${f}" | sort | uniq -c | sort -nr | head -10
+echo "** Top User-agent other"
+jq -r 'select(.status != "200" and (.status | startswith("50") | not) and (.status | startswith("40") | not) and (.status | startswith("30") | not)) | .http_user_agent' "${f}" | sort | uniq -c | sort -nr | head -10
+echo
+echo
+
+echo "** Top uri 200"
+jq -r 'select(.status == "200") | .uri' "${f}" | sort | uniq -c | sort -nr | head -10
+echo "** Top uri 30x"
+jq -r 'select(.status | startswith("30")) | .uri' "${f}" | sort | uniq -c | sort -nr | head -10
+echo "** Top uri 40x"
+jq -r 'select(.status | startswith("40")) | .uri' "${f}" | sort | uniq -c | sort -nr | head -10
+echo "** Top uri 50x"
+jq -r 'select(.status | startswith("50")) | .uri' "${f}" | sort | uniq -c | sort -nr | head -10
+echo "** Top uri other"
+jq -r 'select(.status != "200" and (.status | startswith("50") | not) and (.status | startswith("40") | not) and (.status | startswith("30") | not)) | .uri' "${f}" | sort | uniq -c | sort -nr | head -10
+echo
+echo
+
+echo "** Virtualhost"
+jq -r '.vhost' "${f}" | sort | uniq -c | sort -nr | head -10
+echo "** X-Forwarding-For"
+jq -r '.xff' "${f}" | sort | uniq -c | sort -nr | head -10
+echo
+echo
+
+echo "** Protocol"
+jq -r '.protocol' "${f}" | sort | uniq -c | sort -nr
+echo
+echo
+
+echo "** HTTP return code"
+jq -r '.status' "${f}" | sort | uniq -c | sort -nr
+echo
+echo
+
+echo "** HTTP Method"
+jq -r '.request_method' "${f}" | sort | uniq -c | sort -nr
+echo
+echo
+
+echo "** HTTP Referer"
+jq -r '.http_referer' "${f}" | sort | uniq -c | sort -nr | head -10
+echo
+echo
+
+echo "** Req body_bytes_sent max/avg/min"
+jq -s 'map(.body_bytes_sent | tonumber) | "Median: " + (sort | if length % 2 == 0 then .[length/2] else .[(length-1)/2] end |  tostring), "Average: " + (map(select(. != null)) | add/length | tostring), "Min: " + (map(select(. != null)) | min | tostring), "Max: " + (max | tostring)' $f
+echo "** Top5 Large body_bytes_sent > 5KB"
+jq -r 'select(.body_bytes_sent | tonumber > 5000) | .uri + " from: " + .remote_addr + " by: " + .http_user_agent' "${f}" | sort | uniq -c | sort -nr | head -5
+echo
+echo
+
+echo "** Req request_time max/avg/min"
+jq -s 'map(.request_time | tonumber) | "Median: " + (sort | if length % 2 == 0 then .[length/2] else .[(length-1)/2] end |  tostring), "Average: " + (map(select(. != null)) | add/length | tostring), "Min: " + (map(select(. != null)) | min | tostring), "Max: " + (max | tostring)' $f
+echo "** Top5 Large request_time > 1sec"
+jq -r 'select(.request_time | tonumber > 1) | .uri + " from: " + .remote_addr + " by: " + .http_user_agent' "${f}" | sort | uniq -c | sort -nr | head -5
+echo
+echo
+
+echo "** Fail2ban"
+grep -E '\[(nginx|web).*\] Ban ' /var/log/fail2ban.log
+## this will require root
+#fail2ban-client status nginx-botsearch
+#fail2ban-client status nginx-http-auth
+#fail2ban-client status web-noise
+
+find {{ hardennginx_reporting_dest }} -name 'nginx-report-*' -mtime +{{ hardennginx_reporting_purge | default('10') }} -exec rm {} \; 2>/dev/null

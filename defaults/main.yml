@@ -109,3 +109,8 @@ harden_nginx_client_body_buffer_size: 10k
 hardennginx_fail2ban_enable: true
 
 harden_nginx_testing: false
+
+hardennginx_reporting: true
+hardennginx_reporting_template: nginx_report.sh
+hardennginx_reporting_dest: /var/tmp
+hardennginx_reporting_purge: 10

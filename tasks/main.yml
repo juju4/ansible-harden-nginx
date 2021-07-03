@@ -24,5 +24,8 @@
 - include: aide-hids.yml
 - include: security-txt.yml
 
+- include: reporting.yml
+  when: hardennginx_reporting
+
 - include: testing.yml
   when: harden_nginx_testing|bool
