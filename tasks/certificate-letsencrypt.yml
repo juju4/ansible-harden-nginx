@@ -12,11 +12,18 @@
   register: pkg_result
   until: pkg_result is success
 
+- name: Check if existing user private key
+  stat:
+    path: "{{ ssl_privatedir }}/user.key"
+  register: userkey
+
 - name: Generate an OpenSSL private key for letsencrypt
   openssl_privatekey:
     path: "{{ ssl_privatedir }}/user.key"
     size: 4096
-  when: hardenwebserver_letsencrypt_user_key is not defined or not hardenwebserver_letsencrypt_user_key
+  when:
+    - hardenwebserver_letsencrypt_user_key is not defined or not hardenwebserver_letsencrypt_user_key
+    - not userkey.stat.exists
 
 - name: Debug | hardenwebserver_letsencrypt_acme_dir var
   debug: var=hardenwebserver_letsencrypt_acme_dir
@@ -31,11 +38,17 @@
     contact:
       - "mailto:{{ hardenwebserver_letsencrypt_email }}"
 
+- name: Check if existing host private key
+  stat:
+    path: "{{ ssl_privatedir }}/{{ ansible_fqdn }}.key"
+  register: hostkey
+
 - name: Generate an OpenSSL private key with the default values (4096 bits, RSA)
   openssl_privatekey:
     path: "{{ ssl_privatedir }}/{{ ansible_fqdn }}.key"
     size: 4096
     backup: "{{ hardenwebserver_backup | default(true) }}"
+  when: not hostkey.stat.exists
 
 - name: Generate an OpenSSL Certificate Signing Request with Subject information
   openssl_csr:
