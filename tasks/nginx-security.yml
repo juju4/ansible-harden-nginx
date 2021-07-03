@@ -184,3 +184,6 @@
   notify:
     - restart nginx
   when: ansible_os_family == "RedHat"
+
+- import_tasks: fail2ban.yml
+  when: hardennginx_fail2ban_enable

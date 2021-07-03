@@ -19,3 +19,7 @@
     dest: "{{ hardenwebserver_rootdir | default(_hardenwebserver_rootdir) }}/{{ le_challenge['challenge_data'][ certificate_cn ]['http-01']['resource'] }}"
     content: "{{ le_challenge['challenge_data'][ certificate_cn ]['http-01']['resource_value'] }}"
     mode: '0644'
+
+- name: restart fail2ban
+  service: name=fail2ban state=restarted
+  when: not (ansible_virtualization_type is defined and ansible_virtualization_type == "docker")

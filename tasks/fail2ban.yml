@@ -1,0 +1,18 @@
+---
+
+- name: Ensure fail2ban is present
+  package:
+    name: fail2ban
+    state: present
+
+- name: configure fail2ban for nginx
+  template:
+    src: "{{ item.t }}"
+    dest: "{{ item.d }}"
+    mode: '0644'
+    backup: "{{ nginx_backup | default(false) }}"
+  with_items:
+    - { t: 'fail2ban-filter.d-web-noise.conf.j2', d: '/etc/fail2ban/filter.d/web-noise.conf' }
+    - { t: 'fail2ban-jail.d-nginx.conf.j2', d: '/etc/fail2ban/jail.d/nginx.conf' }
+  notify:
+    - restart fail2ban

@@ -1,0 +1,29 @@
+{{ ansible_managed | comment }}
+# https://www.fail2ban.org/wiki/index.php/NginX
+# https://github.com/fail2ban/fail2ban/tree/master/config/filter.d
+# https://www.digitalocean.com/community/tutorials/how-to-protect-an-nginx-server-with-fail2ban-on-ubuntu-14-04
+# https://github.com/GreyNoise-Intelligence/greynoise-fail2ban
+
+[nginx-http-auth]
+enabled  = true
+filter   = nginx-http-auth
+port     = http,https
+logpath  = /var/log/nginx/error.log
+bantime  = 86400
+
+[nginx-botsearch]
+enabled  = true
+port     = http,https
+filter   = nginx-botsearch
+logpath  = /var/log/nginx/access.log
+maxretry = 2
+bantime  = 86400
+
+[web-noise]
+enabled = true
+port = http,https
+logpath = /var/log/nginx/access_json.log
+filter = web-noise
+bantime  = 86400
+maxretry = 1
+logencoding=utf-8
