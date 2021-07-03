@@ -48,6 +48,11 @@ location ~* /(images|cache|media|logs|tmp)/.*.(php|pl|py|jsp|asp|sh|cgi)$ {
     error_page 403 /403_error.html;
 }
 
+# block empty user agent
+if ($http_user_agent = "") {
+    return 403;
+}
+
 ## VA Scan
 if ($http_user_agent ~* sqlmap|nikto|nmap|nessus|mysqloit|acunetix|w3af) {
     return 403;
@@ -62,6 +67,10 @@ if ($http_user_agent ~* LWP::Simple|wget|libwww-perl|curl) {
 
 ## Block some nasty robots
 if ($http_user_agent ~ (msnbot|Purebot|Baiduspider|Lipperhey|Mail.Ru|scrapbot) ) {
+    return 403;
+}
+
+if ($http_user_agent ~* "morfeus fucking scanner|ZmEu") {
     return 403;
 }
 
