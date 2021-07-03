@@ -23,7 +23,7 @@ server {
     server_tokens off;
     etag off;
 
-    root html;
+    root {{ hardenwebserver_rootdir | default(_hardenwebserver_rootdir) }};
     index index.html index.htm;
 
     include /etc/nginx/harden-nginx-https;
@@ -52,7 +52,7 @@ server {
     }
 
     location / {
-        root /usr/share/nginx/html;
+        root {{ hardenwebserver_rootdir | default(_hardenwebserver_rootdir) }};
 {% if hardenwebserver_nginx_debian_pkg is defined and hardenwebserver_nginx_debian_pkg == 'nginx-naxsi' and hardenwebserver_nginx_naxsi is defined and hardenwebserver_nginx_naxsi %}
             include /etc/nginx/naxsi.rules;
 {% endif %}
