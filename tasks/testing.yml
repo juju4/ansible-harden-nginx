@@ -18,4 +18,4 @@
   args:
     executable: /bin/bash
     creates: /var/log/gixy.log
-  ignore_errors: true
+  failed_when: false
