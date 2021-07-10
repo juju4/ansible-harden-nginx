@@ -72,4 +72,3 @@ access_log syslog:server={{ hardenwebserver_nginx_remotesyslog | default('10.0.0
 {% if hardenwebserver_nginx_debian_pkg is defined and hardenwebserver_nginx_debian_pkg == 'nginx-naxsi' and hardenwebserver_nginx_naxsi is defined and hardenwebserver_nginx_naxsi %}
 include /etc/nginx/naxsi.rules;
 {% endif %}
-

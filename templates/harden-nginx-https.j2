@@ -19,7 +19,7 @@ ssl_dhparam {{ ssl_privatedir }}/dhparam4.pem;
 ssl_session_tickets off; # Requires nginx >= 1.5.9
 {% else %}
 ssl_session_tickets on;
-## openssl rand 48 -out /etc/nginx/ssl/ticket.key 
+## openssl rand 48 -out /etc/nginx/ssl/ticket.key
 ssl_session_ticket_key /etc/nginx/ssl/ticket.key;
 {% endif %}
 {% endif %}

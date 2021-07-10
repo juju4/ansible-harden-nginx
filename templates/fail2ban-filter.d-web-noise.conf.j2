@@ -1,6 +1,6 @@
 # /etc/fail2ban/filter.d/web-noise.conf
 # Adapt to your context
-  
+
 [Definition]
 failregex = "remote_addr":"<HOST>","remote_user":"*","request":".*(boaform|GponForm|config|phpmyadmin|.env|/core/|/apps/|wp-login.php|wp-content|solr|phpunit|w00tw00t|shell|wsman|ecp|sra_|mstshash=).*
 ignoreregex =
