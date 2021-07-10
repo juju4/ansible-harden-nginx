@@ -17,6 +17,24 @@ location ~ /.well-known/acme-challenge/ {
 }
 
 {% endif %}
+{% if harden_nginx_cspreport_template is defined and harden_nginx_cspreport_template %}
+location ~ /csp/report.php {
+    allow all;
+    include snippets/fastcgi-php.conf;
+    fastcgi_param SCRIPT_FILENAME $request_filename;
+    fastcgi_pass unix:/var/run/php/php{{ harden_nginx_phpdir | regex_replace('^/etc/php/', '') }}-fpm.sock;
+}
+
+location ~ /csp/test-csp.html {
+    add_header Content-Security-Policy "default-src 'none'; script-src 'self'; connect-src 'self'; img-src 'self'; style-src 'self'; upgrade-insecure-requests; require-trusted-types-for 'script'; report-uri /csp/report.php;";
+}
+
+location ~ /csp/log {
+    deny all;
+}
+
+{% endif %}
+
 # below is included in following statement
 location ~* \.(inc|old|svn|git|pub|sec|gpg|sql|sqlite|swp|bak|orig|disabled|env)$ {
     deny all;
@@ -60,7 +78,7 @@ if ($http_user_agent ~* sqlmap|nikto|nmap|nessus|mysqloit|acunetix|w3af) {
 
 {% if hardenwebserver_block_downloadagents is defined and hardenwebserver_block_downloadagents %}
 ## Block download agent
-if ($http_user_agent ~* LWP::Simple|wget|libwww-perl|curl) {
+if ($http_user_agent ~* LWP::Simple|wget|libwww-perl|curl|python-requests|WinHttpClient) {
     return 403;
 }
 {% endif %}

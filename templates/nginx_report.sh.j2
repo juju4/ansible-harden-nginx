@@ -91,6 +91,21 @@ jq -r 'select(.request_time | tonumber > 1) | .uri + " from: " + .remote_addr + 
 echo
 echo
 
+csplog={{ _hardenwebserver_rootdir }}/csp/log/csp-violations.log
+if [ -f "${csplog}" ]; then
+echo "** Content-security-policy violations"
+echo "*** CSP blocked-uri"
+sed 's@^.*jsonreport=@@;' "${csplog}" | jq -r '."csp-report"."blocked-uri"' | sort | uniq -c | sort -nr | head -10
+echo "*** CSP violated-directive"
+sed 's@^.*jsonreport=@@;' "${csplog}" | jq -r '."csp-report"."violated-directive"' | sort | uniq -c | sort -nr | head -10
+echo "*** CSP document-uri"
+sed 's@^.*jsonreport=@@;' "${csplog}" | jq -r '."csp-report"."document-uri"' | sort | uniq -c | sort -nr | head -10
+echo "*** CSP remote IP"
+sed 's@^.* clientip=\(.*\) jsonreport=.*$@\1@' "${csplog}" | sort | uniq -c | sort -nr | head -10
+echo
+echo
+
+fi
 echo "** Fail2ban"
 grep -E '\[(nginx|web).*\] Ban ' /var/log/fail2ban.log
 ## this will require root

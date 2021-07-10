@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+     <meta charset="UTF-8" />
+  </head>
+ <body>
+
+<!-- https://content-security-policy.com/browser-test/ -->
+<script>
+  //if CSP is supported this will not run
+  window.onload=function(){
+    var jsNode = document.getElementById("jsNode");
+    jsNode.innerHTML = "<h3> CSP Not Supported</h3> Your browser does not support CSP, the inline script executed and replaced this div content";
+    jsNode.className = "alert alert-danger";
+  };
+</script>
+
+<img src="https://unsplash.it/200/200" alt="CSP Should Block This Image From Loading" id="cspImg">
+
+  </body>
+<html>
