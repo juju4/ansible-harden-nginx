@@ -38,3 +38,4 @@
     line: "{{ _hardenwebserver_rootdir }}/csp/log/csp-violations.log"
     insertbefore: '^/var/log/nginx/\*.log {$'
     mode: '0644'
+    validate: 'logrotate -d %s'
