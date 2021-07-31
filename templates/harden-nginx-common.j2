@@ -72,13 +72,13 @@ if ($http_user_agent = "") {
 }
 
 ## VA Scan
-if ($http_user_agent ~* sqlmap|nikto|nmap|nessus|mysqloit|acunetix|w3af) {
+if ($http_user_agent ~* sqlmap|nikto|nmap|zgrab|nessus|mysqloit|acunetix|w3af) {
     return 403;
 }
 
 {% if hardenwebserver_block_downloadagents is defined and hardenwebserver_block_downloadagents %}
 ## Block download agent
-if ($http_user_agent ~* LWP::Simple|wget|libwww-perl|curl|python-requests|WinHttpClient) {
+if ($http_user_agent ~* LWP::Simple|wget|libwww-perl|curl|python-requests|WinHttpClient|Java|Go-http-client) {
     return 403;
 }
 {% endif %}
