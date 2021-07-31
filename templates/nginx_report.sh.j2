@@ -106,11 +106,13 @@ echo
 echo
 
 fi
+{% if hardennginx_fail2ban_enable %}
 echo "** Fail2ban"
 grep -E '\[(nginx|web).*\] Ban ' /var/log/fail2ban.log
 ## this will require root
 #fail2ban-client status nginx-botsearch
 #fail2ban-client status nginx-http-auth
 #fail2ban-client status web-noise
+{% endif %}
 
 find {{ hardennginx_reporting_dest }} -name 'nginx-report-*' -mtime +{{ hardennginx_reporting_purge | default('10') }} -exec rm {} \; 2>/dev/null
