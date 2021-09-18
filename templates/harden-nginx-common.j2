@@ -67,10 +67,12 @@ location ~* /(images|cache|media|logs|tmp)/.*.(php|pl|py|jsp|asp|sh|cgi)$ {
 }
 
 # block empty user agent
+{% if hardenwebserver_block_emptyua is defined and hardenwebserver_block_emptyua %}
 if ($http_user_agent = "") {
     return 403;
 }
 
+{% endif %}
 ## VA Scan
 if ($http_user_agent ~* sqlmap|nikto|nmap|zgrab|nessus|mysqloit|acunetix|w3af) {
     return 403;

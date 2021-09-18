@@ -11,6 +11,7 @@ hardenwebserver_nginx_https_server_include: []
 ## curl, wget, perl...
 hardenwebserver_block_downloadagents: false
 hardenwebserver_cachecontrol: false
+hardenwebserver_block_emptyua: true
 
 hardenwebserver_nginx_systemd_hardening: true
 hardenwebserver_systemd_dir_acl:
