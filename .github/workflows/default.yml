@@ -86,12 +86,13 @@ jobs:
         continue-on-error: true
       - name: After script - etc
         run: |
-          cat /etc/nginx/nginx.conf
+          sudo cat /etc/nginx/nginx.conf
+          sudo cat /etc/nginx/sites-enabled/https
         if: ${{ always() }}
         continue-on-error: true
       - name: After script - files
         run: |
-          find /etc/nginx -type f -ls
+          sudo find /etc/nginx -type f -ls
         if: ${{ always() }}
         continue-on-error: true
       - name: After script - curl
