@@ -27,7 +27,11 @@ server {
     index index.html index.htm;
 
     include /etc/nginx/harden-nginx-https;
+{% if hardenwebserver_cert is defined and hardenwebserver_cert == 'selfsigned' %}
+    ssl_certificate {{ hardenwebserver_ssl_cert | default( ssl_dir + "/" + ansible_fqdn + ".crt") }}
+{% else %}
     ssl_certificate {{ hardenwebserver_ssl_cert | default( ssl_dir + "/" + ansible_fqdn + "-fullchain.crt") }};
+{% endif %}
     ssl_certificate_key {{ hardenwebserver_ssl_key | default( ssl_privatedir + "/" + ansible_fqdn + ".key") }};
 
     add_header Strict-Transport-Security "max-age=63072000; includeSubdomains; preload";
