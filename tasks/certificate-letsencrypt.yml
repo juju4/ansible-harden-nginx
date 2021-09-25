@@ -89,6 +89,6 @@
     acme_version: 2
     csr: "{{ ssl_dir }}/{{ ansible_fqdn }}.csr"
     dest: "{{ ssl_dir }}/{{ ansible_fqdn }}.crt"
-    fullchain_dest: "{{ ssl_dir }}/ca-certs.pem"
+    fullchain_dest: "{{ ssl_dir }}/{{ ansible_fqdn }}-fullchain.crt"
     data: "{{ le_challenge }}"
     acme_directory: "{{ hardenwebserver_letsencrypt_acme_dir }}"
