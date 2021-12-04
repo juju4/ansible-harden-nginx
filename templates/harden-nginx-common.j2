@@ -66,8 +66,8 @@ location ~* /(images|cache|media|logs|tmp)/.*.(php|pl|py|jsp|asp|sh|cgi)$ {
     error_page 403 /403_error.html;
 }
 
-# block empty user agent
 {% if hardenwebserver_block_emptyua is defined and hardenwebserver_block_emptyua %}
+# block empty user agent
 if ($http_user_agent = "") {
     return 403;
 }
