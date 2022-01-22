@@ -90,7 +90,7 @@
 
 - name: Ensure php-fpm systemd override folder exists
   file:
-    dest: "/etc/systemd/system/{{ phpfpm_svc }}.service.d"
+    dest: "/etc/systemd/system/{{ phpfpm_svc }}.service.d"
     state: directory
     mode: '0755'
 

@@ -25,8 +25,7 @@
 
 - name: restart php-fpm
   systemd:
-    name: "{{ phpfpm_svc }}"
+    name: "{{ phpfpm_svc }}"
     state: restarted
   when: >
     not (ansible_virtualization_type is defined and (ansible_virtualization_type == "docker"))
-
