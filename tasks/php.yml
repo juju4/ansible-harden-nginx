@@ -87,3 +87,18 @@
 #   when: >
 #     (ansible_distribution == 'Ubuntu' and ansible_distribution_major_version|int >= 16) and
 #     harden_php7_snuffleupagus
+
+- name: Ensure php-fpm systemd override folder exists
+  file:
+    dest: "/etc/systemd/system/{{ phpfpm_svc }}.service.d"
+    state: directory
+    mode: '0755'
+
+- name: Review php-fpm systemd options
+  template:
+    src: systemd-override-php-fpm.conf.j2
+    dest: "/etc/systemd/system/{{ phpfpm_svc }}.service.d/override.conf"
+    mode: '0644'
+  notify:
+    - reload systemd
+    - restart php-fpm

@@ -1,0 +1,35 @@
+[Service]
+# Run fully unprivileged
+#User={% if ansible_os_family == 'RedHat' %}nginx{% else %}www-data{% endif %}
+#Group={% if ansible_os_family == 'RedHat' %}nginx{% else %}www-data{% endif %}
+
+# Reduce Attack Surface
+NoNewPrivileges=yes
+PrivateTmp=true
+PrivateDevices=yes
+ProtectHome=yes
+ProtectSystem=full
+{% if (ansible_os_family == 'RedHat' and ansible_distribution_major_version|int > 7) or (ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int >= 18) %}
+InaccessiblePaths=/proc
+ProtectKernelTunables=true
+ProtectKernelModules=yes
+ProtectControlGroups=true
+RestrictRealtime=true
+RestrictNamespaces=~user mnt
+LockPersonality=true
+{% endif %}
+RestrictAddressFamilies=AF_UNIX
+{% if not (ansible_virtualization_type is defined and
+          ansible_virtualization_type == "docker"
+        )
+%}
+{% if (ansible_os_family == 'RedHat' and ansible_distribution_major_version|int >= 8) or (ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int > 18) %}
+SystemCallFilter=@system-service
+{% endif %}
+SystemCallFilter=~@debug @mount @cpu-emulation @obsolete @privileged
+# When system call is disallowed, return error code instead of killing process
+SystemCallErrorNumber=EPERM
+{% endif %}
+CPUShares={{ php_fpm_cgroups_cpushares | default('1024') }}
+CPUQuota={{ php_fpm_cgroups_cpuquota | default('50%') }}
+MemoryLimit={{ php_fpm_cgroups_memorylimit | default('2G') }}

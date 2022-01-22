@@ -31,3 +31,4 @@ php_confext: ini
 _harden_nginx_php_variants: "{{ harden_nginx_php_variants | default(['fpm', 'cli']) }}"
 snuffleupagus_pkgs:
   - php7.2-dev
+phpfpm_svc: php7.2-fpm

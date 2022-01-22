@@ -10,7 +10,6 @@
   systemd:
     name: nginx
     state: restarted
-    daemon_reload: yes
   when: >
     not (ansible_virtualization_type is defined and (ansible_virtualization_type == "docker"))
 
@@ -23,3 +22,11 @@
 - name: restart fail2ban
   service: name=fail2ban state=restarted
   when: not (ansible_virtualization_type is defined and ansible_virtualization_type == "docker")
+
+- name: restart php-fpm
+  systemd:
+    name: "{{ phpfpm_svc }}"
+    state: restarted
+  when: >
+    not (ansible_virtualization_type is defined and (ansible_virtualization_type == "docker"))
+

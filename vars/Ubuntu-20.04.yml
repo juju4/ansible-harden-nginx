@@ -33,3 +33,4 @@ harden_nginx_phpdir: /etc/php/7.4
 _harden_nginx_php_variants: "{{ harden_nginx_php_variants | default(['fpm', 'cli']) }}"
 snuffleupagus_pkgs:
   - php7.4-dev
+phpfpm_svc: php7.4-fpm
