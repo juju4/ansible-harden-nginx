@@ -117,5 +117,8 @@ jobs:
           ls -la /var/log/nginx
           find /var/log/nginx -type f -exec tail -50 {} \;
           cat /var/log/gixy.log
+          cat /var/log/php-fpm.log || true
+          cat /var/log/php7.2-fpm.log || true
+          cat /var/log/php7.4-fpm.log || true
         if: ${{ always() }}
         continue-on-error: true
