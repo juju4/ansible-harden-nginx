@@ -79,6 +79,10 @@ jobs:
       - name: After script - systemd
         run: |
           systemctl -l --no-pager status nginx || true
+          systemctl -l --no-pager status php-fpm || true
+          systemctl -l --no-pager status php7.2-fpm || true
+          systemctl -l --no-pager status php7.4-fpm || true
+          systemctl -l --no-pager --failed || true
           systemd-analyze --no-pager security || true
           rsyslogd -v
           nginx -V
@@ -108,6 +112,8 @@ jobs:
         continue-on-error: true
       - name: After script - logs
         run: |
+          set -x
+          ls -la /var/log/
           ls -la /var/log/nginx
           find /var/log/nginx -type f -exec tail -50 {} \;
           cat /var/log/gixy.log
