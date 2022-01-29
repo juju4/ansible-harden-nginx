@@ -80,8 +80,14 @@
   with_items: "{{ hardenwebserver_systemd_files_acl }}"
 
 - block:
-    - include: "immutable.yml target_dir=/lib/systemd/system state=pre"
-    - include: "immutable.yml target_dir=/lib/systemd/system/nginx.service state=pre"
+    - import_tasks: immutable.yml
+      vars:
+        target_dir: /lib/systemd/system
+        state: pre
+    - import_tasks: immutable.yml
+      vars:
+        target_dir: /lib/systemd/system/nginx.service
+        state: pre
     - name: Ensure no conflicting pid path (immutable)
       replace:
         dest: /lib/systemd/system/nginx.service
@@ -91,6 +97,12 @@
       notify:
         - reload systemd
         - restart nginx
-    - include: "immutable.yml target_dir=/lib/systemd/system state=post"
-    - include: "immutable.yml target_dir=/lib/systemd/system/nginx.service state=post"
+    - import_tasks: immutable.yml
+      vars:
+        target_dir: /lib/systemd/system
+        state: post
+    - import_tasks: immutable.yml
+      vars:
+        target_dir: /lib/systemd/system/nginx.service
+        state: post
   when: nginx_systemd is failed

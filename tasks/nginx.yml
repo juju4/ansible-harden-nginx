@@ -16,12 +16,12 @@
   package: name={{ item }} state=present
   with_items: "{{ hardenwebserver_packages }}"
 
-- include: nginx-security.yml
+- import_tasks: nginx-security.yml
 
-- include: csp-report.yml
+- import_tasks: csp-report.yml
   when: harden_nginx_cspreport_template is defined and harden_nginx_cspreport_template|string
 
-- include: systemd.yml
+- import_tasks: systemd.yml
   when: hardenwebserver_nginx_systemd_hardening
 
 - block:

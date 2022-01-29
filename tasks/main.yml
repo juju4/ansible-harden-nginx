@@ -10,22 +10,22 @@
   include_vars: "RedHat-{{ ansible_distribution_version.split('.')[0] }}.yml"
   when: ansible_os_family == "RedHat"
 
-- include: local-etc-hosts-kitchen-lxd.yml
+- import_tasks: local-etc-hosts-kitchen-lxd.yml
 
-- include: travis.yml
+- import_tasks: travis.yml
 
-- include: nginx.yml
+- import_tasks: nginx.yml
 
-- include: slow.yml
+- import_tasks: slow.yml
 
-- include: php.yml
+- import_tasks: php.yml
   when: harden_nginx_php_enable
 
-- include: aide-hids.yml
-- include: security-txt.yml
+- import_tasks: aide-hids.yml
+- import_tasks: security-txt.yml
 
-- include: reporting.yml
+- import_tasks: reporting.yml
   when: hardennginx_reporting
 
-- include: testing.yml
+- import_tasks: testing.yml
   when: harden_nginx_testing|bool
