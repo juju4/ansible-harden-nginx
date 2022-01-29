@@ -21,14 +21,14 @@
     dest: /etc/nginx/nginx.conf
     regexp: '^user (.*);'
     replace: '#user \1;'
-    mode: '0644'
+    mode: '0640'
 
 - name: Align pid path in nginx.conf
   replace:
     dest: /etc/nginx/nginx.conf
     regexp: '^pid .*'
     replace: 'pid /run/nginx/nginx.pid;'
-    mode: '0644'
+    mode: '0640'
 
 - name: Ensure /run/nginx exists
   file:
