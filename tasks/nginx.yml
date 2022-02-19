@@ -26,12 +26,12 @@
 
 - block:
     - name: Centos7 | systemd reload - workaround
-      command: systemctl daemon-reload  # noqa 303
+      command: systemctl daemon-reload  # noqa no-changed-when command-instead-of-module
     - name: Centos7 | restart nginx 1
-      command: systemctl restart nginx  # noqa 303
+      command: systemctl restart nginx  # noqa no-changed-when command-instead-of-module
       failed_when: false
     - name: Centos7 | restart nginx 2
-      command: systemctl restart nginx  # noqa 303
+      command: systemctl restart nginx  # noqa no-changed-when command-instead-of-module
   when: ansible_os_family == "RedHat" and ansible_distribution_major_version == '7'
 
 - name: Flush handlers
