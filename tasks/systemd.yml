@@ -37,23 +37,6 @@
     mode: '0755'
     owner: "{% if ansible_os_family == 'RedHat' %}nginx{% else %}www-data{% endif %}"
 
-- name: Ensure no conflicting pid path
-  replace:
-    dest: /lib/systemd/system/nginx.service
-    regexp: "{{ item.re }}"
-    replace: "{{ item.rep }}"
-    mode: '0644'
-  with_items:
-    - { re: '^PIDFile=/run/nginx.pid', rep: '#PIDFile=/run/nginx.pid' }
-    - { re: '--pidfile /run/nginx.pid', rep: '--pidfile /run/nginx/nginx.pid' }
-    # Centos 7
-    - { re: '^ExecStartPre=/usr/bin/rm -f /run/nginx.pid', rep: 'ExecStartPre=/usr/bin/rm -f /run/nginx/nginx.pid' }
-  notify:
-    - reload systemd
-    - restart nginx
-  register: nginx_systemd
-  ignore_errors: true
-
 - name: Ensure directories exists
   file:
     path: "{{ item.p }}"
@@ -80,6 +63,22 @@
   with_items: "{{ hardenwebserver_systemd_files_acl }}"
 
 - block:
+    - name: Ensure no conflicting pid path
+      replace:
+        dest: /lib/systemd/system/nginx.service
+        regexp: "{{ item.re }}"
+        replace: "{{ item.rep }}"
+        mode: '0644'
+      with_items:
+        - { re: '^PIDFile=/run/nginx.pid', rep: '#PIDFile=/run/nginx.pid' }
+        - { re: '--pidfile /run/nginx.pid', rep: '--pidfile /run/nginx/nginx.pid' }
+        # Centos 7
+        - { re: '^ExecStartPre=/usr/bin/rm -f /run/nginx.pid', rep: 'ExecStartPre=/usr/bin/rm -f /run/nginx/nginx.pid' }
+      notify:
+        - reload systemd
+        - restart nginx
+      register: nginx_systemd
+  rescue:
     - import_tasks: immutable.yml
       vars:
         target_dir: /lib/systemd/system
@@ -105,4 +104,3 @@
       vars:
         target_dir: /lib/systemd/system/nginx.service
         state: post
-  when: nginx_systemd is failed
