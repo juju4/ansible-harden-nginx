@@ -1,14 +1,14 @@
 ---
 
 - name: Ensure override folder exists
-  file:
+  ansible.builtin.file:
     dest: /etc/systemd/system/nginx.service.d
     state: directory
     mode: '0755'
 
 # if issue, check /var/log/audit/audit.log
 - name: Review nginx systemd options
-  template:
+  ansible.builtin.template:
     src: systemd-override.conf.j2
     dest: /etc/systemd/system/nginx.service.d/override.conf
     mode: '0644'
@@ -17,28 +17,28 @@
     - restart nginx
 
 - name: Remove user/group in nginx.conf as in systemd
-  replace:
+  ansible.builtin.replace:
     dest: /etc/nginx/nginx.conf
     regexp: '^user (.*);'
     replace: '#user \1;'
     mode: '0640'
 
 - name: Align pid path in nginx.conf
-  replace:
+  ansible.builtin.replace:
     dest: /etc/nginx/nginx.conf
     regexp: '^pid .*'
     replace: 'pid /run/nginx/nginx.pid;'
     mode: '0640'
 
 - name: Ensure /run/nginx exists
-  file:
+  ansible.builtin.file:
     path: /run/nginx
     state: directory
     mode: '0755'
     owner: "{% if ansible_os_family == 'RedHat' %}nginx{% else %}www-data{% endif %}"
 
 - name: Ensure directories exists
-  file:
+  ansible.builtin.file:
     path: "{{ item.p }}"
     mode: "{{ item.m }}"
     state: directory
@@ -64,7 +64,7 @@
 
 - block:
     - name: Ensure no conflicting pid path
-      replace:
+      ansible.builtin.replace:
         dest: /lib/systemd/system/nginx.service
         regexp: "{{ item.re }}"
         replace: "{{ item.rep }}"
@@ -88,7 +88,7 @@
         target_dir: /lib/systemd/system/nginx.service
         state: pre
     - name: Ensure no conflicting pid path (immutable)
-      replace:
+      ansible.builtin.replace:
         dest: /lib/systemd/system/nginx.service
         regexp: '^PIDFile=/run/nginx.pid'
         replace: '#PIDFile=/run/nginx.pid'

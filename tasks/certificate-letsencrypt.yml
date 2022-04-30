@@ -3,17 +3,17 @@
 # https://docs.ansible.com/ansible/latest/modules/openssl_csr_module.html
 
 - name: apt | certificate packages dependencies
-  apt: name=ssl-cert state=present update_cache=yes cache_valid_time=3600
+  ansible.builtin.apt: name=ssl-cert state=present update_cache=yes cache_valid_time=3600
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
   register: pkg_result
   until: pkg_result is success
 - name: install deps
-  package: name=openssl state=present
+  ansible.builtin.package: name=openssl state=present
   register: pkg_result
   until: pkg_result is success
 
 - name: Check if existing user private key
-  stat:
+  ansible.builtin.stat:
     path: "{{ ssl_privatedir }}/user.key"
   register: userkey
 
@@ -26,7 +26,7 @@
     - not userkey.stat.exists
 
 - name: Debug | hardenwebserver_letsencrypt_acme_dir var
-  debug: var=hardenwebserver_letsencrypt_acme_dir
+  ansible.builtin.debug: var=hardenwebserver_letsencrypt_acme_dir
 - name: Ensure have letsencrypt account
   acme_account:
     acme_directory: "{{ hardenwebserver_letsencrypt_acme_dir }}"
@@ -39,7 +39,7 @@
       - "mailto:{{ hardenwebserver_letsencrypt_email }}"
 
 - name: Check if existing host private key
-  stat:
+  ansible.builtin.stat:
     path: "{{ ssl_privatedir }}/{{ ansible_fqdn }}.key"
   register: hostkey
 
@@ -77,10 +77,10 @@
 
 # - debug: var=le_challenge
 - name: ensure letsencrypt directory exists
-  file: "dest={{ hardenwebserver_rootdir | default(_hardenwebserver_rootdir) }}/.well-known/acme-challenge state=directory mode=0755"
+  ansible.builtin.file: "dest={{ hardenwebserver_rootdir | default(_hardenwebserver_rootdir) }}/.well-known/acme-challenge state=directory mode=0755"
 
 - name: Flush handlers
-  meta: flush_handlers
+  ansible.builtin.meta: flush_handlers
 
 ## Note: validation is over http... can't remove http before this task.
 - name: validate letsencrypt challenge

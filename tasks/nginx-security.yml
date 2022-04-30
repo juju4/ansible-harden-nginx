@@ -1,14 +1,14 @@
 ---
 
 - name: restrict permissions on nginx configuration dir
-  file: dest=/etc/nginx mode=0750 state=directory owner=root group={{ www_user }}
+  ansible.builtin.file: dest=/etc/nginx mode=0750 state=directory owner=root group={{ www_user }}
 - name: restrict permissions on few nginx configuration files
-  file: dest={{ item }} mode=0640 state=file owner=root group={{ www_user }} follow=yes
+  ansible.builtin.file: dest={{ item }} mode=0640 state=file owner=root group={{ www_user }} follow=yes
   with_items:
     - /etc/nginx/nginx.conf
 
 - name: HTTP Public Key Pinning (HPKP) hash extraction
-  shell: |
+  ansible.builtin.shell: |
     set -o pipefail
     openssl req -in {{ ssl_dir }}/{{ ansible_fqdn }}.csr -pubkey -noout |
       openssl rsa -pubin -outform der |
@@ -21,12 +21,12 @@
   when: harden_nginx_hpkp_enable
 
 - name: nginx configuration file update
-  template: src=harden-cache
+  ansible.builtin.template: src=harden-cache
     dest={{ apache_confdir }}/harden-cache
     owner=0 group=0 mode=0644
 
 - name: review nginx main configuration
-  template:
+  ansible.builtin.template:
     src: "{{ item }}.j2"
     dest: "{{ apache_confdir }}/{{ item }}{{ nginx_conf_suffix }}"
     mode: '0644'
@@ -36,7 +36,7 @@
 
 ## centos7 = nginx 1.12. location" directive is not allowed here in /etc/nginx/conf.d/harden-nginx-limit_req.conf
 - name: enable nginx limit_req - nginx-full only
-  template:
+  ansible.builtin.template:
     src: harden-nginx-limit_req.j2
     dest: "{{ apache_confdir }}/../harden-nginx-limit_req"
     mode: '0644'
@@ -45,7 +45,7 @@
     (ansible_os_family == 'RedHat' and ansible_distribution_major_version|int > 7)
 
 - name: Ensure extra configs are present
-  template:
+  ansible.builtin.template:
     src: "{{ item.src }}"
     dest: "{{ apache_confdir }}/../{{ item.name }}{{ nginx_conf_suffix }}"
     mode: '0644'
@@ -54,7 +54,7 @@
   with_items: "{{ hardenwebserver_nginx_https_server_include }}"
 
 - name: harden template for tls servers, common, fastcgi
-  template:
+  ansible.builtin.template:
     src: "{{ item }}.j2"
     dest: "{{ apache_confdir }}/../{{ item }}"
     mode: '0644'
@@ -69,7 +69,7 @@
 ## size should be >= certificate key size
 - name: generate ssl dhparam key
   # command: "openssl dhparam -out {{ ssl_privatedir }}/dhparam4.pem 4096 creates=/etc/nginx/ssl/dhparam4.pem"
-  command: >
+  ansible.builtin.command: >
     openssl dhparam -dsaparam -out {{ ssl_privatedir }}/dhparam4.pem 4096
   args:
     creates: "{{ ssl_privatedir }}/dhparam4.pem"
@@ -80,7 +80,7 @@
 ##  and disable https to ensure no start error
 - block:
     - name: debian | nginx check default site present
-      file:
+      ansible.builtin.file:
         src: "{{ apachedefault }}"
         dest: /etc/nginx/sites-enabled/default
         mode: '0644'
@@ -88,11 +88,11 @@
       notify:
         - restart nginx
     - name: debian | nginx disable https during letsencrypt validation
-      file: dest="/etc/nginx/sites-enabled/https" state=absent
+      ansible.builtin.file: dest="/etc/nginx/sites-enabled/https" state=absent
       notify:
         - restart nginx
     - name: debian | ensure no redirect http to https - letsencrypt
-      lineinfile:  # noqa no-tabs
+      ansible.builtin.lineinfile:  # noqa no-tabs
         dest: /etc/nginx/sites-available/default
         regexp: "^\treturn 301 https://\\$host\\$request_uri;"
         state: absent
@@ -104,7 +104,7 @@
     (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
 - block:
     - name: redhat | ensure nginx default/http site present
-      file:
+      ansible.builtin.file:
         dest: "{{ apacheconf }}"
         mode: '0644'
         state: file
@@ -114,7 +114,7 @@
 
 - block:
     - name: nginx https configuration
-      template:
+      ansible.builtin.template:
         src: https.j2
         dest: "{{ apache_sitedir }}/https"
         owner: '0'
@@ -123,7 +123,7 @@
       notify:
         - restart nginx
     - name: enable https
-      file:
+      ansible.builtin.file:
         src: "{{ apache_sitedir }}/https"
         dest: "/etc/nginx/sites-enabled/https"
         state: link
@@ -135,13 +135,13 @@
 
 - block:
     - name: debian | nginx remove default site
-      file: dest=/etc/nginx/sites-enabled/default
+      ansible.builtin.file: dest=/etc/nginx/sites-enabled/default
         state=absent
       notify:
         - restart nginx
       when: hardenwebserver_disable_http is defined and hardenwebserver_disable_http
     - name: debian | nginx check default site present
-      file:
+      ansible.builtin.file:
         src: "{{ apache_sitedir }}/default"
         dest: /etc/nginx/sites-enabled/default
         mode: '0644'
@@ -150,7 +150,7 @@
         - restart nginx
       when: hardenwebserver_disable_http is not defined or not hardenwebserver_disable_http
     - name: debian | nginx redirect http to https
-      lineinfile:  # noqa no-tabs
+      ansible.builtin.lineinfile:  # noqa no-tabs
         dest: /etc/nginx/sites-available/default
         regexp: "^\treturn 301 https://$host$request_uri;"
         line: "\treturn 301 https://$host$request_uri;"
@@ -160,13 +160,13 @@
     ## https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-naxsi-on-ubuntu-14-04
     - block:
         - name: download nxtool.py to help whitelisting
-          get_url:
+          ansible.builtin.get_url:
             url: https://raw.githubusercontent.com/nbs-system/naxsi/master/nxapi/nxtool.py
             dest: /usr/local/bin/nxtool.py
             mode: '0755'
             sha256sum: 'a4d4248f755260458b9771727ac6dd2d910f06c2a8b30ec8c4fbbd51ecbc1d39'
         - name: debian | nginx enable naxsi
-          replace:
+          ansible.builtin.replace:
             dest: "{{ apacheconf }}"
             regexp: '^       #include /etc/nginx/naxsi_core.rules'
             replace: '       include /etc/nginx/naxsi_core.rules'
@@ -175,7 +175,7 @@
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
 - name: nginx https configuration
-  template:
+  ansible.builtin.template:
     src: https.j2
     dest: "{{ apache_sitedir }}/https.conf"
     owner: '0'

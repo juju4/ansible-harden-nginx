@@ -1,12 +1,12 @@
 ---
 
 - name: Ensure fail2ban is present
-  package:
+  ansible.builtin.package:
     name: fail2ban
     state: present
 
 - name: configure fail2ban for nginx
-  template:
+  ansible.builtin.template:
     src: "{{ item.t }}"
     dest: "{{ item.d }}"
     mode: '0644'

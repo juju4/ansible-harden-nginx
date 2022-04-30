@@ -1,18 +1,18 @@
 ---
 
 - name: Ensure pip is available
-  package:
+  ansible.builtin.package:
     name: "{{ python_pip | default('python-pip') }}"
     state: present
 
 # https://github.com/yandex/gixy
 - name: Install gixy
-  pip:
+  ansible.builtin.pip:
     name: gixy
     state: present
 
 - name: Validate nginx config with gixy
-  shell: |
+  ansible.builtin.shell: |
     set -o pipefail
     gixy /etc/nginx/nginx.conf | tee /var/log/gixy.log
   args:

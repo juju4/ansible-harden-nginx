@@ -2,7 +2,7 @@
 # install a basic csp report log file, consider alternatives if production
 
 - name: ensure csp directories exist
-  file:
+  ansible.builtin.file:
     dest: "{{ item.d }}"
     state: directory
     owner: "{{ item.o }}"
@@ -12,20 +12,20 @@
     - { d: "{{ _hardenwebserver_rootdir }}/csp/log", o: "{{ www_user }}", m: '0755' }
 
 - name: configure csp-report script
-  template:
+  ansible.builtin.template:
     src: "{{ harden_nginx_cspreport_template }}"
     dest: "{{ _hardenwebserver_rootdir }}/csp/report.php"
     mode: '0644'
     backup: true
 
 - name: add csp test file
-  copy:
+  ansible.builtin.copy:
     src: test-csp.html
     dest: "{{ _hardenwebserver_rootdir }}/csp/test-csp.html"
     mode: '0644'
 
 - name: Ensure php is present
-  package:
+  ansible.builtin.package:
     name: "{{ item }}"
     state: present
   with_items: "{{ harden_nginx_php }}"
@@ -33,7 +33,7 @@
   until: pkg_result is success
 
 - name: Add csp log in logrotate
-  lineinfile:
+  ansible.builtin.lineinfile:
     dest: /etc/logrotate.d/nginx
     line: "{{ _hardenwebserver_rootdir }}/csp/log/csp-violations.log"
     insertbefore: '^/var/log/nginx/\*.log {$'
