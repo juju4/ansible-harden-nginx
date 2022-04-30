@@ -74,7 +74,7 @@
   args:
     creates: "{{ ssl_privatedir }}/dhparam4.pem"
 - name: ensure good permissions for ssl dhparam key
-  file: "dest={{ ssl_privatedir }}/dhparam4.pem mode=0440 owner=root group={{ www_user }}"
+  ansible.builtin.file: "dest={{ ssl_privatedir }}/dhparam4.pem mode=0440 owner=root group={{ www_user }}"
 
 ## when using letsencrypt, http verification implies default/http site to be available
 ##  and disable https to ensure no start error
