@@ -78,7 +78,8 @@
 
 ## when using letsencrypt, http verification implies default/http site to be available
 ##  and disable https to ensure no start error
-- block:
+- name: Debian | letsencrypt verification prepare
+  block:
     - name: debian | nginx check default site present
       ansible.builtin.file:
         src: "{{ apachedefault }}"
@@ -102,7 +103,8 @@
     hardenwebserver_cert is defined and
     hardenwebserver_cert == 'letsencrypt' and
     (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
-- block:
+- name: RedHat | letsencrypt verification prepare
+  block:
     - name: redhat | ensure nginx default/http site present
       ansible.builtin.file:
         dest: "{{ apacheconf }}"
@@ -112,7 +114,8 @@
 - import_tasks: certificate-letsencrypt.yml
   when: hardenwebserver_cert is defined and hardenwebserver_cert == 'letsencrypt'
 
-- block:
+- name: Debian | https
+  block:
     - name: nginx https configuration
       ansible.builtin.template:
         src: https.j2
@@ -133,7 +136,8 @@
       when: hardenwebserver_https_noconfig is not defined or not hardenwebserver_https_noconfig|bool
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
 
-- block:
+- name: Debian
+  block:
     - name: debian | nginx remove default site
       ansible.builtin.file: dest=/etc/nginx/sites-enabled/default
         state=absent
@@ -158,7 +162,8 @@
         insertafter: "^\tlisten \\[::\\]:80 default_server;"
       when: hardenwebserver_http_redirect_to_https
     ## https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-naxsi-on-ubuntu-14-04
-    - block:
+    - name: naxsi
+      block:
         - name: download nxtool.py to help whitelisting
           ansible.builtin.get_url:
             url: https://raw.githubusercontent.com/nbs-system/naxsi/master/nxapi/nxtool.py

@@ -1,6 +1,7 @@
 ---
 
-- block:
+- name: Debian
+  block:
     - name: ensure aide.conf.d directory exists
       ansible.builtin.file:
         dest: /etc/aide/aide.conf.d

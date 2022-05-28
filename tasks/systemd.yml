@@ -62,7 +62,8 @@
     state: present
   with_items: "{{ hardenwebserver_systemd_files_acl }}"
 
-- block:
+- name: Systemd
+  block:
     - name: Ensure no conflicting pid path
       ansible.builtin.replace:
         dest: /lib/systemd/system/nginx.service
