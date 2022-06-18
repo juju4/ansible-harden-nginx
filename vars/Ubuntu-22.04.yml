@@ -19,7 +19,7 @@ nginx_conf_suffix: '.conf'
 python_pip: python3-pip
 
 hardenwebserver_packages:
-  - python-passlib
+  - python3-passlib
   - "{{ hardenwebserver_nginx_debian_pkg }}"
   - acl
   ## for Docker & netstat call in serverspec
@@ -29,8 +29,8 @@ harden_nginx_php:
   - php
   - php-fpm
 php_confext: ini
-harden_nginx_phpdir: /etc/php/7.4
+harden_nginx_phpdir: /etc/php/8.1
 _harden_nginx_php_variants: "{{ harden_nginx_php_variants | default(['fpm', 'cli']) }}"
 snuffleupagus_pkgs:
-  - php7.4-dev
-phpfpm_svc: php7.4-fpm
+  - php8.1-dev
+phpfpm_svc: php8.1-fpm
