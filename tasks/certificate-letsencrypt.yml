@@ -73,7 +73,7 @@
     acme_directory: "{{ hardenwebserver_letsencrypt_acme_dir }}"
   register: le_challenge
   notify:
-    - add public file to www dir to fullfill letsencrypt challenge
+    - add public file to www dir to fulfill letsencrypt challenge
 
 # - debug: var=le_challenge
 - name: ensure letsencrypt directory exists

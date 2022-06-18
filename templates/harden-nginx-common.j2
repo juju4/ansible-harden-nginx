@@ -94,7 +94,7 @@ if ($http_user_agent ~* "morfeus fucking scanner|ZmEu") {
     return 403;
 }
 
-## Deny referal spam
+## Deny referral spam
 if ( $http_referer ~* (jewelry|viagra|nude|girl|nudit|casino|poker|porn|sex|teen|babes) ) {
     return 403;
 }
