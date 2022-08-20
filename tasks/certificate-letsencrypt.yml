@@ -3,7 +3,7 @@
 # https://docs.ansible.com/ansible/latest/modules/openssl_csr_module.html
 
 - name: Update ssl path for letsencrypt
-  set_fact:
+  ansible.builtin.set_fact:
     ssl_privatedir: "/etc/letsencrypt/live/{{ ansible_fqdn }}"
     ssl_dir: "/etc/letsencrypt/live/{{ ansible_fqdn }}"
     ssl_privkey: "{{ ssl_privatedir }}/privkey.pem"
