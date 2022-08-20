@@ -7,6 +7,8 @@ hardenwebserver_http_redirect_to_https: true
 hardenwebserver_https_noconfig: false
 hardenwebserver_nginx_https_server_include: []
 #  - { name: service, src: template_filename.j2 }
+# if 'location /' is used in one included file
+hardennginx_https_rootlocation: true
 
 ## curl, wget, perl...
 hardenwebserver_block_downloadagents: false

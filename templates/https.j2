@@ -55,6 +55,7 @@ server {
         add_header Allow "GET, POST, HEAD" always;
     }
 
+{% if hardennginx_https_rootlocation %}
     location / {
         root {{ hardenwebserver_rootdir | default(_hardenwebserver_rootdir) }};
 {% if hardenwebserver_nginx_debian_pkg is defined and hardenwebserver_nginx_debian_pkg == 'nginx-naxsi' and hardenwebserver_nginx_naxsi is defined and hardenwebserver_nginx_naxsi %}
@@ -66,6 +67,7 @@ server {
 
         }
 
+{% endif %}
 {% for f in hardenwebserver_nginx_https_server_include %}
     include /etc/nginx/{{ f.name }}{{ nginx_conf_suffix }};
 {% endfor %}
