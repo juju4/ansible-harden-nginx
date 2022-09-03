@@ -100,5 +100,5 @@
     dest: "/etc/systemd/system/{{ phpfpm_svc }}.service.d/override.conf"
     mode: '0644'
   notify:
-    - reload systemd
-    - restart php-fpm
+    - Reload systemd
+    - Restart php-fpm

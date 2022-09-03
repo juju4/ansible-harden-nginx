@@ -1,29 +1,29 @@
 ---
 
-- name: reload systemd
+- name: Reload systemd
   ansible.builtin.systemd:
     daemon_reload: yes
   when: >
     not (ansible_virtualization_type is defined and (ansible_virtualization_type == "docker"))
 
-- name: restart nginx
+- name: Restart nginx
   ansible.builtin.systemd:
     name: nginx
     state: restarted
   when: >
     not (ansible_virtualization_type is defined and (ansible_virtualization_type == "docker"))
 
-- name: add public file to www dir to fulfill letsencrypt challenge
+- name: Add public file to www dir to fulfill letsencrypt challenge
   ansible.builtin.copy:
-    dest: "{{ hardenwebserver_rootdir | default(_hardenwebserver_rootdir) }}/{{ le_challenge['challenge_data'][ certificate_cn ]['http-01']['resource'] }}"
-    content: "{{ le_challenge['challenge_data'][ certificate_cn ]['http-01']['resource_value'] }}"
+    dest: "{{ hardenwebserver_rootdir | default(_hardenwebserver_rootdir) }}/{{ le_challenge['challenge_data'][certificate_cn]['http-01']['resource'] }}"
+    content: "{{ le_challenge['challenge_data'][certificate_cn]['http-01']['resource_value'] }}"
     mode: '0644'
 
-- name: restart fail2ban
+- name: Restart fail2ban
   ansible.builtin.service: name=fail2ban state=restarted
   when: not (ansible_virtualization_type is defined and ansible_virtualization_type == "docker")
 
-- name: restart php-fpm
+- name: Restart php-fpm
   ansible.builtin.systemd:
     name: "{{ phpfpm_svc }}"
     state: restarted

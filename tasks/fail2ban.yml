@@ -5,7 +5,7 @@
     name: fail2ban
     state: present
 
-- name: configure fail2ban for nginx
+- name: Configure fail2ban for nginx
   ansible.builtin.template:
     src: "{{ item.t }}"
     dest: "{{ item.d }}"
@@ -15,4 +15,4 @@
     - { t: 'fail2ban-filter.d-web-noise.conf.j2', d: '/etc/fail2ban/filter.d/web-noise.conf' }
     - { t: 'fail2ban-jail.d-nginx.conf.j2', d: '/etc/fail2ban/jail.d/nginx.conf' }
   notify:
-    - restart fail2ban
+    - Restart fail2ban

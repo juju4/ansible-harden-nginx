@@ -1,6 +1,6 @@
 ---
 
-- name: apt | update cache
+- name: Debian | update cache
   ansible.builtin.apt:
     update_cache: yes
     cache_valid_time: 3600
@@ -8,7 +8,7 @@
   register: pkg_result
   until: pkg_result is success
 
-- name: nginx packages install
+- name: Nginx packages install
   ansible.builtin.package: name={{ item }} state=present
   with_items: "{{ hardenwebserver_packages }}"
 
@@ -34,5 +34,5 @@
 - name: Flush handlers
   ansible.builtin.meta: flush_handlers
 
-- name: ensure nginx is enabled and started
+- name: Ensure nginx is enabled and started
   ansible.builtin.service: name={{ apache_svc }} state=started enabled=yes

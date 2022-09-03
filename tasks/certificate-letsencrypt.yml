@@ -10,12 +10,12 @@
     ssl_crt: "{{ ssl_privatedir }}/cert.pem"
     ssl_fullchain: "{{ ssl_privatedir }}/fullchain.pem"
 
-- name: apt | certificate packages dependencies
+- name: Debian | certificate packages dependencies
   ansible.builtin.apt: name=ssl-cert state=present update_cache=yes cache_valid_time=3600
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
   register: pkg_result
   until: pkg_result is success
-- name: install deps
+- name: Install deps
   ansible.builtin.package: name=openssl state=present
   register: pkg_result
   until: pkg_result is success
@@ -71,7 +71,7 @@
     # defaults
     # digest: sha256
 
-- name: register letsencrypt challenge
+- name: Register letsencrypt challenge
   acme_certificate:
     account_key: "{{ ssl_privatedir }}/user.key"
     acme_version: 2
@@ -81,17 +81,17 @@
     acme_directory: "{{ hardenwebserver_letsencrypt_acme_dir }}"
   register: le_challenge
   notify:
-    - add public file to www dir to fulfill letsencrypt challenge
+    - Add public file to www dir to fulfill letsencrypt challenge
 
 # - debug: var=le_challenge
-- name: ensure letsencrypt directory exists
+- name: Ensure letsencrypt directory exists
   ansible.builtin.file: "dest={{ hardenwebserver_rootdir | default(_hardenwebserver_rootdir) }}/.well-known/acme-challenge state=directory mode=0755"
 
 - name: Flush handlers
   ansible.builtin.meta: flush_handlers
 
 ## Note: validation is over http... can't remove http before this task.
-- name: validate letsencrypt challenge
+- name: Validate letsencrypt challenge
   acme_certificate:
     account_key: "{{ ssl_privatedir }}/user.key"
     acme_version: 2

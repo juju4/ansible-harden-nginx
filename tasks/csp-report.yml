@@ -1,7 +1,7 @@
 ---
 # install a basic csp report log file, consider alternatives if production
 
-- name: ensure csp directories exist
+- name: Ensure csp directories exist
   ansible.builtin.file:
     dest: "{{ item.d }}"
     state: directory
@@ -11,14 +11,14 @@
     - { d: "{{ _hardenwebserver_rootdir }}/csp", o: root, m: '0755' }
     - { d: "{{ _hardenwebserver_rootdir }}/csp/log", o: "{{ www_user }}", m: '0755' }
 
-- name: configure csp-report script
+- name: Configure csp-report script
   ansible.builtin.template:
     src: "{{ harden_nginx_cspreport_template }}"
     dest: "{{ _hardenwebserver_rootdir }}/csp/report.php"
     mode: '0644'
     backup: true
 
-- name: add csp test file
+- name: Add csp test file
   ansible.builtin.copy:
     src: test-csp.html
     dest: "{{ _hardenwebserver_rootdir }}/csp/test-csp.html"

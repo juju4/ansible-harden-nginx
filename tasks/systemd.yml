@@ -13,8 +13,8 @@
     dest: /etc/systemd/system/nginx.service.d/override.conf
     mode: '0644'
   notify:
-    - reload systemd
-    - restart nginx
+    - Reload systemd
+    - Restart nginx
 
 - name: Remove user/group in nginx.conf as in systemd
   ansible.builtin.replace:
@@ -76,8 +76,8 @@
         # Centos 7
         - { re: '^ExecStartPre=/usr/bin/rm -f /run/nginx.pid', rep: 'ExecStartPre=/usr/bin/rm -f /run/nginx/nginx.pid' }
       notify:
-        - reload systemd
-        - restart nginx
+        - Reload systemd
+        - Restart nginx
       register: nginx_systemd
   rescue:
     - import_tasks: immutable.yml
@@ -95,8 +95,8 @@
         replace: '#PIDFile=/run/nginx.pid'
         mode: '0644'
       notify:
-        - reload systemd
-        - restart nginx
+        - Reload systemd
+        - Restart nginx
     - import_tasks: immutable.yml
       vars:
         target_dir: /lib/systemd/system
