@@ -55,11 +55,6 @@ hardenwebserver_cert_pinning_value: 'pin-sha256=\"xxxx\"; pin-sha256=\"yyyy\"; m
 
 hardenwebserver_nginx_sessiontickets: false
 
-## naxsi only available on debian wheezy and ubuntu precise+trusty, not supporting uwsgi
-## https://packages.debian.org/jessie/nginx-full
-## https://packages.debian.org/jessie/nginx-light
-## https://packages.debian.org/wheezy/nginx-naxsi
-# hardenwebserver_nginx_debian_pkg: 'nginx-naxsi'
 # hardenwebserver_nginx_debian_pkg: 'nginx-full'
 ## Note: nginx-light --without-http_limit_req_module
 hardenwebserver_nginx_debian_pkg: 'nginx-light'

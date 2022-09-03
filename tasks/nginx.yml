@@ -1,17 +1,5 @@
 ---
 
-- name: Naxsi not available
-  ansible.builtin.fail: msg="nginx-naxsi package not available on target distribution"
-  when: >
-    hardenwebserver_nginx_debian_pkg is defined and
-    hardenwebserver_nginx_debian_pkg == 'nginx-naxsi' and
-    not (
-          (ansible_distribution == 'Debian' and ansible_distribution_release == "wheezy") or
-          (ansible_distribution == 'Ubuntu' and
-            (ansible_distribution_release == 'precise' or ansible_distribution_release == 'trusty')
-          )
-        )
-
 - name: apt | update cache
   ansible.builtin.apt:
     update_cache: yes
