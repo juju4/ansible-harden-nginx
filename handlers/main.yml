@@ -20,7 +20,9 @@
     mode: '0644'
 
 - name: Restart fail2ban
-  ansible.builtin.service: name=fail2ban state=restarted
+  ansible.builtin.service:
+    name: fail2ban
+    state: restarted
   when: not (ansible_virtualization_type is defined and ansible_virtualization_type == "docker")
 
 - name: Restart php-fpm

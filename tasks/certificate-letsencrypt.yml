@@ -11,12 +11,18 @@
     ssl_fullchain: "{{ ssl_privatedir }}/fullchain.pem"
 
 - name: Debian | certificate packages dependencies
-  ansible.builtin.apt: name=ssl-cert state=present update_cache=yes cache_valid_time=3600
+  ansible.builtin.apt:
+    name: "ssl-cert"
+    state: "present"
+    update_cache: "yes"
+    cache_valid_time: "3600"
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
   register: pkg_result
   until: pkg_result is success
 - name: Install deps
-  ansible.builtin.package: name=openssl state=present
+  ansible.builtin.package:
+    name: openssl
+    state: present
   register: pkg_result
   until: pkg_result is success
 
@@ -26,7 +32,7 @@
   register: userkey
 
 - name: Generate an OpenSSL private key for letsencrypt
-  openssl_privatekey:
+  community.crypto.openssl_privatekey:
     path: "{{ ssl_privatedir }}/user.key"
     size: 4096
   when:
@@ -34,9 +40,10 @@
     - not userkey.stat.exists
 
 - name: Debug | hardenwebserver_letsencrypt_acme_dir var
-  ansible.builtin.debug: var=hardenwebserver_letsencrypt_acme_dir
+  ansible.builtin.debug:
+    var: hardenwebserver_letsencrypt_acme_dir
 - name: Ensure have letsencrypt account
-  acme_account:
+  community.crypto.acme_account:
     acme_directory: "{{ hardenwebserver_letsencrypt_acme_dir }}"
     acme_version: 2
     # account_key_src: "{{ hardenwebserver_letsencrypt_user_key | default(ssl_privatedir + '/user.key') }}"
@@ -52,14 +59,14 @@
   register: hostkey
 
 - name: Generate an OpenSSL private key with the default values (4096 bits, RSA)
-  openssl_privatekey:
+  community.crypto.openssl_privatekey:
     path: "{{ ssl_privatedir }}/{{ ansible_fqdn }}.key"
     size: 4096
     backup: "{{ hardenwebserver_backup | default(true) }}"
   when: not hostkey.stat.exists
 
 - name: Generate an OpenSSL Certificate Signing Request with Subject information
-  openssl_csr:
+  community.crypto.openssl_csr:
     path: "{{ ssl_dir }}/{{ ansible_fqdn }}.csr"
     privatekey_path: "{{ ssl_privatedir }}/{{ ansible_fqdn }}.key"
     country_name: "{{ hardenwebserver_letsencrypt_country | default('US') }}"
@@ -72,7 +79,7 @@
     # digest: sha256
 
 - name: Register letsencrypt challenge
-  acme_certificate:
+  community.crypto.acme_certificate:
     account_key: "{{ ssl_privatedir }}/user.key"
     acme_version: 2
     csr: "{{ ssl_dir }}/{{ ansible_fqdn }}.csr"
@@ -85,14 +92,17 @@
 
 # - debug: var=le_challenge
 - name: Ensure letsencrypt directory exists
-  ansible.builtin.file: "dest={{ hardenwebserver_rootdir | default(_hardenwebserver_rootdir) }}/.well-known/acme-challenge state=directory mode=0755"
+  ansible.builtin.file:
+    dest: "{{ hardenwebserver_rootdir | default(_hardenwebserver_rootdir) }}/.well-known/acme-challenge"
+    state: "directory"
+    mode: "0755"
 
 - name: Flush handlers
   ansible.builtin.meta: flush_handlers
 
 ## Note: validation is over http... can't remove http before this task.
 - name: Validate letsencrypt challenge
-  acme_certificate:
+  community.crypto.acme_certificate:
     account_key: "{{ ssl_privatedir }}/user.key"
     acme_version: 2
     csr: "{{ ssl_dir }}/{{ ansible_fqdn }}.csr"

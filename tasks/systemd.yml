@@ -45,7 +45,7 @@
   with_items: "{{ hardenwebserver_systemd_dir_acl }}"
 
 - name: Ensure directories are accessible to www-data
-  acl:
+  ansible.posix.acl:
     path: "{{ item.p }}"
     entity: "{{ www_user }}"
     etype: user
@@ -54,7 +54,7 @@
   with_items: "{{ hardenwebserver_systemd_dir_acl }}"
 
 - name: Ensure certificates and log files are accessible to www-data
-  acl:
+  ansible.posix.acl:
     path: "{{ item.p }}"
     entity: "{{ www_user }}"
     etype: user
@@ -80,11 +80,13 @@
         - Restart nginx
       register: nginx_systemd
   rescue:
-    - import_tasks: immutable.yml
+    - name: Import immutable
+      ansible.builtin.import_tasks: immutable.yml
       vars:
         target_dir: /lib/systemd/system
         state: pre
-    - import_tasks: immutable.yml
+    - name: Import immutable
+      ansible.builtin.import_tasks: immutable.yml
       vars:
         target_dir: /lib/systemd/system/nginx.service
         state: pre
@@ -97,11 +99,13 @@
       notify:
         - Reload systemd
         - Restart nginx
-    - import_tasks: immutable.yml
+    - name: Import immutable
+      ansible.builtin.import_tasks: immutable.yml
       vars:
         target_dir: /lib/systemd/system
         state: post
-    - import_tasks: immutable.yml
+    - name: Import immutable
+      ansible.builtin.import_tasks: immutable.yml
       vars:
         target_dir: /lib/systemd/system/nginx.service
         state: post

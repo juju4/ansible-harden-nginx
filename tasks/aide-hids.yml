@@ -1,6 +1,7 @@
 ---
 
 - name: Debian
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
   block:
     - name: Ensure aide.conf.d directory exists
       ansible.builtin.file:
@@ -12,4 +13,3 @@
         src: 99_aide_local_nginx.j2
         dest: /etc/aide/aide.conf.d/99_aide_local_nginx
         mode: '0644'
-  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
