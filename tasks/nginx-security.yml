@@ -141,7 +141,7 @@
   block:
     - name: Nginx https configuration
       ansible.builtin.template:
-        src: https.j2
+        src: "{{ hardenwebserver_https_template }}"
         dest: "{{ apache_sitedir }}/https"
         owner: '0'
         group: '0'
@@ -188,7 +188,7 @@
 
 - name: Nginx https configuration
   ansible.builtin.template:
-    src: https.j2
+    src: "{{ hardenwebserver_https_template }}"
     dest: "{{ apache_sitedir }}/https.conf"
     owner: '0'
     group: '0'
