@@ -35,3 +35,6 @@ php_confext: ini
 harden_nginx_phpdir: /etc/php
 harden_nginx_phpini: /etc/php.ini
 _harden_nginx_php_variants: "{{ harden_nginx_php_variants | default(['fpm', 'cli']) }}"
+
+mkcert_deps:
+  - nss-tools
