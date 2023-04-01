@@ -34,3 +34,6 @@ _harden_nginx_php_variants: "{{ harden_nginx_php_variants | default(['fpm', 'cli
 snuffleupagus_pkgs:
   - php8.1-dev
 phpfpm_svc: php8.1-fpm
+
+mkcert_deps:
+  - libnss3-tools

@@ -115,3 +115,6 @@ hardennginx_reporting: true
 hardennginx_reporting_template: nginx_report.sh
 hardennginx_reporting_dest: /var/tmp
 hardennginx_reporting_purge: 10
+
+harden_nginx_ca_pull: false
+harden_nginx_ca_pulldir: files
