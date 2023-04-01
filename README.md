@@ -5,6 +5,12 @@
 
 Ansible role to harden nginx webserver.
 
+This role offers multiple option to handle certificates (See hardenwebserver_cert variable):
+* self-signed
+* mkcert (recommended only for development)
+* letsencrypt through ansible modules. It does not handle renewal and role must be run around renewal time for it to happen.
+* letsencrypt through certbot. It does handle renewal.
+
 ## Requirements & Dependencies
 
 ### Ansible
@@ -12,10 +18,11 @@ It was tested on the following versions:
  * 2.0
  * 2.1
  * 2.2 (required for letsencrypt module/option)
+ * 2.14
 
 ### Operating systems
 
-Ubuntu 14.04, 16.04 and Centos7
+Ubuntu 22.04, 20.04, 18.04 and Centos7
 
 ## Example Playbook
 
