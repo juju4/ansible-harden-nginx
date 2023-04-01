@@ -10,6 +10,7 @@ This role offers multiple option to handle certificates (See hardenwebserver_cer
 * mkcert (recommended only for development)
 * letsencrypt through ansible modules. It does not handle renewal and role must be run around renewal time for it to happen.
 * letsencrypt through certbot. It does handle renewal.
+* Smallstep step-ca
 
 ## Requirements & Dependencies
 

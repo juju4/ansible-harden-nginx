@@ -85,6 +85,10 @@
   ansible.builtin.import_tasks: certificate-mkcert.yml
   when: hardenwebserver_cert is defined and hardenwebserver_cert == 'mkcert'
 
+- name: Import certificate-stepca
+  ansible.builtin.import_tasks: certificate-stepca.yml
+  when: hardenwebserver_cert is defined and hardenwebserver_cert == 'stepca'
+
 ## size should be >= certificate key size
 - name: Generate ssl dhparam key
   # command: "openssl dhparam -out {{ ssl_privatedir }}/dhparam4.pem 4096 creates=/etc/nginx/ssl/dhparam4.pem"
