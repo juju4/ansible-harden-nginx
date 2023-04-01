@@ -1,0 +1,137 @@
+---
+name: default-stepca-bare
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+  schedule:  # run weekly, every Tuesday 03:00
+    - cron: '0 3 * * 2'
+
+permissions: {}
+
+jobs:
+  build:
+    permissions:
+      contents: read
+    runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.experimental }}
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        include:
+          - os: ubuntu-22.04
+            experimental: false
+          - os: ubuntu-20.04
+            experimental: false
+    env:
+      ANSIBLE_CALLBACKS_ENABLED: profile_tasks
+      ANSIBLE_EXTRA_VARS: ""
+      SUITE: default-stepca
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          path: juju4.harden_nginx
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+      - name: ACL
+        run: |
+          sudo apt-get install -y acl || true
+          mount
+          sudo mount -o remount,acl / || true
+      - name: Install dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          pip3 install ansible-lint flake8 yamllint
+          which ansible
+          pip3 install ansible
+          pip3 show ansible
+          ls -l $HOME/.local/bin || true
+          ls -l /opt/hostedtoolcache/Python/3.9.1/x64/bin || true
+          echo "/opt/hostedtoolcache/Python/3.9.1/x64/bin" >> $GITHUB_PATH
+          ansible --version
+          cd $GITHUB_WORKSPACE/juju4.harden_nginx
+          [ -f get-dependencies.sh ] && sh -x get-dependencies.sh
+          { echo '[defaults]'; echo 'callbacks_enabled = profile_tasks, timer'; echo 'roles_path = ../'; echo 'ansible_python_interpreter: /usr/bin/python3'; } >> ansible.cfg
+      - name: Environment
+        run: |
+          pwd
+          env
+          find -ls
+      - name: run test
+        run: |
+          cd $GITHUB_WORKSPACE/juju4.harden_nginx && ansible-playbook -i localhost, --connection=local --become -vvv test/integration/${SUITE}/default.yml ${ANSIBLE_EXTRA_VARS}
+        env:
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'
+      - name: idempotency run
+        run: |
+          cd $GITHUB_WORKSPACE/juju4.harden_nginx && ansible-playbook -i localhost, --connection=local --become -vvv test/integration/${SUITE}/default.yml ${ANSIBLE_EXTRA_VARS} | tee /tmp/idempotency.log | grep -q 'changed=0.*failed=0'  && (echo 'Idempotence test: pass' && exit 0)  || (echo 'Idempotence test: fail' && cat /tmp/idempotency.log && exit 0)
+      - name: On failure
+        run: |
+          ansible -i inventory --connection=local -m setup localhost
+          systemctl -l --no-pager status
+          systemctl -l --no-pager --failed
+          ls -l /usr/bin/ | egrep '(python|pip|ansible)'
+          pip freeze
+          pip3 freeze
+          ip addr
+          cat /etc/resolv.conf
+          host www.google.com
+          ping -c 1 www.google.com
+          ping -c 1 8.8.8.8
+          ps axuw
+          netstat -anp
+        if: ${{ failure() }}
+        continue-on-error: true
+      - name: After script - systemd
+        run: |
+          systemctl -l --no-pager status nginx || true
+          systemctl -l --no-pager status php-fpm || true
+          systemctl -l --no-pager status php7.2-fpm || true
+          systemctl -l --no-pager status php7.4-fpm || true
+          systemctl -l --no-pager --failed || true
+          systemd-analyze --no-pager security || true
+          rsyslogd -v
+          nginx -V
+        if: ${{ always() }}
+        continue-on-error: true
+      - name: After script - etc
+        run: |
+          sudo cat /etc/nginx/nginx.conf
+          sudo cat /etc/nginx/sites-enabled/https
+          sudo find /etc/nginx/conf.d/ -iname 'harden-nginx-*' -type f -exec cat {} \;
+        if: ${{ always() }}
+        continue-on-error: true
+      - name: After script - files
+        run: |
+          sudo find /etc/nginx -type f -ls
+        if: ${{ always() }}
+        continue-on-error: true
+      - name: After script - curl
+        run: |
+          curl -vk https://localhost
+          curl -vk https://localhost?a=b
+          curl -vk -X HEAD https://localhost
+          curl -vk -X OPTIONS https://localhost
+          curl -vk -H Referer:http://www.example.com -H X-Forwarded-For:127.0.0.128 https://localhost/
+          curl -vk --cookie COOKIE=test_cookie https://localhost
+          curl -vk https://localhost
+        if: ${{ always() }}
+        continue-on-error: true
+      - name: After script - logs
+        run: |
+          set -x
+          ls -la /var/log/
+          ls -la /var/log/nginx
+          find /var/log/nginx -type f -exec tail -50 {} \;
+          cat /var/log/gixy.log
+          cat /var/log/php-fpm.log || true
+          cat /var/log/php7.2-fpm.log || true
+          cat /var/log/php7.4-fpm.log || true
+        if: ${{ always() }}
+        continue-on-error: true
