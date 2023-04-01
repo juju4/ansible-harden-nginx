@@ -39,8 +39,8 @@
     mode: "{{ item.m }}"
     remote_src: true
   loop:
-    - { s: "/root/{{ ansible_fqdn }}.pem", d: "{{ hardenwebserver_ssl_cert | default(ssl_dir + '/' + ansible_fqdn + '.pem') }}", m: '0644' }
-    - { s: "/root/{{ ansible_fqdn }}-key.pem", d: "{{ hardenwebserver_ssl_key | default(ssl_privatedir + '/' + ansible_fqdn + '-key.pem') }}", m: '0600' }
+    - { s: "/root/{{ ansible_fqdn }}.pem", d: "{{ hardenwebserver_ssl_cert | default(ssl_dir + '/' + ansible_fqdn + '.crt') }}", m: '0644' }
+    - { s: "/root/{{ ansible_fqdn }}-key.pem", d: "{{ hardenwebserver_ssl_key | default(ssl_privatedir + '/' + ansible_fqdn + '.key') }}", m: '0600' }
 
 - name: Retrieve output dir to orchestrator
   ansible.builtin.fetch:
