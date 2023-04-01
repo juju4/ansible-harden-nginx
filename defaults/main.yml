@@ -49,6 +49,8 @@ harden_nginx_hpkp_enable: false
 # hardenwebserver_cert: certbot
 certbot_args: "-m {{ hardenwebserver_letsencrypt_email }} --agree-tos --domains {{ ansible_fqdn }}"
 # certbot_args: "--register-unsafely-without-email --agree-tos --domains {{ ansible_fqdn }}"
+# hardenwebserver_cert: stepca
+stepca_pass_file: /tmp/provisioner_password
 
 # hardenwebserver_nginx_resolver: '$DNS-IP-1 $DNS-IP-2'
 ## example: Google, OpenDNS, Dyn DNS servers
