@@ -51,7 +51,7 @@ certbot_args: "-m {{ hardenwebserver_letsencrypt_email }} --agree-tos --domains 
 # certbot_args: "--register-unsafely-without-email --agree-tos --domains {{ ansible_fqdn }}"
 # hardenwebserver_cert: stepca
 stepca_pass_file: /tmp/provisioner_password
-stepca_args: '--ca-url=127.0.0.1:8443'
+stepca_args: '--ca-url=127.0.0.1:8443 --root=/var/lib/step/.step/certs/root_ca.crt'
 
 # hardenwebserver_nginx_resolver: '$DNS-IP-1 $DNS-IP-2'
 ## example: Google, OpenDNS, Dyn DNS servers
