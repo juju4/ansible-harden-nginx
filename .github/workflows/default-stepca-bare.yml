@@ -112,6 +112,7 @@ jobs:
         continue-on-error: true
       - name: After script - curl
         run: |
+          curl -vk https://localhost:8443
           curl -vk https://localhost
           curl -vk https://localhost?a=b
           curl -vk -X HEAD https://localhost
