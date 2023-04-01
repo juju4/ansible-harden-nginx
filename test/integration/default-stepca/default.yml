@@ -3,6 +3,7 @@
 - hosts: all
   vars:
     hardenwebserver_cert: stepca
+    smallstep_ca_init_args: "--name=Smallstep --dns=localhost --address=localhost:8443 --provisioner=smallstep@{{ ansible_domain }} --provisioner-password-file=/tmp/provisioner_password --password-file=/var/lib/step/.password --with-ca-url=https://localhost:8443"
     harden_nginx_testing: true
     hardenwebserver_nginx_with_log_combined: true
     hardenwebserver_nginx_with_log_json: true
