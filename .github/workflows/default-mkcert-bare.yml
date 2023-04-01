@@ -114,13 +114,13 @@ jobs:
         continue-on-error: true
       - name: After script - curl
         run: |
-          curl -v https://localhost
-          curl -v https://localhost?a=b
-          curl -v -X HEAD https://localhost
-          curl -v -X OPTIONS https://localhost
-          curl -v -H Referer:http://www.example.com -H X-Forwarded-For:127.0.0.128 https://localhost/
-          curl -v --cookie COOKIE=test_cookie https://localhost
-          curl -v https://localhost
+          curl -vk https://localhost
+          curl -vk https://localhost?a=b
+          curl -vk -X HEAD https://localhost
+          curl -vk -X OPTIONS https://localhost
+          curl -vk -H Referer:http://www.example.com -H X-Forwarded-For:127.0.0.128 https://localhost/
+          curl -vk --cookie COOKIE=test_cookie https://localhost
+          curl -vk https://localhost
         if: ${{ always() }}
         continue-on-error: true
       - name: After script - logs
