@@ -46,6 +46,9 @@ hardenwebserver_letsencrypt_country: US
 hardenwebserver_letsencrypt_acme_dir: 'https://acme-staging-v02.api.letsencrypt.org/directory'
 # hardenwebserver_letsencrypt_acme_dir: 'https://acme-v02.api.letsencrypt.org/directory'
 harden_nginx_hpkp_enable: false
+# hardenwebserver_cert: certbot
+certbot_args: "-m {{ hardenwebserver_letsencrypt_email }} --agree-tos --domains {{ ansible_fqdn }}"
+# certbot_args: "--register-unsafely-without-email --agree-tos --domains {{ ansible_fqdn }}"
 
 # hardenwebserver_nginx_resolver: '$DNS-IP-1 $DNS-IP-2'
 ## example: Google, OpenDNS, Dyn DNS servers

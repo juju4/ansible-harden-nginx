@@ -104,7 +104,7 @@
 - name: Debian | letsencrypt verification prepare
   when: >
     hardenwebserver_cert is defined and
-    hardenwebserver_cert == 'letsencrypt' and
+    (hardenwebserver_cert == 'letsencrypt' or hardenwebserver_cert == 'certbot') and
     (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   block:
     - name: Debian | nginx check default site present
@@ -129,7 +129,10 @@
       notify:
         - Restart nginx
 - name: RedHat | letsencrypt verification prepare
-  when: hardenwebserver_cert is defined and hardenwebserver_cert == 'letsencrypt' and (ansible_os_family == 'RedHat')
+  when: >
+    hardenwebserver_cert is defined and
+    (hardenwebserver_cert == 'letsencrypt' or hardenwebserver_cert == 'certbot') and
+    (ansible_os_family == 'RedHat')
   block:
     - name: Redhat | ensure nginx default/http site present
       ansible.builtin.file:
@@ -139,6 +142,9 @@
 - name: Import certificate-letsencrypt
   ansible.builtin.import_tasks: certificate-letsencrypt.yml
   when: hardenwebserver_cert is defined and hardenwebserver_cert == 'letsencrypt'
+- name: Import certificate-certbot
+  ansible.builtin.import_tasks: certificate-certbot.yml
+  when: hardenwebserver_cert is defined and hardenwebserver_cert == 'certbot'
 
 - name: Debian | https
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')

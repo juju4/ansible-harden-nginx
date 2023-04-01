@@ -1,0 +1,44 @@
+---
+
+- name: Update ssl path for letsencrypt certbot
+  ansible.builtin.set_fact:
+    ssl_privatedir: "/etc/letsencrypt/live/{{ ansible_fqdn }}"
+    ssl_dir: "/etc/letsencrypt/live/{{ ansible_fqdn }}"
+    ssl_privkey: "{{ ssl_privatedir }}/privkey.pem"
+    ssl_crt: "{{ ssl_privatedir }}/cert.pem"
+    ssl_fullchain: "{{ ssl_privatedir }}/fullchain.pem"
+
+- name: Debian | certificate packages dependencies
+  ansible.builtin.apt:
+    name: "ssl-cert"
+    state: "present"
+    update_cache: "yes"
+    cache_valid_time: "3600"
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+  register: pkg_result
+  until: pkg_result is success
+- name: Install deps
+  ansible.builtin.package:
+    name:
+      - openssl
+      - certbot
+      - python3-certbot-nginx
+    state: present
+  register: pkg_result
+  until: pkg_result is success
+
+- name: Check if existing certificate
+  ansible.builtin.command:
+    cmd: certbot certificates
+  register: certbotcert
+  changed_when: false
+
+- name: Request Let's Encrypt certificate with certbot
+  ansible.builtin.command: "certbot --nginx --non-interactive {{ certbot_args }}"
+  when: '"Found the following certs" not in certbotcert.stdout'
+
+- name: Verify that certbot can perform auto-renewal
+  ansible.builtin.command: sudo certbot renew --dry-run
+  register: dry_run_results
+  failed_when: "'All renewal attempts failed.' in dry_run_results"
+  when: '"Found the following certs" not in certbotcert.stdout'
