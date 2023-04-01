@@ -2,7 +2,7 @@
 
 - name: Create new certificate for requested domain with step-ca
   ansible.builtin.command:
-    cmd: "step ca certificate --password-file={{ stepca_pass_file }} {{ ansible_fqdn }} {{ ansible_fqdn }}.crt {{ ansible_fqdn }}.key"
+    cmd: "step ca certificate --password-file={{ stepca_pass_file }} {{ stepca_args }} {{ ansible_fqdn }} {{ ansible_fqdn }}.crt {{ ansible_fqdn }}.key"
   args:
     chdir: /root
     creates: "/root/{{ ansible_fqdn }}.crt"
