@@ -22,7 +22,7 @@ server {
     index index.html index.htm;
 
     include /etc/nginx/harden-nginx-https;
-{% if hardenwebserver_cert is defined and hardenwebserver_cert == 'selfsigned' %}
+{% if hardenwebserver_cert is defined and (hardenwebserver_cert == 'selfsigned' or hardenwebserver_cert == 'mkcert') %}
     ssl_certificate {{ hardenwebserver_ssl_cert | default( ssl_dir + "/" + ansible_fqdn + ".crt") }};
 {% else %}
     ssl_certificate {{ hardenwebserver_ssl_cert | default( ssl_dir + "/" + ansible_fqdn + "-fullchain.crt") }};
