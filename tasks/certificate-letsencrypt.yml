@@ -6,9 +6,9 @@
   ansible.builtin.set_fact:
     ssl_privatedir: "/etc/letsencrypt/live/{{ ansible_fqdn }}"
     ssl_dir: "/etc/letsencrypt/live/{{ ansible_fqdn }}"
-    ssl_privkey: "{{ ssl_privatedir }}/privkey.pem"
-    ssl_crt: "{{ ssl_privatedir }}/cert.pem"
-    ssl_fullchain: "{{ ssl_privatedir }}/fullchain.pem"
+    ssl_privkey: "/etc/letsencrypt/live/{{ ansible_fqdn }}/privkey.pem"
+    ssl_crt: "/etc/letsencrypt/live/{{ ansible_fqdn }}/cert.pem"
+    ssl_fullchain: "/etc/letsencrypt/live/{{ ansible_fqdn }}/fullchain.pem"
 
 - name: Debian | certificate packages dependencies
   ansible.builtin.apt:
