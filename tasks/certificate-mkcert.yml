@@ -1,6 +1,14 @@
 ---
 # https://github.com/FiloSottile/mkcert
 
+- name: Update ssl path for mkcert
+  ansible.builtin.set_fact:
+    ssl_privatedir: "/etc/ssl/private"
+    ssl_dir: "/etc/ssl/certs"
+    ssl_privkey: "/etc/ssl/private/{{ ansible_fqdn }}.key"
+    ssl_crt: "/etc/ssl/certs/{{ ansible_fqdn }}.crt"
+    ssl_fullchain: "/etc/ssl/certs/{{ ansible_fqdn }}.crt"
+
 - name: Ensure mkcert packages dependencies are present
   ansible.builtin.apt:
     name: "{{ mkcert_deps }}"
