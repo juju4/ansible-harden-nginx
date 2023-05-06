@@ -34,11 +34,14 @@
   changed_when: false
 
 - name: Request Let's Encrypt certificate with certbot
-  ansible.builtin.command: "certbot --nginx --non-interactive {{ certbot_args }}"
+  ansible.builtin.command:  # noqa no-changed-when
+    cmd: "certbot --nginx --non-interactive {{ certbot_args }}"
   when: '"Found the following certs" not in certbotcert.stdout'
 
 - name: Verify that certbot can perform auto-renewal
-  ansible.builtin.command: sudo certbot renew --dry-run
+  ansible.builtin.command:  # noqa no-changed-when
+    cmd: certbot renew --dry-run
+  become: yes
   register: dry_run_results
   failed_when: "'All renewal attempts failed.' in dry_run_results"
   when: '"Found the following certs" not in certbotcert.stdout'
