@@ -1,4 +1,6 @@
+{{ ansible_managed | comment }}
 # https://medium.com/@nickodell/sandboxing-nginx-with-systemd-80441923c555
+# http://web.archive.org/web/20200527053030/https://medium.com/@nickodell/sandboxing-nginx-with-systemd-80441923c555
 [Service]
 # Run fully unprivileged
 User={% if ansible_os_family == 'RedHat' %}nginx{% else %}www-data{% endif %}

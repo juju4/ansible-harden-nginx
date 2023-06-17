@@ -1,3 +1,4 @@
+{{ ansible_managed | comment }}
 [Service]
 # Run fully unprivileged
 #User={% if ansible_os_family == 'RedHat' %}nginx{% else %}www-data{% endif %}
