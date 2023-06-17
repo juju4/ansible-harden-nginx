@@ -106,6 +106,8 @@ harden_php_include_path: '/usr/share/php'
 harden_php_session_use_strict_mode: 1
 harden_php_session_cookie_secure: true
 harden_php_session_cookie_httponly: true
+harden_php_openbasedir: 'none'
+# harden_php_openbasedir: '/var/www:/dev/urandom:/var/run/mysqld/mysqld.sock'
 
 # https://www.ietf.org/id/draft-foudil-securitytxt-00.txt
 harden_nginx_securitytxt_template: security.txt.j2
