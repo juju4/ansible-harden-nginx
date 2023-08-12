@@ -45,6 +45,3 @@ suites:
       - ubuntu-20.04
       - ubuntu-18.04
       - debian-buster
-  - name: default-vascan
-    run_list:
-    attributes:
