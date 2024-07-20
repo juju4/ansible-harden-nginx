@@ -11,6 +11,8 @@ hardenwebserver_nginx_https_server_include: []
 # if 'location /' is used in one included file
 hardennginx_https_rootlocation: true
 
+hardenwebserver_nginx_with_log_json: false
+
 ## curl, wget, perl...
 hardenwebserver_block_downloadagents: false
 hardenwebserver_cachecontrol: false
