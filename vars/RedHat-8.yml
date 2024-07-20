@@ -38,3 +38,5 @@ _harden_nginx_php_variants: "{{ harden_nginx_php_variants | default(['fpm', 'cli
 
 mkcert_deps:
   - nss-tools
+
+varlog_group: root

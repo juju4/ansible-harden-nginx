@@ -37,3 +37,5 @@ phpfpm_svc: php8.2-fpm
 
 mkcert_deps:
   - libnss3-tools
+
+varlog_group: adm

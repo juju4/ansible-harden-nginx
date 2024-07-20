@@ -21,3 +21,5 @@ hardenwebserver_packages:
   - "{{ hardenwebserver_nginx_debian_pkg }}"
   ## for Docker & netstat call in serverspec
   - net-tools
+
+varlog_group: adm

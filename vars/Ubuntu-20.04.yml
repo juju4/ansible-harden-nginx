@@ -37,3 +37,5 @@ phpfpm_svc: php7.4-fpm
 
 mkcert_deps:
   - libnss3-tools
+
+varlog_group: adm
