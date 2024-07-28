@@ -8,6 +8,9 @@
     ssl_privkey: "/etc/ssl/private/{{ ansible_fqdn }}.key"
     ssl_crt: "/etc/ssl/certs/{{ ansible_fqdn }}.crt"
     ssl_fullchain: "/etc/ssl/certs/{{ ansible_fqdn }}.crt"
+    tmp_ssl_crt: "{{ tmp_ssl_dir }}/{{ ansible_fqdn }}.crt"
+    tmp_ssl_key: "{{ tmp_ssl_dir }}/{{ ansible_fqdn }}-key.pem"
+    tmp_ssl_p12: "{{ tmp_ssl_dir }}/{{ ansible_fqdn }}.p12"
 
 - name: Ensure mkcert packages dependencies are present
   ansible.builtin.apt:
@@ -35,10 +38,16 @@
 
 - name: Create new certificate for requested domain
   ansible.builtin.command:
-    cmd: "mkcert {{ ansible_fqdn }} {{ alternate_dns | default('') }}"
+    cmd: "mkcert -cert-file {{ tmp_ssl_crt }} -key-file {{ tmp_ssl_key }} -p12-file {{ tmp_ssl_p12 }} {{ ansible_fqdn }} {{ alternate_dns | default('') }}"
   args:
-    chdir: /root
-    creates: "/root/{{ ansible_fqdn }}.pem"
+    chdir: "{{ tmp_ssl_dir }}"
+    creates: "{{ tmp_ssl_key }}"
+  register: mkcert_create
+
+- name: Debug | var mkcert_create
+  ansible.builtin.debug:
+    var: mkcert_create
+    verbosity: 0
 
 - name: Copy certificate files to needed locations
   ansible.builtin.copy:
@@ -47,8 +56,8 @@
     mode: "{{ item.m }}"
     remote_src: true
   loop:
-    - { s: "/root/{{ ansible_fqdn }}.pem", d: "{{ hardenwebserver_ssl_cert | default(ssl_dir + '/' + ansible_fqdn + '.crt') }}", m: '0644' }
-    - { s: "/root/{{ ansible_fqdn }}-key.pem", d: "{{ hardenwebserver_ssl_key | default(ssl_privatedir + '/' + ansible_fqdn + '.key') }}", m: '0600' }
+    - { s: "{{ tmp_ssl_crt }}", d: "{{ hardenwebserver_ssl_cert | default(ssl_dir + '/' + ansible_fqdn + '.crt') }}", m: '0644' }
+    - { s: "{{ tmp_ssl_key }}", d: "{{ hardenwebserver_ssl_key | default(ssl_privatedir + '/' + ansible_fqdn + '.key') }}", m: '0600' }
 
 - name: Retrieve output dir to orchestrator
   ansible.builtin.fetch:

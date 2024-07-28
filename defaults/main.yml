@@ -128,3 +128,6 @@ hardennginx_reporting_purge: 10
 
 harden_nginx_ca_pull: false
 harden_nginx_ca_pulldir: files
+
+# mkcert
+tmp_ssl_dir: /root
