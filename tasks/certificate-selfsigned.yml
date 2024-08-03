@@ -45,7 +45,7 @@
     path: "{{ ssl_privatedir }}/{{ ansible_fqdn }}.csr"
     privatekey_path: "{{ ssl_privatedir }}/{{ ansible_fqdn }}.key"
     organization_name: "{{ cert_orgname | default('Ansible') }}"
-    common_name: "{{ certificate_cn | truncate(64, True, '') }}"
+    common_name: "{{ certificate_cn | truncate(60, True, '') }}"
     subject_alt_name: "{{ cert_san | default(omit) }}"
     email_address: "{{ cert_email | default(omit) }}"
 
