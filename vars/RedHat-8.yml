@@ -40,3 +40,4 @@ mkcert_deps:
   - nss-tools
 
 varlog_group: root
+syslog_user: ''

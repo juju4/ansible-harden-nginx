@@ -14,7 +14,7 @@ apacheconf: /etc/nginx/nginx.conf
 apachedefault: /etc/nginx/sites-available/default
 _hardenwebserver_rootdir: /var/www/html
 hardenwebserver_nginx_naxsi: true
-nginx_conf_suffix: ''
+nginx_conf_suffix: '.conf'
 
 python_pip: python3-pip
 
@@ -39,3 +39,4 @@ mkcert_deps:
   - libnss3-tools
 
 varlog_group: adm
+syslog_user: ''

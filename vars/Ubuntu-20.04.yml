@@ -39,3 +39,4 @@ mkcert_deps:
   - libnss3-tools
 
 varlog_group: adm
+syslog_user: 'syslog'
