@@ -15,7 +15,7 @@
 - name: Add nginx report in logrotate
   ansible.builtin.lineinfile:  # noqa no-tabs
     dest: /etc/logrotate.d/nginx
-    line: "\t\ttest ! -x /usr/local/scripts/{{ hardennginx_reporting_template | basename }} || sudo -u syslog /usr/local/scripts/{{ hardennginx_reporting_template | basename }} 2>&1 | sudo -u syslog tee {{ hardennginx_reporting_dest }}/nginx-report-$(date +%Y%m%d) >/dev/null"
+    line: "\t\ttest ! -x /usr/local/scripts/{{ hardennginx_reporting_template | basename }} || {% if ansible_distribution == 'Ubuntu' %}sudo -u {{ syslog_user }} {% endif %}/usr/local/scripts/{{ hardennginx_reporting_template | basename }} 2>&1 | {% if ansible_distribution == 'Ubuntu' %}sudo -u {{ syslog_user }} {% endif %}tee {{ hardennginx_reporting_dest }}/nginx-report-$(date +%Y%m%d) >/dev/null"
     insertafter: '^\tprerotate$'
     mode: '0644'
 
