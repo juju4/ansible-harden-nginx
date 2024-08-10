@@ -34,7 +34,7 @@
 - name: Nginx configuration file update
   ansible.builtin.template:
     src: "harden-cache"
-    dest: "{{ apache_confdir }}/harden-cache"
+    dest: "{{ apache_confdir }}/harden-cache{{ nginx_conf_suffix }}"
     owner: "0"
     group: "0"
     mode: "0644"
