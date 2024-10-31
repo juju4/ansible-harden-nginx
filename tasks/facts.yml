@@ -20,4 +20,4 @@
     cert_san: "DNS:{{ ansible_fqdn }}"
   when:
     - ansible_fqdn | length >= 64
-    - not cert_san
+    - cert_san is not defined or (cert_san | length == 0)
