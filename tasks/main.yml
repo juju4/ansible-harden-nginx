@@ -13,8 +13,8 @@
 - name: Import local-etc-hosts-kitchen-lxd
   ansible.builtin.import_tasks: local-etc-hosts-kitchen-lxd.yml
 
-- name: Import travis
-  ansible.builtin.import_tasks: travis.yml
+- name: Import facts
+  ansible.builtin.import_tasks: facts.yml
 
 - name: Import nginx
   ansible.builtin.import_tasks: nginx.yml
