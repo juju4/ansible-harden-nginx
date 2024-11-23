@@ -26,7 +26,7 @@
   ansible.builtin.get_url:
     url: "https://dl.filippo.io/mkcert/latest?for=linux/amd64"
     dest: /usr/local/bin/mkcert
-    mode: 0755
+    mode: '0755'
 
 - name: Ensure have local CA
   ansible.builtin.command:
