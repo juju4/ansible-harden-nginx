@@ -38,6 +38,6 @@ SystemCallFilter=~@debug @mount @cpu-emulation @obsolete @privileged
 # When system call is disallowed, return error code instead of killing process
 SystemCallErrorNumber=EPERM
 {% endif %}
-CPUShares={{ nginx_cgroups_cpushares | default('1024') }}
+CPUWeight={{ nginx_cgroups_cpushares | default('1024') }}
 CPUQuota={{ nginx_cgroups_cpuquota | default('80%') }}
-MemoryLimit={{ nginx_cgroups_memorylimit | default('4G') }}
+MemoryMax={{ nginx_cgroups_memorylimit | default('4G') }}
