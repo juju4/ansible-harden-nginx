@@ -139,13 +139,13 @@ jobs:
       - name: After script - stepca
         run: |
           set -x
-          ls -A /var/lib/step/.step/
-          ls -A /var/lib/step/.step/certs/
-          openssl x509 -in /var/lib/step/.step/certs/root_ca.crt -text
-          ls /etc/ssl/certs/*.crt
+          sudo ls -A /var/lib/step/.step/
+          sudo ls -A /var/lib/step/.step/certs/
+          sudo openssl x509 -in /var/lib/step/.step/certs/root_ca.crt -text
+          sudo ls /etc/ssl/certs/*.crt
           for f in `ls /etc/ssl/certs/*.crt`; do
             echo "== $f"
-            openssl x509 -in $f -text
+            sudo openssl x509 -in $f -text
           done
         if: ${{ always() }}
         continue-on-error: true
