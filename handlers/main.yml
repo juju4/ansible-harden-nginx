@@ -15,9 +15,11 @@
 
 - name: Add public file to www dir to fulfill letsencrypt challenge
   ansible.builtin.copy:
-    dest: "{{ hardenwebserver_rootdir | default(_hardenwebserver_rootdir) }}/{{ le_challenge['challenge_data'][certificate_cn]['http-01']['resource'] }}"
-    content: "{{ le_challenge['challenge_data'][certificate_cn]['http-01']['resource_value'] }}"
+    dest: "{{ hardenwebserver_rootdir | default(_hardenwebserver_rootdir) }}/{{ le_challenge['challenge_data'][item.key]['http-01']['resource'] }}"
+    content: "{{ le_challenge['challenge_data'][item.key]['http-01']['resource_value'] }}"
     mode: '0644'
+  # if SAN has multiple entries, each one has a different challenge and must be validated
+  loop: "{{ le_challenge['challenge_data'] | dict2items }}"
 
 - name: Restart fail2ban
   ansible.builtin.service:
