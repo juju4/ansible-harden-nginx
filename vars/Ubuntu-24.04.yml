@@ -20,13 +20,14 @@ python_pip: python3-pip
 
 hardenwebserver_packages:
   - python3-passlib
+  - python3-cryptography
   - "{{ hardenwebserver_nginx_debian_pkg }}"
   - acl
   ## for Docker & netstat call in serverspec
   - net-tools
 
 harden_nginx_php:
-  - php
+  # - php
   - php-fpm
 php_confext: ini
 harden_nginx_phpdir: /etc/php/8.3
