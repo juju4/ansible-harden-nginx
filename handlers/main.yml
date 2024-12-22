@@ -3,6 +3,8 @@
 - name: Reload systemd
   ansible.builtin.systemd:
     daemon_reload: yes
+  become: true
+  become_user: root
   when: >
     not (ansible_virtualization_type is defined and (ansible_virtualization_type == "docker"))
 
@@ -33,3 +35,16 @@
     state: restarted
   when: >
     not (ansible_virtualization_type is defined and (ansible_virtualization_type == "docker"))
+
+- name: Add to /etc/ca-certificates.conf
+  ansible.builtin.lineinfile:
+    path: /etc/ca-certificates.conf
+    line: "{{ hardenwebserver_acme_download_root_ca_url | basename }}"
+    mode: '0644'
+    owner: root
+
+- name: Update-ca-certificates
+  ansible.builtin.command:  # noqa no-changed-when
+    cmd: update-ca-certificates
+  become: yes
+  become_user: root

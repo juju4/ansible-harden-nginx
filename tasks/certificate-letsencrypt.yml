@@ -10,6 +10,12 @@
     ssl_crt: "/etc/letsencrypt/live/{{ ansible_fqdn }}/cert.pem"
     ssl_fullchain: "/etc/letsencrypt/live/{{ ansible_fqdn }}/fullchain.pem"
 
+- name: Fatal localhost
+  ansible.builtin.fail:
+    msg: "Fatal! certificate_cn set as localhost. Review and use hardenwebserver_target_host_cn"
+  when:
+    - certificate_cn == 'localhost'
+
 - name: Debian | certificate packages dependencies
   ansible.builtin.apt:
     name: "ssl-cert"
@@ -25,6 +31,39 @@
     state: present
   register: pkg_result
   until: pkg_result is success
+
+- name: Ensure directories exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+    owner: root
+  loop:
+    - "{{ ssl_privatedir }}"
+    - "{{ ssl_dir }}"
+
+- name: Specific Root CA
+  when:
+    - hardenwebserver_acme_download_root_ca | bool
+  block:
+    - name: Download Root CA
+      ansible.builtin.get_url:
+        url: "{{ hardenwebserver_acme_download_root_ca_url }}"
+        dest: "/tmp/{{ hardenwebserver_acme_download_root_ca_url | basename }}"
+        mode: '0644'
+        validate_certs: "{{ hardenwebserver_acme_validate_certs | bool }}"
+    - name: Add Root CA to system
+      ansible.builtin.copy:
+        src: "/tmp/{{ hardenwebserver_acme_download_root_ca_url | basename }}"
+        dest: /usr/share/ca-certificates
+        mode: '0644'
+        owner: root
+        remote_src: true
+      notify:
+        - Add to /etc/ca-certificates.conf
+        - Update-ca-certificates
+    - name: Flush handlers
+      ansible.builtin.meta: flush_handlers
 
 - name: Check if existing user private key
   ansible.builtin.stat:
@@ -52,15 +91,16 @@
     terms_agreed: yes
     contact:
       - "mailto:{{ hardenwebserver_letsencrypt_email }}"
+    validate_certs: "{{ hardenwebserver_acme_validate_certs | bool }}"
 
 - name: Check if existing host private key
   ansible.builtin.stat:
-    path: "{{ ssl_privatedir }}/{{ ansible_fqdn }}.key"
+    path: "{{ ssl_privkey }}"
   register: hostkey
 
 - name: Generate an OpenSSL private key with the default values (4096 bits, RSA)
   community.crypto.openssl_privatekey:
-    path: "{{ ssl_privatedir }}/{{ ansible_fqdn }}.key"
+    path: "{{ ssl_privkey }}"
     size: 4096
     backup: "{{ hardenwebserver_backup | default(true) }}"
   when: not hostkey.stat.exists
@@ -68,7 +108,7 @@
 - name: Generate an OpenSSL Certificate Signing Request with Subject information
   community.crypto.openssl_csr:
     path: "{{ ssl_dir }}/{{ ansible_fqdn }}.csr"
-    privatekey_path: "{{ ssl_privatedir }}/{{ ansible_fqdn }}.key"
+    privatekey_path: "{{ ssl_privkey }}"
     country_name: "{{ hardenwebserver_letsencrypt_country | default('US') }}"
     organization_name: "{{ hardenwebserver_letsencrypt_org_name }}"
     email_address: "{{ hardenwebserver_letsencrypt_email }}"
@@ -83,9 +123,10 @@
     account_key: "{{ ssl_privatedir }}/user.key"
     acme_version: 2
     csr: "{{ ssl_dir }}/{{ ansible_fqdn }}.csr"
-    dest: "{{ ssl_dir }}/{{ ansible_fqdn }}.crt"
-    fullchain_dest: "{{ ssl_dir }}/ca-certs.pem"
+    dest: "{{ ssl_crt }}"
+    fullchain_dest: "{{ ssl_fullchain }}"
     acme_directory: "{{ hardenwebserver_letsencrypt_acme_dir }}"
+    validate_certs: "{{ hardenwebserver_acme_validate_certs | bool }}"
   register: le_challenge
   notify:
     - Add public file to www dir to fulfill letsencrypt challenge
@@ -106,7 +147,8 @@
     account_key: "{{ ssl_privatedir }}/user.key"
     acme_version: 2
     csr: "{{ ssl_dir }}/{{ ansible_fqdn }}.csr"
-    dest: "{{ ssl_dir }}/{{ ansible_fqdn }}.crt"
-    fullchain_dest: "{{ ssl_dir }}/{{ ansible_fqdn }}-fullchain.crt"
+    dest: "{{ ssl_crt }}"
+    fullchain_dest: "{{ ssl_fullchain }}"
     data: "{{ le_challenge }}"
     acme_directory: "{{ hardenwebserver_letsencrypt_acme_dir }}"
+    validate_certs: "{{ hardenwebserver_acme_validate_certs | bool }}"

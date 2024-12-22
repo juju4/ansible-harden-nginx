@@ -102,6 +102,8 @@ $ vagrant ssh
 * no CSP report log?
 Maybe because of uBlock Origin browser extension: [Block CSP reports. Enabled by default in Firefox in 1.31.3rc1 to mitigate fingerprinting attempts described in LiCybora/NanoDefenderFirefox#196. Dec 2020](https://github.com/gorhill/uBlock/wiki/Dashboard:-Settings#block-csp-reports)
 
+* when using step-ca and creating certificate, getting "client GET https://<SERVER>:8443/provisioners?limit=100 failed: Forbidden": check that you are not blocked at a proxy level, either with no_proxy env, either allowed at proxy level.
+
 ## Extras
 
 * If you want to warn users who use old browsers, the following projects are among the options to add little warnings: (browser-update.org)[https://browser-update.org/], (outdatedbrowser.com)[http://outdatedbrowser.com/]

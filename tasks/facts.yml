@@ -6,7 +6,7 @@
 # https://stackoverflow.com/questions/47175877/csr-with-common-name-longer-than-64-characters
 - name: Default | set certificate_cn
   ansible.builtin.set_fact:
-    certificate_cn: "{{ ansible_fqdn }}"
+    certificate_cn: "{{ hardenwebserver_target_host_cn }}"
 
 - name: Over RFC3280 | Truncate fqdn for certificate_cn
   ansible.builtin.set_fact:
