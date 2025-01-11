@@ -105,7 +105,7 @@ harden_webserver_header_refpolicy: strict-origin-when-cross-origin
 ## https://bettercrypto.org/static/applied-crypto-hardening.pdf
 harden_nginx_sslciphersuite: 'EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH'
 # harden_nginx_sslciphersuite: 'ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS'
-harden_nginx_sslprotocol: 'TLSv1.2'
+harden_nginx_sslprotocol: 'TLSv1.3'
 # harden_nginx_sslprotocol: 'TLSv1.2 TLSv1.1'
 
 ## review php settings?
