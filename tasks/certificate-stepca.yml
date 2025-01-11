@@ -38,13 +38,40 @@
         name: "{{ tmp_ssl_dir }}/{{ step_pkg | basename }}"
         state: present
 
-- name: Create new certificate for requested domain with step-ca
-  ansible.builtin.command:
-    # cmd: "strace step ca certificate --password-file={{ stepca_pass_file }} {{ stepca_args }} {{ ansible_fqdn }} {{ ansible_fqdn }}.crt {{ ansible_fqdn }}.key 2>/tmp/step-ca-certificate.strace"
-    cmd: "step ca certificate --password-file={{ stepca_pass_file }} {{ stepca_args }} {{ ansible_fqdn }} {{ ansible_fqdn }}.crt {{ ansible_fqdn }}.key"
-  args:
-    chdir: /root
-    creates: "/root/{{ ansible_fqdn }}.crt"
+- name: Step-ca token
+  when:
+    - hardenwebserver_stepca_host is defined
+    - hardenwebserver_stepca_host | length > 0
+  block:
+    - name: Create token on step-ca certificate server
+      ansible.builtin.command:  # noqa no-changed-when
+        cmd: "step ca token --provisioner-password-file={{ stepca_host_provisioner_passfile }} {{ stepca_args }} {{ ansible_fqdn }}{% if hardenwebserver_target_host_san %}{% for item in hardenwebserver_target_host_san %} --san {{ item }}{% endfor %}{% endif %}"
+      delegate_to: "{{ hardenwebserver_stepca_host }}"
+      register: stepca_token
+    - name: Create new certificate for requested domain with step-ca and token
+      ansible.builtin.command:
+        cmd: "step ca certificate --token={{ stepca_token.stdout }} {{ stepca_args }} {{ ansible_fqdn }} {{ ansible_fqdn }}.crt {{ ansible_fqdn }}.key"
+        # cmd: "step ca certificate --token={{ stepca_token.stdout }} {{ stepca_args }} {{ ansible_fqdn }} {{ ansible_fqdn }}.crt {{ ansible_fqdn }}.key --force"
+      args:
+        chdir: /root
+        # if want to renew certificate, skip on file existence and add '--force' above (else overwrite question)
+        creates: "/root/{{ ansible_fqdn }}.crt"
+
+- name: Step-ca provisioner password file
+  when: >
+    hardenwebserver_stepca_host is not defined or
+    hardenwebserver_stepca_host | length == 0
+  block:
+    - name: Create new certificate for requested domain with step-ca
+      ansible.builtin.command:
+        # cmd: "strace step ca certificate --password-file={{ stepca_pass_file }} {{ stepca_args }} {{ ansible_fqdn }} {{ ansible_fqdn }}.crt {{ ansible_fqdn }}.key 2>/tmp/step-ca-certificate.strace"
+        cmd: "step ca certificate --password-file={{ stepca_pass_file }} {{ stepca_args }} {{ ansible_fqdn }} {{ ansible_fqdn }}.crt {{ ansible_fqdn }}.key"
+        # this returns "Please enter the password to decrypt the provisioner key:" and blocks
+        # cmd: "step ca certificate {{ stepca_args }} {{ ansible_fqdn }} {{ ansible_fqdn }}.crt {{ ansible_fqdn }}.key"
+      args:
+        chdir: /root
+        # if want to renew certificate, can't skip on file existence
+        creates: "/root/{{ ansible_fqdn }}.crt"
 
 - name: Copy certificate files to needed locations
   ansible.builtin.copy:
@@ -53,5 +80,10 @@
     mode: "{{ item.m }}"
     remote_src: true
   loop:
-    - { s: "/root/{{ ansible_fqdn }}.crt", d: "{{ hardenwebserver_ssl_cert | default(ssl_dir + '/' + ansible_fqdn + '.crt') }}", m: '0644' }
-    - { s: "/root/{{ ansible_fqdn }}.key", d: "{{ hardenwebserver_ssl_key | default(ssl_privatedir + '/' + ansible_fqdn + '.key') }}", m: '0600' }
+    - { s: "/root/{{ ansible_fqdn }}.crt", d: "{{ hardenwebserver_ssl_cert | default(ssl_fullchain) }}", m: '0644' }
+    - { s: "/root/{{ ansible_fqdn }}.key", d: "{{ hardenwebserver_ssl_key | default(ssl_privkey) }}", m: '0600' }
+  notify:
+    - Restart nginx
+
+- name: Import certificate-stepca-autorenewal
+  ansible.builtin.import_tasks: certificate-stepca-autorenewal.yml

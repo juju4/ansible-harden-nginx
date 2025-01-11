@@ -113,7 +113,7 @@
     organization_name: "{{ hardenwebserver_letsencrypt_org_name }}"
     email_address: "{{ hardenwebserver_letsencrypt_email }}"
     common_name: "{{ certificate_cn }}"
-    subject_alt_name: "{{ hardenwebserver_letsencrypt_san | default(omit) }}"
+    subject_alt_name: "{{ hardenwebserver_target_host_san | default(omit) }}"
     backup: "{{ hardenwebserver_backup | default(true) }}"
     # defaults
     # digest: sha256

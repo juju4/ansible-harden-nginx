@@ -1,0 +1,81 @@
+---
+# https://smallstep.com/docs/step-ca/renewal/
+# Only work if current certificate is still valid else
+# "step[11284]: The request lacked necessary authorization to be completed: certificate expired on YYYY-MM-DD HH:MM:SS +0000 UTC"
+
+# if got certificate through acme, step-ca must be installed first
+- name: Debian | Install small step
+  when:
+    - ansible_os_family == 'Debian'
+  block:
+    - name: Debian | Set fact
+      ansible.builtin.set_fact:
+        step_pkg: https://dl.smallstep.com/cli/docs-cli-install/latest/step-cli_amd64.deb
+    - name: Debian | Download package
+      ansible.builtin.get_url:
+        url: "{{ step_pkg }}"
+        dest: "{{ tmp_ssl_dir }}/{{ step_pkg | basename }}"
+        mode: '0600'
+        owner: root
+    - name: Install small step
+      ansible.builtin.package:
+        deb: "{{ tmp_ssl_dir }}/{{ step_pkg | basename }}"
+        state: present
+
+- name: RedHat | Install small step
+  when:
+    - ansible_os_family == 'RedHat'
+  block:
+    - name: RedHat | Set fact
+      ansible.builtin.set_fact:
+        step_pkg: https://dl.smallstep.com/cli/docs-cli-install/latest/step-cli_amd64.rpm
+    - name: Install small step
+      ansible.builtin.package:
+        name: "{{ tmp_ssl_dir }}/{{ step_pkg | basename }}"
+        state: present
+
+- name: Ensure service cert-renewer@.service is set
+  ansible.builtin.template:
+    src: systemd-cert-renewer.service.conf.j2
+    dest: /etc/systemd/system/cert-renewer@.service
+    mode: '0644'
+  notify:
+    - Reload systemd
+
+- name: Ensure cert-renewer@nginx service.d exists
+  ansible.builtin.file:
+    path: /etc/systemd/system/cert-renewer@nginx.service.d
+    state: directory
+    mode: '0755'
+    owner: root
+
+- name: Ensure service cert-renewer@nginx is set
+  ansible.builtin.copy:
+    content: |
+      [Service]
+      ; `Environment=` overrides are applied per environment variable. This line does not
+      ; affect any other variables set in the service template.
+      Environment=CERT_LOCATION={{ ssl_fullchain }} \
+                  KEY_LOCATION={{ ssl_privkey }}
+      WorkingDirectory=/etc/ssl
+
+      ; Restart service after the certificate is successfully renewed.
+      ExecStartPost=/usr/bin/systemctl restart nginx.service
+    dest: /etc/systemd/system/cert-renewer@nginx.service.d/override.conf
+    mode: '0644'
+  notify:
+    - Reload systemd
+
+- name: Ensure service cert-renewer@.timer is set
+  ansible.builtin.template:
+    src: systemd-cert-renewer.timer.conf.j2
+    dest: /etc/systemd/system/cert-renewer@.timer
+    mode: '0644'
+  notify:
+    - Reload systemd
+
+- name: Ensure service cert-renewer@nginx is enabled
+  ansible.builtin.service:
+    name: cert-renewer@nginx.timer
+    enabled: yes
+    state: started

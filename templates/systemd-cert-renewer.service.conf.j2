@@ -24,7 +24,7 @@ Environment=STEPPATH=/etc/step-ca \
 ExecCondition=/usr/bin/step certificate needs-renewal ${CERT_LOCATION}
 
 ; ExecStart renews the certificate, if ExecStartPre was successful.
-ExecStart=/usr/bin/step ca renew --force ${CERT_LOCATION} ${KEY_LOCATION}
+ExecStart=/usr/bin/step ca renew {{ hardenwebserver_stepcarenew_args }} --force ${CERT_LOCATION} ${KEY_LOCATION}
 
 ; Try to reload or restart the systemd service that relies on this cert-renewer
 ; If the relying service doesn't exist, forge ahead.
