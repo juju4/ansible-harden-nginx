@@ -27,7 +27,6 @@ hardenwebserver_packages:
   - net-tools
 
 harden_nginx_php:
-  # - php
   - php-fpm
 php_confext: ini
 harden_nginx_phpdir: /etc/php/8.3
