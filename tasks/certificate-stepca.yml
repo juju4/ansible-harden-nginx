@@ -38,10 +38,16 @@
         name: "{{ tmp_ssl_dir }}/{{ step_pkg | basename }}"
         state: present
 
+- name: Check if certificate exists
+  ansible.builtin.stat:
+    path: "/root/{{ ansible_fqdn }}.crt"
+  register: has_stepca_cert
+
 - name: Step-ca token
   when:
     - hardenwebserver_stepca_host is defined
     - hardenwebserver_stepca_host | length > 0
+    - not has_stepca_cert.stat.exists or hardenwebserver_stepca_force_issue | bool
   block:
     - name: Create token on step-ca certificate server
       ansible.builtin.command:  # noqa no-changed-when
@@ -50,12 +56,11 @@
       register: stepca_token
     - name: Create new certificate for requested domain with step-ca and token
       ansible.builtin.command:
-        cmd: "step ca certificate --token={{ stepca_token.stdout }} {{ stepca_args }} {{ ansible_fqdn }} {{ ansible_fqdn }}.crt {{ ansible_fqdn }}.key"
-        # cmd: "step ca certificate --token={{ stepca_token.stdout }} {{ stepca_args }} {{ ansible_fqdn }} {{ ansible_fqdn }}.crt {{ ansible_fqdn }}.key --force"
+        cmd: "step ca certificate --token={{ stepca_token.stdout }} {{ stepca_args }} {{ ansible_fqdn }} {{ ansible_fqdn }}.crt {{ ansible_fqdn }}.key{% if hardenwebserver_stepca_force_issue | bool %} --force {% endif %}"
       args:
         chdir: /root
         # if want to renew certificate, skip on file existence and add '--force' above (else overwrite question)
-        creates: "/root/{{ ansible_fqdn }}.crt"
+        creates: "{% if hardenwebserver_stepca_force_issue | bool %}{{ omit }}{% else %}/root/{{ ansible_fqdn }}.crt{% endif %}"
 
 - name: Step-ca provisioner password file
   when: >
