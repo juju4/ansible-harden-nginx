@@ -12,7 +12,7 @@ PrivateTmp=true
 ProtectHome=yes
 ProtectSystem=yes
 # ProtectSystem=strict
-{% if ansible_distribution == 'Ubuntu' and ansible_distribution_major_version|int >= 21 %}
+{% if ansible_distribution == 'Ubuntu' and ansible_distribution_major_version | int >= 21 %}
 ProtectProc=noaccess
 {% endif %}
 
@@ -77,9 +77,9 @@ CapabilityBoundingSet=~CAP_IPC_LOCK
           ansible_virtualization_type == "docker"
         )
 %}
-{% if (ansible_os_family == 'RedHat' and ansible_distribution_major_version|int >= 8) or (ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int > 18) %}
+{%     if (ansible_os_family == 'RedHat' and ansible_distribution_major_version | int >= 8) or (ansible_distribution == "Ubuntu" and ansible_distribution_major_version | int > 18) %}
 SystemCallFilter=@system-service @privileged
-{% endif %}
+{%     endif %}
 SystemCallFilter=~@debug @mount @cpu-emulation @obsolete @resources @reboot @swap @raw-io @module
 # When system call is disallowed, return error code instead of killing process
 SystemCallErrorNumber=EPERM

@@ -1,5 +1,5 @@
 /var/lib/nginx/proxy$ VarDir
-{% if harden_nginx_cspreport_template is defined and harden_nginx_cspreport_template|string %}
+{% if harden_nginx_cspreport_template is defined and harden_nginx_cspreport_template | string %}
 {{ _hardenwebserver_rootdir }}/csp/log$ VarDir
 {{ _hardenwebserver_rootdir }}/csp/log/csp-violations.log$ VarFile
 {% endif %}

@@ -14,13 +14,13 @@ ssl_ecdh_curve secp384r1; # Requires nginx >= 1.1.0
 ssl_dhparam {{ ssl_privatedir }}/dhparam4.pem;
 
 {% if ansible_distribution_release == 'xenial' %}
-{% if hardenwebserver_nginx_sessiontickets is not defined or not hardenwebserver_nginx_sessiontickets %}
+{%     if hardenwebserver_nginx_sessiontickets is not defined or not hardenwebserver_nginx_sessiontickets %}
 ssl_session_tickets off; # Requires nginx >= 1.5.9
-{% else %}
+{%     else %}
 ssl_session_tickets on;
 ## openssl rand 48 -out /etc/nginx/ssl/ticket.key
 ssl_session_ticket_key /etc/nginx/ssl/ticket.key;
-{% endif %}
+{%     endif %}
 {% endif %}
 {% if hardenwebserver_nginx_stapling is defined and hardenwebserver_nginx_stapling %}
 ssl_stapling on; # Requires nginx >= 1.3.7

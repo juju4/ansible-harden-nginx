@@ -3,9 +3,13 @@
 # http://web.archive.org/web/20200527053030/https://medium.com/@nickodell/sandboxing-nginx-with-systemd-80441923c555
 [Service]
 # Run fully unprivileged
-User={% if ansible_os_family == 'RedHat' %}nginx{% else %}www-data{% endif %}
-
-Group={% if ansible_os_family == 'RedHat' %}nginx{% else %}www-data{% endif %}
+{% if ansible_os_family == 'RedHat' %}
+User=nginx
+Group=nginx
+{% else %}
+User=www-data
+Group=www-data
+{% endif %}
 
 AmbientCapabilities=CAP_NET_BIND_SERVICE
 CapabilityBoundingSet=CAP_NET_BIND_SERVICE
@@ -17,7 +21,7 @@ PrivateTmp=true
 PrivateDevices=yes
 ProtectHome=yes
 ProtectSystem=full
-{% if (ansible_os_family == 'RedHat' and ansible_distribution_major_version|int > 7) or (ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int >= 18) %}
+{% if (ansible_os_family == 'RedHat' and ansible_distribution_major_version | int > 7) or (ansible_distribution == "Ubuntu" and ansible_distribution_major_version | int >= 18) %}
 InaccessiblePaths=/proc
 ProtectKernelTunables=true
 ProtectKernelModules=yes
@@ -31,9 +35,9 @@ RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
           ansible_virtualization_type == "docker"
         )
 %}
-{% if (ansible_os_family == 'RedHat' and ansible_distribution_major_version|int >= 8) or (ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int > 18) %}
+{%     if (ansible_os_family == 'RedHat' and ansible_distribution_major_version | int >= 8) or (ansible_distribution == "Ubuntu" and ansible_distribution_major_version | int > 18) %}
 SystemCallFilter=@system-service
-{% endif %}
+{%     endif %}
 SystemCallFilter=~@debug @mount @cpu-emulation @obsolete @privileged
 # When system call is disallowed, return error code instead of killing process
 SystemCallErrorNumber=EPERM
