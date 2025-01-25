@@ -60,7 +60,10 @@
       ; `Environment=` overrides are applied per environment variable. This line does not
       ; affect any other variables set in the service template.
       Environment=CERT_LOCATION={{ ssl_fullchain }} \
-                  KEY_LOCATION={{ ssl_privkey }}
+                  KEY_LOCATION={{ ssl_privkey }}{% if hardenwebserver_stepcarenew_debug | bool %} \
+                  STEPDEBUG=1 \
+                  GODEBUG=http2debug=2
+      {% endif %}
 
       WorkingDirectory=/etc/ssl
 

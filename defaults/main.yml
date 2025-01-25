@@ -65,6 +65,7 @@ stepca_args: '--ca-url=https://localhost:8443 --root=/var/lib/step/.step/certs/r
 # this will force issue a certificate even if one exists (file existence, expired or not)
 hardenwebserver_stepca_force_issue: false
 hardenwebserver_stepcarenew_args: '--ca-url=https://localhost:8443 --root=/var/lib/step/.step/certs/root_ca.crt'
+hardenwebserver_stepcarenew_debug: false
 # if stepca server is behind reverse proxy at L7
 # hardenwebserver_stepcarenew_args: '--ca-url=https://localhost:8443 --root=/var/lib/step/.step/certs/root_ca.crt --mtls=false'
 

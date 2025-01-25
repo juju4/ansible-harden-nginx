@@ -16,7 +16,10 @@ User=root
 
 Environment=STEPPATH=/etc/step-ca \
             CERT_LOCATION=/etc/step/certs/%i.crt \
-            KEY_LOCATION=/etc/step/certs/%i.key
+            KEY_LOCATION=/etc/step/certs/%i.key{% if hardenwebserver_stepcarenew_debug | bool %} \
+            STEPDEBUG=1 \
+            GODEBUG=http2debug=2
+{% endif %}
 
 ; ExecCondition checks if the certificate is ready for renewal,
 ; based on the exit status of the command.
