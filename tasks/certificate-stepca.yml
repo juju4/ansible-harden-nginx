@@ -21,6 +21,8 @@
         dest: "{{ tmp_ssl_dir }}/{{ step_pkg | basename }}"
         mode: '0600'
         owner: root
+      register: dl_result
+      until: dl_result is success
     - name: Install small step
       ansible.builtin.package:
         deb: "{{ tmp_ssl_dir }}/{{ step_pkg | basename }}"
@@ -37,6 +39,8 @@
       ansible.builtin.package:
         name: "{{ tmp_ssl_dir }}/{{ step_pkg | basename }}"
         state: present
+      register: pkg_result
+      until: pkg_result is success
 
 - name: Check if certificate exists
   ansible.builtin.stat:
@@ -61,6 +65,8 @@
         chdir: /root
         # if want to renew certificate, skip on file existence and add '--force' above (else overwrite question)
         creates: "{% if hardenwebserver_stepca_force_issue | bool %}{{ omit }}{% else %}/root/{{ ansible_fqdn }}.crt{% endif %}"
+      register: stepca_cert
+      until: stepca_cert is success
 
 - name: Step-ca provisioner password file
   when: >

@@ -17,6 +17,8 @@
         dest: "{{ tmp_ssl_dir }}/{{ step_pkg | basename }}"
         mode: '0600'
         owner: root
+      register: dl_result
+      until: dl_result is success
     - name: Install small step
       ansible.builtin.package:
         deb: "{{ tmp_ssl_dir }}/{{ step_pkg | basename }}"
@@ -33,6 +35,8 @@
       ansible.builtin.package:
         name: "{{ tmp_ssl_dir }}/{{ step_pkg | basename }}"
         state: present
+      register: pkg_result
+      until: pkg_result is success
 
 - name: Ensure service cert-renewer@.service is set
   ansible.builtin.template:
@@ -57,6 +61,7 @@
       ; affect any other variables set in the service template.
       Environment=CERT_LOCATION={{ ssl_fullchain }} \
                   KEY_LOCATION={{ ssl_privkey }}
+
       WorkingDirectory=/etc/ssl
 
       ; Restart service after the certificate is successfully renewed.
