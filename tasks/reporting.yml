@@ -20,8 +20,16 @@
     mode: '0644'
 
 - name: Ensure right permissions for logs dir
+  ansible.builtin.file:
+    dest: /var/log/nginx
+    state: directory
+    mode: '0755'
+    owner: root
+    group: "{{ harden_nginx_syslog_dir_group | default(varlog_group) }}"
+
+- name: Ensure right permissions for logs dir in logrotate
   ansible.builtin.lineinfile:
     dest: /etc/logrotate.d/nginx
-    line: "su root {{ harden_nginx_syslog_dir_group | default(varlog_group) }}"
-    insertbefore: '^\t}$'
+    line: "\tsu root {{ harden_nginx_syslog_dir_group | default(varlog_group) }}"
+    insertbefore: '^}$'
     mode: '0644'
