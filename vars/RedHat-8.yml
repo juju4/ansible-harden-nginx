@@ -1,7 +1,5 @@
 ---
 
-hardenwebserver_nginx_stapling: true
-
 ssl_user: root
 ssl_dir: /etc/pki/tls/certs
 ssl_privatedir: /etc/pki/tls/private
