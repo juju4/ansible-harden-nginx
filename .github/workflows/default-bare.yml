@@ -116,7 +116,7 @@ jobs:
       - name: After script - etc
         run: |
           sudo cat /etc/nginx/nginx.conf
-          sudo cat /etc/nginx/sites-enabled/https
+          sudo find /etc/nginx/sites-enabled/ -type f -exec cat {} \;
           sudo find /etc/nginx/conf.d/ -iname 'harden-nginx-*' -type f -exec cat {} \;
         if: ${{ always() }}
         continue-on-error: true
@@ -134,6 +134,8 @@ jobs:
           curl -vk -H Referer:http://www.example.com -H X-Forwarded-For:127.0.0.128 https://localhost/
           curl -vk --cookie COOKIE=test_cookie https://localhost
           curl -vk https://localhost
+          curl -v https://host1.internal || true
+          curl -v https://host2.internal || true
         if: ${{ always() }}
         continue-on-error: true
       - name: After script - logs
