@@ -134,7 +134,15 @@ jobs:
           curl -vk -H Referer:http://www.example.com -H X-Forwarded-For:127.0.0.128 https://localhost/
           curl -vk --cookie COOKIE=test_cookie https://localhost
           curl -vk https://localhost
+        if: ${{ always() }}
+        continue-on-error: true
+      - name: After script - host1
+        run: |
           curl -v https://host1.internal || true
+        if: ${{ always() }}
+        continue-on-error: true
+      - name: After script - host2
+        run: |
           curl -v https://host2.internal || true
         if: ${{ always() }}
         continue-on-error: true
