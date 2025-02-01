@@ -138,12 +138,12 @@ jobs:
         continue-on-error: true
       - name: After script - host1
         run: |
-          curl -v https://host1.internal || true
+          curl -vk https://host1.internal || true
         if: ${{ always() }}
         continue-on-error: true
       - name: After script - host2
         run: |
-          curl -v https://host2.internal || true
+          curl -vk https://host2.internal || true
         if: ${{ always() }}
         continue-on-error: true
       - name: After script - logs
