@@ -70,5 +70,5 @@ jobs:
         if: ${{ always() }}
       - name: ansible-lint
         run: |
-          cd $GITHUB_WORKSPACE/$ANSIBLE_ROLE && ansible-lint
+          cd $GITHUB_WORKSPACE/$ANSIBLE_ROLE && ansible-lint -v
         if: ${{ always() }}
