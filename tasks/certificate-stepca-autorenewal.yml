@@ -4,9 +4,14 @@
 # "step[11284]: The request lacked necessary authorization to be completed: certificate expired on YYYY-MM-DD HH:MM:SS +0000 UTC"
 
 # if got certificate through acme, step-ca must be installed first
+- name: Get stat of /usr/bin/step
+  ansible.builtin.stat:
+    path: /usr/bin/step
+  register: has_step_cli
 - name: Debian | Install small step
   when:
     - ansible_os_family == 'Debian'
+    - not has_step_cli.stat.exists
   block:
     - name: Debian | Set fact
       ansible.builtin.set_fact:
@@ -27,6 +32,7 @@
 - name: RedHat | Install small step
   when:
     - ansible_os_family == 'RedHat'
+    - not has_step_cli.stat.exists
   block:
     - name: RedHat | Set fact
       ansible.builtin.set_fact:
@@ -40,7 +46,7 @@
 
 - name: Ensure service cert-renewer@.service is set
   ansible.builtin.template:
-    src: systemd-cert-renewer.service.conf.j2
+    src: "{{ hardenwebserver_templates_path | default('') }}systemd-cert-renewer.service.conf.j2"
     dest: /etc/systemd/system/cert-renewer@.service
     mode: '0644'
   notify:
@@ -68,7 +74,7 @@
       WorkingDirectory=/etc/ssl
 
       ; Restart service after the certificate is successfully renewed.
-      ExecStartPost=/usr/bin/systemctl restart nginx.service
+      ExecStartPost=/usr/bin/systemctl restart {{ hardenwebserver_service | default('nginx') }}.service
     dest: /etc/systemd/system/cert-renewer@nginx.service.d/override.conf
     mode: '0644'
   notify:
@@ -76,7 +82,7 @@
 
 - name: Ensure service cert-renewer@.timer is set
   ansible.builtin.template:
-    src: systemd-cert-renewer.timer.conf.j2
+    src: "{{ hardenwebserver_templates_path | default('') }}systemd-cert-renewer.timer.conf.j2"
     dest: /etc/systemd/system/cert-renewer@.timer
     mode: '0644'
   notify:

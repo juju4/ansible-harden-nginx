@@ -8,9 +8,14 @@
     ssl_crt: "/etc/ssl/certs/{{ ansible_fqdn }}.crt"
     ssl_fullchain: "/etc/ssl/certs/{{ ansible_fqdn }}.crt"
 
+- name: Get stat of /usr/bin/step
+  ansible.builtin.stat:
+    path: /usr/bin/step
+  register: has_step_cli
 - name: Debian | Install small step
   when:
     - ansible_os_family == 'Debian'
+    - not has_step_cli.stat.exists
   block:
     - name: Debian | Set fact
       ansible.builtin.set_fact:
@@ -31,6 +36,7 @@
 - name: RedHat | Install small step
   when:
     - ansible_os_family == 'RedHat'
+    - not has_step_cli.stat.exists
   block:
     - name: RedHat | Set fact
       ansible.builtin.set_fact:
@@ -94,7 +100,7 @@
     - { s: "/root/{{ ansible_fqdn }}.crt", d: "{{ hardenwebserver_ssl_cert | default(ssl_fullchain) }}", m: '0644' }
     - { s: "/root/{{ ansible_fqdn }}.key", d: "{{ hardenwebserver_ssl_key | default(ssl_privkey) }}", m: '0600' }
   notify:
-    - Restart nginx
+    - "Restart {{ hardenwebserver_service | default('nginx') }}"
 
 - name: Import certificate-stepca-autorenewal
   ansible.builtin.import_tasks: certificate-stepca-autorenewal.yml
