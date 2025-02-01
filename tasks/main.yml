@@ -12,6 +12,8 @@
 
 - name: Import local-etc-hosts-kitchen-lxd
   ansible.builtin.import_tasks: local-etc-hosts-kitchen-lxd.yml
+  when:
+    - hardennginx_etc_hosts_update | bool
 
 - name: Import facts
   ansible.builtin.import_tasks: facts.yml

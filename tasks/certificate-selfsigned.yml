@@ -32,18 +32,18 @@
 
 - name: Check if OpenSSL private key exists
   ansible.builtin.stat:
-    path: "{{ ssl_privatedir }}/{{ ansible_fqdn }}.key"
+    path: "{{ ssl_privatedir }}/{{ site_server_name }}.key"
   register: private_key
 
 - name: Generate an OpenSSL private key
   community.crypto.openssl_privatekey:
-    path: "{{ ssl_privatedir }}/{{ ansible_fqdn }}.key"
+    path: "{{ ssl_privatedir }}/{{ site_server_name }}.key"
   when: not private_key.stat.exists
 
 - name: Generate an OpenSSL Certificate Signing Request
   community.crypto.openssl_csr:
-    path: "{{ ssl_privatedir }}/{{ ansible_fqdn }}.csr"
-    privatekey_path: "{{ ssl_privatedir }}/{{ ansible_fqdn }}.key"
+    path: "{{ ssl_privatedir }}/{{ site_server_name }}.csr"
+    privatekey_path: "{{ ssl_privatedir }}/{{ site_server_name }}.key"
     organization_name: "{{ cert_orgname | default('Ansible') }}"
     common_name: "{{ certificate_cn }}"
     subject_alt_name: "{{ cert_san | default(omit) }}"
@@ -52,15 +52,15 @@
 
 - name: Generate SSL self-signed certificate
   community.crypto.x509_certificate:
-    path: "{{ ssl_dir }}/{{ ansible_fqdn }}.crt"
-    privatekey_path: "{{ ssl_privatedir }}/{{ ansible_fqdn }}.key"
-    csr_path: "{{ ssl_privatedir }}/{{ ansible_fqdn }}.csr"
+    path: "{{ ssl_dir }}/{{ site_server_name }}.crt"
+    privatekey_path: "{{ ssl_privatedir }}/{{ site_server_name }}.key"
+    csr_path: "{{ ssl_privatedir }}/{{ site_server_name }}.csr"
     ownca_not_after: "{{ hardenwebserver_certduration | default('+90d') }}"
     provider: selfsigned
 
 - name: Validate private key file permissions
   ansible.builtin.file:
-    path: "{{ ssl_privatedir }}/{{ ansible_fqdn }}.key"
+    path: "{{ ssl_privatedir }}/{{ site_server_name }}.key"
     owner: "root"
     group: "{% if ansible_os_family == 'Debian' %}ssl-cert{% else %}root{% endif %}"
     mode: '0440'

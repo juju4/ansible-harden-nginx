@@ -5,12 +5,12 @@
   ansible.builtin.set_fact:
     ssl_privatedir: "/etc/ssl/private"
     ssl_dir: "/etc/ssl/certs"
-    ssl_privkey: "/etc/ssl/private/{{ ansible_fqdn }}.key"
-    ssl_crt: "/etc/ssl/certs/{{ ansible_fqdn }}.crt"
-    ssl_fullchain: "/etc/ssl/certs/{{ ansible_fqdn }}.crt"
-    tmp_ssl_crt: "{{ tmp_ssl_dir }}/{{ ansible_fqdn }}.crt"
-    tmp_ssl_key: "{{ tmp_ssl_dir }}/{{ ansible_fqdn }}-key.pem"
-    tmp_ssl_p12: "{{ tmp_ssl_dir }}/{{ ansible_fqdn }}.p12"
+    ssl_privkey: "/etc/ssl/private/{{ site_server_name }}.key"
+    ssl_crt: "/etc/ssl/certs/{{ site_server_name }}.crt"
+    ssl_fullchain: "/etc/ssl/certs/{{ site_server_name }}.crt"
+    tmp_ssl_crt: "{{ tmp_ssl_dir }}/{{ site_server_name }}.crt"
+    tmp_ssl_key: "{{ tmp_ssl_dir }}/{{ site_server_name }}-key.pem"
+    tmp_ssl_p12: "{{ tmp_ssl_dir }}/{{ site_server_name }}.p12"
 
 - name: Ensure mkcert packages dependencies are present
   ansible.builtin.apt:
@@ -38,7 +38,7 @@
 
 - name: Create new certificate for requested domain
   ansible.builtin.command:
-    cmd: "mkcert -cert-file {{ tmp_ssl_crt }} -key-file {{ tmp_ssl_key }} -p12-file {{ tmp_ssl_p12 }} {{ ansible_fqdn }} {{ alternate_dns | default('') }}"
+    cmd: "mkcert -cert-file {{ tmp_ssl_crt }} -key-file {{ tmp_ssl_key }} -p12-file {{ tmp_ssl_p12 }} {{ site_server_name }} {{ alternate_dns | default('') }}"
   args:
     chdir: "{{ tmp_ssl_dir }}"
     creates: "{{ tmp_ssl_key }}"
@@ -56,8 +56,8 @@
     mode: "{{ item.m }}"
     remote_src: true
   loop:
-    - { s: "{{ tmp_ssl_crt }}", d: "{{ hardenwebserver_ssl_cert | default(ssl_dir + '/' + ansible_fqdn + '.crt') }}", m: '0644' }
-    - { s: "{{ tmp_ssl_key }}", d: "{{ hardenwebserver_ssl_key | default(ssl_privatedir + '/' + ansible_fqdn + '.key') }}", m: '0600' }
+    - { s: "{{ tmp_ssl_crt }}", d: "{{ hardenwebserver_ssl_cert | default(ssl_dir + '/' + site_server_name + '.crt') }}", m: '0644' }
+    - { s: "{{ tmp_ssl_key }}", d: "{{ hardenwebserver_ssl_key | default(ssl_privatedir + '/' + site_server_name + '.key') }}", m: '0600' }
 
 - name: Retrieve output dir to orchestrator
   ansible.builtin.fetch:

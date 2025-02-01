@@ -10,11 +10,11 @@ server {
     listen [::]:{{ harden_nginx_https_port | default('443') }} ssl;
 {% else %}
     # Nginx >= 1.9.5
-    listen {{ harden_nginx_https_port | default('443') }} ssl http2;
-    listen [::]:{{ harden_nginx_https_port | default('443') }} ssl http2;
+    # listen {{ harden_nginx_https_port | default('443') }} ssl http2;
+    listen {{ harden_nginx_https_listen | default('[::]') }}:{{ harden_nginx_https_port | default('443') }} ssl http2;
 {% endif %}
 
-    server_name localhost;
+    server_name {{ site_server_name }};
     server_tokens off;
     etag off;
 
@@ -22,7 +22,7 @@ server {
     index index.html index.htm;
 
     include /etc/nginx/harden-nginx-https;
-{% if hardenwebserver_cert is defined and (hardenwebserver_cert == 'selfsigned' or hardenwebserver_cert == 'mkcert' or hardenwebserver_cert == 'stepca') %}
+{% if hardenwebserver_cert is defined and (hardenwebserver_cert == 'selfsigned' or hardenwebserver_cert == 'mkcert') %}
     ssl_certificate {{ hardenwebserver_ssl_cert | default(ssl_dir + "/" + ansible_fqdn + ".crt") }};
     ssl_certificate_key {{ hardenwebserver_ssl_key | default(ssl_privatedir + "/" + ansible_fqdn + ".key") }};
 {% else %}

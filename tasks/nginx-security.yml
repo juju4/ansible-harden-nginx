@@ -77,18 +77,6 @@
     - harden-nginx-common
     - harden-nginx-fastcgi_params
 
-- name: Import certificate-selfsigned
-  ansible.builtin.import_tasks: certificate-selfsigned.yml
-  when: hardenwebserver_cert is defined and hardenwebserver_cert == 'selfsigned'
-
-- name: Import certificate-mkcert
-  ansible.builtin.import_tasks: certificate-mkcert.yml
-  when: hardenwebserver_cert is defined and hardenwebserver_cert == 'mkcert'
-
-- name: Import certificate-stepca
-  ansible.builtin.import_tasks: certificate-stepca.yml
-  when: hardenwebserver_cert is defined and hardenwebserver_cert == 'stepca'
-
 ## size should be >= certificate key size
 - name: Generate ssl dhparam key
   # command: "openssl dhparam -out {{ ssl_privatedir }}/dhparam4.pem 4096 creates=/etc/nginx/ssl/dhparam4.pem"
@@ -103,113 +91,52 @@
     owner: "root"
     group: "{{ www_user }}"
 
-## when using letsencrypt, http verification implies default/http site to be available
-##  and disable https to ensure no start error
-- name: Debian | letsencrypt verification prepare
-  when: >
-    hardenwebserver_cert is defined and
-    (hardenwebserver_cert == 'letsencrypt' or hardenwebserver_cert == 'certbot') and
-    (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+- name: Single site
+  when:
+    - hardenwebserver_sites is not defined or hardenwebserver_sites == []
   block:
-    - name: Debian | nginx check default site present
+    - name: Single Https site
+      ansible.builtin.include_tasks: nginx-https-sites.yml
+      vars:
+        site_server_name: "{{ hardenwebserver_target_host_cn }}"
+        site_defaultname: default
+        site_httpsname: https
+        site_defaultfile: "/etc/nginx/sites-available/default"
+- name: Multi sites
+  when:
+    - hardenwebserver_sites is defined
+    - hardenwebserver_sites != []
+  block:
+    - name: Debug
+      ansible.builtin.debug:
+        var: hardenwebserver_sites
+        verbosity: 1
+    - name: Remove duplicate config links
       ansible.builtin.file:
-        src: "{{ apachedefault }}"
-        dest: /etc/nginx/sites-enabled/default
-        mode: '0644'
-        state: link
-      notify:
-        - Restart nginx
-    - name: Debian | nginx disable https during letsencrypt validation
-      ansible.builtin.file:
-        dest: "/etc/nginx/sites-enabled/https"
+        name: "{{ item }}"
         state: absent
-      notify:
-        - Restart nginx
-    - name: Debian | ensure no redirect http to https - letsencrypt
-      ansible.builtin.lineinfile:  # noqa no-tabs
-        dest: /etc/nginx/sites-available/default
-        regexp: "^\treturn 301 https://\\$host\\$request_uri;"
-        state: absent
-      notify:
-        - Restart nginx
-- name: RedHat | letsencrypt verification prepare
-  when: >
-    hardenwebserver_cert is defined and
-    (hardenwebserver_cert == 'letsencrypt' or hardenwebserver_cert == 'certbot') and
-    (ansible_os_family == 'RedHat')
-  block:
-    - name: Redhat | ensure nginx default/http site present
-      ansible.builtin.file:
-        dest: "{{ apacheconf }}"
-        mode: '0644'
-        state: file
-- name: Import certificate-letsencrypt
-  ansible.builtin.import_tasks: certificate-letsencrypt.yml
-  when: hardenwebserver_cert is defined and hardenwebserver_cert == 'letsencrypt'
-- name: Import certificate-certbot
-  ansible.builtin.import_tasks: certificate-certbot.yml
-  when: hardenwebserver_cert is defined and hardenwebserver_cert == 'certbot'
-
-- name: Debian | https
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
-  block:
-    - name: Nginx https configuration
-      ansible.builtin.template:
-        src: "{{ hardenwebserver_https_template }}"
-        dest: "{{ apache_sitedir }}/https"
-        owner: '0'
-        group: '0'
-        mode: '0644'
-      notify:
-        - Restart nginx
-    - name: Enable https
-      ansible.builtin.file:
-        src: "{{ apache_sitedir }}/https"
-        dest: "/etc/nginx/sites-enabled/https"
-        state: link
-        mode: '0644'
-      notify:
-        - Restart nginx
-      when: hardenwebserver_https_noconfig is not defined or not hardenwebserver_https_noconfig | bool
-
-- name: Debian
-  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
-  block:
-    - name: Debian | nginx remove default site
-      ansible.builtin.file:
-        dest: /etc/nginx/sites-enabled/default
-        state: absent
-      notify:
-        - Restart nginx
-      when: hardenwebserver_disable_http is defined and hardenwebserver_disable_http
-    - name: Debian | nginx check default site present
-      ansible.builtin.file:
-        src: "{{ apache_sitedir }}/default"
-        dest: /etc/nginx/sites-enabled/default
-        mode: '0644'
-        state: link
-      notify:
-        - Restart nginx
-      when: hardenwebserver_disable_http is not defined or not hardenwebserver_disable_http
-    - name: Debian | nginx redirect http to https
-      ansible.builtin.lineinfile:  # noqa no-tabs
-        dest: /etc/nginx/sites-available/default
-        regexp: "^\treturn 301 https://$host$request_uri;"
-        line: "\treturn 301 https://$host$request_uri;"
-        mode: '0644'
-        insertafter: "^\tlisten \\[::\\]:80 default_server;"
-      when: hardenwebserver_http_redirect_to_https
-
-- name: Nginx https configuration
-  ansible.builtin.template:
-    src: "{{ hardenwebserver_https_template }}"
-    dest: "{{ apache_sitedir }}/https.conf"
-    owner: '0'
-    group: '0'
-    mode: '0644'
-  notify:
-    - Restart nginx
-  when: ansible_os_family == "RedHat"
+      loop:
+        - /etc/nginx/sites-enabled/default
+        - /etc/nginx/sites-enabled/https
+    - name: "Https sites - {{ site_server_name }}"
+      ansible.builtin.include_tasks: nginx-https-sites.yml
+      vars:
+        site_server_name: "{{ outer_item.server_name }}"
+        site_defaultname: "{{ outer_item.server_name }}-default"
+        site_defaultfile: "/etc/nginx/sites-available/{{ outer_item.server_name }}-default"
+        site_httpsname: "{{ outer_item.server_name }}-https"
+        harden_nginx_http_listen: "{{ outer_item.listen | default(omit) }}"
+        harden_nginx_https_listen: "{{ outer_item.listen | default(omit) }}"
+        hardenwebserver_https_template: "{{ outer_item.site_template }}"
+        hardenwebserver_cert: "{{ outer_item.cert_type }}"
+        cert_san: "{{ outer_item.cert_san }}"
+        hardenwebserver_target_host_san: "{{ outer_item.cert_san }}"
+        hardenwebserver_rootdir: "{{ outer_item.rootdir }}"
+        hardenwebserver_nginx_https_server_include: "{{ outer_item.https_server_include }}"
+        hardenwebserver_disable_http: "{{ outer_item.disable_http | default(true) }}"
+      loop_control:
+        loop_var: outer_item
+      loop: "{{ hardenwebserver_sites }}"
 
 - name: Import fail2ban
   ansible.builtin.import_tasks: fail2ban.yml

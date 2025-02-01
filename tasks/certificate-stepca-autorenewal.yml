@@ -52,9 +52,9 @@
   notify:
     - Reload systemd
 
-- name: Ensure cert-renewer@nginx service.d exists
+- name: Ensure cert-renewer@nginx-virtualhost service.d exists
   ansible.builtin.file:
-    path: /etc/systemd/system/cert-renewer@nginx.service.d
+    path: "/etc/systemd/system/cert-renewer@{{ hardenwebserver_service | default('nginx') }}-{{ site_server_name }}.service.d"
     state: directory
     mode: '0755'
     owner: root
@@ -75,7 +75,7 @@
 
       ; Restart service after the certificate is successfully renewed.
       ExecStartPost=/usr/bin/systemctl restart {{ hardenwebserver_service | default('nginx') }}.service
-    dest: /etc/systemd/system/cert-renewer@nginx.service.d/override.conf
+    dest: "/etc/systemd/system/cert-renewer@{{ hardenwebserver_service | default('nginx') }}-{{ site_server_name }}.service.d/override.conf"
     mode: '0644'
   notify:
     - Reload systemd
@@ -90,6 +90,6 @@
 
 - name: Ensure service cert-renewer@nginx is enabled
   ansible.builtin.service:
-    name: cert-renewer@nginx.timer
+    name: "cert-renewer@{{ hardenwebserver_service | default('nginx') }}-{{ site_server_name }}.timer"
     enabled: yes
     state: started

@@ -4,9 +4,9 @@
   ansible.builtin.set_fact:
     ssl_privatedir: "/etc/ssl/private"
     ssl_dir: "/etc/ssl/certs"
-    ssl_privkey: "/etc/ssl/private/{{ ansible_fqdn }}.key"
-    ssl_crt: "/etc/ssl/certs/{{ ansible_fqdn }}.crt"
-    ssl_fullchain: "/etc/ssl/certs/{{ ansible_fqdn }}.crt"
+    ssl_privkey: "/etc/ssl/private/{{ site_server_name }}.key"
+    ssl_crt: "/etc/ssl/certs/{{ site_server_name }}.crt"
+    ssl_fullchain: "/etc/ssl/certs/{{ site_server_name }}.crt"
 
 - name: Get stat of /usr/bin/step
   ansible.builtin.stat:
@@ -50,7 +50,7 @@
 
 - name: Check if certificate exists
   ansible.builtin.stat:
-    path: "/root/{{ ansible_fqdn }}.crt"
+    path: "/root/{{ site_server_name }}.crt"
   register: has_stepca_cert
 
 - name: Step-ca token
@@ -61,16 +61,16 @@
   block:
     - name: Create token on step-ca certificate server
       ansible.builtin.command:  # noqa no-changed-when
-        cmd: "step ca token --provisioner-password-file={{ stepca_host_provisioner_passfile }} {{ stepca_args }} {{ ansible_fqdn }}{% if hardenwebserver_target_host_san %}{% for item in hardenwebserver_target_host_san %} --san {{ item }}{% endfor %}{% endif %}"
+        cmd: "step ca token --provisioner-password-file={{ stepca_host_provisioner_passfile }} {{ stepca_args }} {{ site_server_name }}{% if hardenwebserver_target_host_san %}{% for item in hardenwebserver_target_host_san %} --san {{ item }}{% endfor %}{% endif %}"
       delegate_to: "{{ hardenwebserver_stepca_host }}"
       register: stepca_token
     - name: Create new certificate for requested domain with step-ca and token
       ansible.builtin.command:
-        cmd: "step ca certificate --token={{ stepca_token.stdout }} {{ stepca_args }} {{ ansible_fqdn }} {{ ansible_fqdn }}.crt {{ ansible_fqdn }}.key{% if hardenwebserver_stepca_force_issue | bool %} --force {% endif %}"
+        cmd: "step ca certificate --token={{ stepca_token.stdout }} {{ stepca_args }} {{ site_server_name }} {{ site_server_name }}.crt {{ site_server_name }}.key{% if hardenwebserver_stepca_force_issue | bool %} --force {% endif %}"
       args:
         chdir: /root
         # if want to renew certificate, skip on file existence and add '--force' above (else overwrite question)
-        creates: "{% if hardenwebserver_stepca_force_issue | bool %}{{ omit }}{% else %}/root/{{ ansible_fqdn }}.crt{% endif %}"
+        creates: "{% if hardenwebserver_stepca_force_issue | bool %}{{ omit }}{% else %}/root/{{ site_server_name }}.crt{% endif %}"
       register: stepca_cert
       until: stepca_cert is success
 
@@ -81,14 +81,14 @@
   block:
     - name: Create new certificate for requested domain with step-ca
       ansible.builtin.command:
-        # cmd: "strace step ca certificate --password-file={{ stepca_pass_file }} {{ stepca_args }} {{ ansible_fqdn }} {{ ansible_fqdn }}.crt {{ ansible_fqdn }}.key 2>/tmp/step-ca-certificate.strace"
-        cmd: "step ca certificate --password-file={{ stepca_pass_file }} {{ stepca_args }} {{ ansible_fqdn }} {{ ansible_fqdn }}.crt {{ ansible_fqdn }}.key"
+        # cmd: "strace step ca certificate --password-file={{ stepca_pass_file }} {{ stepca_args }} {{ site_server_name }} {{ site_server_name }}.crt {{ site_server_name }}.key 2>/tmp/step-ca-certificate.strace"
+        cmd: "step ca certificate --password-file={{ stepca_pass_file }} {{ stepca_args }} {{ site_server_name }} {{ site_server_name }}.crt {{ site_server_name }}.key"
         # this returns "Please enter the password to decrypt the provisioner key:" and blocks
-        # cmd: "step ca certificate {{ stepca_args }} {{ ansible_fqdn }} {{ ansible_fqdn }}.crt {{ ansible_fqdn }}.key"
+        # cmd: "step ca certificate {{ stepca_args }} {{ site_server_name }} {{ site_server_name }}.crt {{ site_server_name }}.key"
       args:
         chdir: /root
         # if want to renew certificate, can't skip on file existence
-        creates: "/root/{{ ansible_fqdn }}.crt"
+        creates: "/root/{{ site_server_name }}.crt"
 
 - name: Copy certificate files to needed locations
   ansible.builtin.copy:
@@ -97,8 +97,8 @@
     mode: "{{ item.m }}"
     remote_src: true
   loop:
-    - { s: "/root/{{ ansible_fqdn }}.crt", d: "{{ hardenwebserver_ssl_cert | default(ssl_fullchain) }}", m: '0644' }
-    - { s: "/root/{{ ansible_fqdn }}.key", d: "{{ hardenwebserver_ssl_key | default(ssl_privkey) }}", m: '0600' }
+    - { s: "/root/{{ site_server_name }}.crt", d: "{{ hardenwebserver_ssl_cert | default(ssl_fullchain) }}", m: '0644' }
+    - { s: "/root/{{ site_server_name }}.key", d: "{{ hardenwebserver_ssl_key | default(ssl_privkey) }}", m: '0600' }
   notify:
     - "Restart {{ hardenwebserver_service | default('nginx') }}"
 

@@ -4,11 +4,11 @@
 
 - name: Update ssl path for letsencrypt
   ansible.builtin.set_fact:
-    ssl_privatedir: "/etc/letsencrypt/live/{{ ansible_fqdn }}"
-    ssl_dir: "/etc/letsencrypt/live/{{ ansible_fqdn }}"
-    ssl_privkey: "/etc/letsencrypt/live/{{ ansible_fqdn }}/privkey.pem"
-    ssl_crt: "/etc/letsencrypt/live/{{ ansible_fqdn }}/cert.pem"
-    ssl_fullchain: "/etc/letsencrypt/live/{{ ansible_fqdn }}/fullchain.pem"
+    ssl_privatedir: "/etc/letsencrypt/live/{{ site_server_name }}"
+    ssl_dir: "/etc/letsencrypt/live/{{ site_server_name }}"
+    ssl_privkey: "/etc/letsencrypt/live/{{ site_server_name }}/privkey.pem"
+    ssl_crt: "/etc/letsencrypt/live/{{ site_server_name }}/cert.pem"
+    ssl_fullchain: "/etc/letsencrypt/live/{{ site_server_name }}/fullchain.pem"
 
 - name: Fatal localhost
   ansible.builtin.fail:
@@ -107,7 +107,7 @@
 
 - name: Generate an OpenSSL Certificate Signing Request with Subject information
   community.crypto.openssl_csr:
-    path: "{{ ssl_dir }}/{{ ansible_fqdn }}.csr"
+    path: "{{ ssl_dir }}/{{ site_server_name }}.csr"
     privatekey_path: "{{ ssl_privkey }}"
     country_name: "{{ hardenwebserver_letsencrypt_country | default('US') }}"
     organization_name: "{{ hardenwebserver_letsencrypt_org_name }}"
@@ -122,7 +122,7 @@
   community.crypto.acme_certificate:
     account_key: "{{ ssl_privatedir }}/user.key"
     acme_version: 2
-    csr: "{{ ssl_dir }}/{{ ansible_fqdn }}.csr"
+    csr: "{{ ssl_dir }}/{{ site_server_name }}.csr"
     dest: "{{ ssl_crt }}"
     fullchain_dest: "{{ ssl_fullchain }}"
     acme_directory: "{{ hardenwebserver_letsencrypt_acme_dir }}"
@@ -146,7 +146,7 @@
   community.crypto.acme_certificate:
     account_key: "{{ ssl_privatedir }}/user.key"
     acme_version: 2
-    csr: "{{ ssl_dir }}/{{ ansible_fqdn }}.csr"
+    csr: "{{ ssl_dir }}/{{ site_server_name }}.csr"
     dest: "{{ ssl_crt }}"
     fullchain_dest: "{{ ssl_fullchain }}"
     data: "{{ le_challenge }}"

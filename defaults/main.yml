@@ -132,6 +132,19 @@ harden_nginx_client_max_body_size: 5m
 harden_nginx_client_body_buffer_size: 10k
 
 hardennginx_fail2ban_enable: true
+hardennginx_etc_hosts_update: false
+
+# Multi sites/certificates?
+hardenwebserver_sites: []
+# hardenwebserver_sites:
+#   - server_name:
+#     site_template:
+#     cert_type:
+#     cert_path:
+#     cert_privkey:
+#     cert_san:
+#     rootdir:
+#     https_server_include:
 
 harden_nginx_testing: false
 
