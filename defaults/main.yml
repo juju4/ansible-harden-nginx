@@ -31,6 +31,7 @@ hardenwebserver_systemd_files_acl:
 ## if defined, restrict webserver listen interface (only support one interface)
 # hardenwebserver_bind: 192.168.1.1
 
+harden_nginx_https_listen: '[::]'
 hardenwebserver_cert: selfsigned
 hardenwebserver_certinfo: '/C=US/ST=CA/L=San Francisco/O=Ansible'
 hardenwebserver_certduration: 1095
