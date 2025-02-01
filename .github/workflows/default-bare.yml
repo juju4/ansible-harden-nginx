@@ -150,3 +150,9 @@ jobs:
           cat /var/log/php7.4-fpm.log || true
         if: ${{ always() }}
         continue-on-error: true
+      - name: After script - journalctl
+        run: |
+          set -x
+          sudo journalctl -xeu nginx -l --no-pager | tail -500
+        if: ${{ always() }}
+        continue-on-error: true
