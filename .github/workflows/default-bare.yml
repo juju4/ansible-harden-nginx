@@ -116,7 +116,7 @@ jobs:
       - name: After script - etc
         run: |
           sudo cat /etc/nginx/nginx.conf
-          sudo find /etc/nginx/sites-enabled/ -type f -exec cat {} \;
+          sudo find /etc/nginx/sites-available/ -type f -exec cat {} \;
           sudo find /etc/nginx/conf.d/ -iname 'harden-nginx-*' -type f -exec cat {} \;
         if: ${{ always() }}
         continue-on-error: true
