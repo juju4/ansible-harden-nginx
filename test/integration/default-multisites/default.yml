@@ -30,8 +30,6 @@
     hardenwebserver_systemd_files_acl:
       - { p: "/etc/ssl/private", perm: rx }
       - { p: "/var/log/nginx", perm: rwx }
-      - { p: /etc/letsencrypt/archive, perm: rx }
-      - { p: /etc/letsencrypt/live, perm: rx }
       - { p: "/etc/ssl/private/host1.internal.key", perm: r }
       - { p: "/etc/ssl/certs/host1.internal.crt", perm: r }
       - { p: "/etc/ssl/private/host2.internal.key", perm: r }
