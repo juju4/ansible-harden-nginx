@@ -1,0 +1,69 @@
+---
+
+- name: Test Integration playbook
+  hosts: all
+  vars:
+    harden_nginx_testing: true
+    hardenwebserver_nginx_with_log_combined: true
+    hardenwebserver_nginx_with_log_json: true
+
+    hardenwebserver_cert: stepca
+    smallstep_ca_init_args: "--name=Smallstep --dns=localhost --address=localhost:8443 --provisioner=smallstep@{{ ansible_domain }} --provisioner-password-file=/tmp/provisioner_password --password-file=/var/lib/step/.password --with-ca-url=https://localhost:8443"
+    hardenwebserver_sites:
+      - server_name: host1.internal
+        listen: ''
+        site_template: https.j2
+        cert_type: stepca
+        cert_san: ["host1.internal"]
+        rootdir: /var/www/html
+        https_server_include: []
+        disable_http: true
+      - server_name: host2.internal
+        listen: ''
+        site_template: https.j2
+        cert_type: stepca
+        cert_san: ["host2.internal"]
+        rootdir: /var/www/html
+        https_server_include: []
+        disable_http: true
+
+    hardenwebserver_systemd_files_acl:
+      - { p: "/etc/ssl/private", perm: rx }
+      - { p: "/var/log/nginx", perm: rwx }
+      - { p: /etc/letsencrypt/archive, perm: rx }
+      - { p: /etc/letsencrypt/live, perm: rx }
+      - { p: "/etc/ssl/private/host1.internal.key", perm: r }
+      - { p: "/etc/ssl/certs/host1.internal.crt", perm: r }
+      - { p: "/etc/ssl/private/host2.internal.key", perm: r }
+      - { p: "/etc/ssl/certs/host2.internal.crt", perm: r }
+  pre_tasks:
+    - name: Redhat | set extra permissions for systemd hardening
+      ansible.builtin.set_fact:
+        hardenwebserver_systemd_dir_acl:
+          - { p: "/etc/pki/tls/private", perm: rx, m: '0700' }
+          - { p: "/var/log/nginx", perm: rwx, m: '0755' }
+        hardenwebserver_systemd_files_acl:
+          - { p: "/etc/pki/tls/private/{{ ansible_fqdn }}.key", perm: r }
+          - { p: "/etc/pki/tls/certs/{{ ansible_fqdn }}.crt", perm: r }
+      when: ansible_os_family == "RedHat"
+    - name: Debian | set extra permissions for systemd hardening
+      ansible.builtin.set_fact:
+        hardenwebserver_systemd_dir_acl:
+          - { p: "/etc/ssl/private", perm: rx, m: '0700' }
+          - { p: "/var/log/nginx", perm: rwx, m: '0755' }
+      when: ansible_os_family == "Debian"
+    - name: Ensure hostname in /etc/hosts
+      ansible.builtin.lineinfile:
+        path: /etc/hosts
+        regexp: "{{ item.re }}"
+        line: "{{ item.l | default(omit) }}"
+        state: "{{ item.state | default('present') }}"
+        mode: '0644'
+      loop:
+        - { re: "^[^#].* host1.internal host2.internal",
+            l: "{{ main_physical_ip | default(ansible_default_ipv4.address) }} {{ ansible_fqdn }} {{ ansible_hostname }} host1.internal host2.internal"
+        }
+  roles:
+    - { role: juju4.redhat_epel, when: ansible_os_family == "RedHat" }
+    - imntreal.smallstep_ca
+    - juju4.harden_nginx

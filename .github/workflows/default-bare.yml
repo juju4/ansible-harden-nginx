@@ -30,6 +30,9 @@ jobs:
           - os: ubuntu-20.04
             experimental: false
             suite: default
+          - os: ubuntu-24.04
+            experimental: false
+            suite: default-multisites
     env:
       ANSIBLE_CALLBACKS_ENABLED: profile_tasks
       ANSIBLE_EXTRA_VARS: ""
