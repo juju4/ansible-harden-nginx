@@ -32,6 +32,11 @@
   register: pkg_result
   until: pkg_result is success
 
+- name: Ensure logrotate package is present
+  ansible.builtin.package:
+    name: logrotate
+    state: present
+
 - name: Add csp log in logrotate
   ansible.builtin.lineinfile:
     dest: /etc/logrotate.d/nginx
