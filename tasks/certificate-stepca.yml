@@ -63,6 +63,8 @@
       ansible.builtin.command:  # noqa no-changed-when
         cmd: "step ca token --provisioner-password-file={{ stepca_host_provisioner_passfile }} {{ stepca_args }} {{ site_server_name }}{% if hardenwebserver_target_host_san %}{% for item in hardenwebserver_target_host_san %} --san {{ item }}{% endfor %}{% endif %}"
       delegate_to: "{{ hardenwebserver_stepca_host }}"
+      become: yes
+      become_user: "{{ hardenwebserver_stepca_user | default('step') }}"
       register: stepca_token
     - name: Create new certificate for requested domain with step-ca and token
       ansible.builtin.command:
@@ -71,6 +73,8 @@
         chdir: /root
         # if want to renew certificate, skip on file existence and add '--force' above (else overwrite question)
         creates: "{% if hardenwebserver_stepca_force_issue | bool %}{{ omit }}{% else %}/root/{{ site_server_name }}.crt{% endif %}"
+      environment:
+        STEPDEBUG: 1
       register: stepca_cert
       until: stepca_cert is success
 
