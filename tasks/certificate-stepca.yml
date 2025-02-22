@@ -105,6 +105,9 @@
     - { s: "/root/{{ site_server_name }}.key", d: "{{ hardenwebserver_ssl_key | default(ssl_privkey) }}", m: '0600' }
   notify:
     - "Restart {{ hardenwebserver_service | default('nginx') }}"
+  when:
+    # Else can overwrite current certificate with an expired one
+    - not has_stepca_cert.stat.exists or hardenwebserver_stepca_force_issue | bool
 
 - name: Import certificate-stepca-autorenewal
   ansible.builtin.import_tasks: certificate-stepca-autorenewal.yml
