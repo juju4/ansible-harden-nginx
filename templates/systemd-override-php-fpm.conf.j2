@@ -11,7 +11,7 @@ NoNewPrivileges=yes
 PrivateTmp=true
 ProtectHome=yes
 ProtectSystem=yes
-# ProtectSystem=strict
+# ProtectSystem=strict
 {% if ansible_distribution == 'Ubuntu' and ansible_distribution_major_version | int >= 21 %}
 ProtectProc=noaccess
 {% endif %}
@@ -43,9 +43,15 @@ RestrictNamespaces=yes
 RestrictSUIDSGID=yes
 MemoryDenyWriteExecute=yes
 
+{% if not hardenwebserver_php_curl_enable | bool %}
 PrivateNetwork=yes
 RestrictAddressFamilies=AF_UNIX
 RestrictAddressFamilies=~AF_INET AF_INET6 AF_NETLINK AF_PACKET
+{% else %}
+# PrivateNetwork=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+RestrictAddressFamilies=~AF_NETLINK AF_PACKET
+{% endif %}
 
 IPAccounting=yes
 IPAddressAllow=localhost link-local multicast 10.0.0.0/8 192.168.0.0/16
@@ -66,7 +72,7 @@ CapabilityBoundingSet=~CAP_LEASE
 CapabilityBoundingSet=~CAP_SYS_PACCT
 CapabilityBoundingSet=~CAP_SYS_TTY_CONFIG
 CapabilityBoundingSet=~CAP_SYS_ADMIN
-# CapabilityBoundingSet=~CAP_SETUID CAP_SETGID
+# CapabilityBoundingSet=~CAP_SETUID CAP_SETGID
 CapabilityBoundingSet=~CAP_SETPCAP
 # CapabilityBoundingSet=~CAP_CHOWN
 CapabilityBoundingSet=~CAP_FSETID CAP_SETFCAP

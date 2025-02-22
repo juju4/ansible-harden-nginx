@@ -125,6 +125,9 @@ harden_php_session_cookie_secure: true
 harden_php_session_cookie_httponly: true
 harden_php_openbasedir: 'none'
 # harden_php_openbasedir: '/var/www:/dev/urandom:/var/run/mysqld/mysqld.sock'
+# Adapt systemd hardening if php-curl is used
+# (but not installing module)
+hardenwebserver_php_curl_enable: false
 
 # https://www.ietf.org/id/draft-foudil-securitytxt-00.txt
 harden_nginx_securitytxt_template: security.txt.j2
