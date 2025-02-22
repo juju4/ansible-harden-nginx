@@ -74,7 +74,7 @@
         # if want to renew certificate, skip on file existence and add '--force' above (else overwrite question)
         creates: "{% if hardenwebserver_stepca_force_issue | bool %}{{ omit }}{% else %}/root/{{ site_server_name }}.crt{% endif %}"
       environment:
-        STEPDEBUG: 1
+        STEPDEBUG: '1'
       register: stepca_cert
       until: stepca_cert is success
 
