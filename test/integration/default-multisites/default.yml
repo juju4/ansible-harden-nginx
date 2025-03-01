@@ -42,6 +42,8 @@
       - { p: "/etc/ssl/certs/host1.internal.crt", perm: r }
       - { p: "/etc/ssl/private/host2.internal.key", perm: r }
       - { p: "/etc/ssl/certs/host2.internal.crt", perm: r }
+      - { p: "/etc/ssl/private/host3.internal.key", perm: r }
+      - { p: "/etc/ssl/certs/host3.internal.crt", perm: r }
   pre_tasks:
     - name: Redhat | set extra permissions for systemd hardening
       ansible.builtin.set_fact:
