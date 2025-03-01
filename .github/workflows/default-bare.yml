@@ -146,6 +146,11 @@ jobs:
           curl -vk https://host2.internal || true
         if: ${{ always() }}
         continue-on-error: true
+      - name: After script - host3
+        run: |
+          curl -vk https://host3.internal || true
+        if: ${{ always() }}
+        continue-on-error: true
       - name: After script - logs
         run: |
           set -x
@@ -154,8 +159,7 @@ jobs:
           find /var/log/nginx -type f -exec tail -50 {} \;
           cat /var/log/gixy.log
           cat /var/log/php-fpm.log || true
-          cat /var/log/php7.2-fpm.log || true
-          cat /var/log/php7.4-fpm.log || true
+          cat /var/log/php*-fpm.log || true
         if: ${{ always() }}
         continue-on-error: true
       - name: After script - journalctl

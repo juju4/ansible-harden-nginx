@@ -26,6 +26,14 @@
         rootdir: /var/www/html
         https_server_include: []
         disable_http: true
+      - server_name: host3.internal
+        listen: ''
+        site_template: https.j2
+        cert_type: stepca
+        cert_san: ["host3.internal"]
+        rootdir: /var/www/html
+        https_server_include: []
+        disable_http: true
 
     hardenwebserver_systemd_files_acl:
       - { p: "/etc/ssl/private", perm: rx }
@@ -58,8 +66,8 @@
         state: "{{ item.state | default('present') }}"
         mode: '0644'
       loop:
-        - { re: "^[^#].* host1.internal host2.internal",
-            l: "{{ main_physical_ip | default(ansible_default_ipv4.address) }} {{ ansible_fqdn }} {{ ansible_hostname }} host1.internal host2.internal"
+        - { re: "^[^#].* host1.internal host2.internal host3.internal",
+            l: "{{ main_physical_ip | default(ansible_default_ipv4.address) }} {{ ansible_fqdn }} {{ ansible_hostname }} host1.internal host2.internal host3.internal"
         }
   roles:
     - { role: juju4.redhat_epel, when: ansible_os_family == "RedHat" }
