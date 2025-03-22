@@ -1,0 +1,30 @@
+{{ ansible_managed | comment }}
+
+{% if harden_nginx_cspreport_template is defined and harden_nginx_cspreport_template | string %}
+/var/www/html/csp/log/csp-violations.log
+{% endif %}
+/var/log/nginx/*.log {
+    daily
+    missingok
+    rotate 14
+    compress
+    delaycompress
+    notifempty
+    create 0640 www-data adm
+    sharedscripts
+    prerotate
+        test ! -x /usr/local/scripts/nginx_report.sh || sudo -u syslog /usr/local/scripts/nginx_report.sh 2>&1 | sudo -u syslog tee /var/tmp/nginx-report-$(date +%Y%m%d) >/dev/null
+        if [ -d /etc/logrotate.d/httpd-prerotate ]; then \
+            run-parts /etc/logrotate.d/httpd-prerotate; \
+        fi \
+    endscript
+    postrotate
+        invoke-rc.d nginx rotate >/dev/null 2>&1
+{% if syslog_postrotate_extras_cmd is defined %}
+{%     for cmd in syslog_postrotate_extras_cmd %}
+                {{ cmd }}
+{%     endfor %}
+{% endif %}
+    endscript
+    su root adm
+}

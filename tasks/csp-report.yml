@@ -38,9 +38,10 @@
     state: present
 
 - name: Add csp log in logrotate
-  ansible.builtin.lineinfile:
+  ansible.builtin.template:
+    src: logrotate-nginx.j2
     dest: /etc/logrotate.d/nginx
-    line: "{{ _hardenwebserver_rootdir }}/csp/log/csp-violations.log"
-    insertbefore: '^/var/log/nginx/\*.log {$'
     mode: '0644'
+    owner: root
+    group: root
     validate: 'logrotate -d %s'
