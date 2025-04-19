@@ -131,7 +131,7 @@
         regexp: "^\treturn 301 https://$host$request_uri;"
         line: "\treturn 301 https://$host$request_uri;"
         mode: '0644'
-        insertafter: "^\tlisten .*:80 default_server;"
+        insertbefore: "^\tlocation / {"
       when: hardenwebserver_http_redirect_to_https
 
 - name: Nginx https configuration
