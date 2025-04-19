@@ -49,6 +49,10 @@ server {
 	# server_name _;
 	server_name {{ site_server_name }};
 
+	location /.well-known/acme-challenge/ {
+		try_files $uri =404;
+	}
+
 	location / {
 		# First attempt to serve request as file, then
 		# as directory, then fall back to displaying a 404.
