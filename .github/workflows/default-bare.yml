@@ -27,9 +27,6 @@ jobs:
           - os: ubuntu-22.04
             experimental: false
             suite: default
-          - os: ubuntu-20.04
-            experimental: false
-            suite: default
           - os: ubuntu-24.04
             experimental: false
             suite: default-multisites
