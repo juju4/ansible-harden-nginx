@@ -18,6 +18,7 @@
     line: "\t\ttest ! -x /usr/local/scripts/{{ hardennginx_reporting_template | basename }} || {% if ansible_distribution == 'Ubuntu' %}sudo -u {{ syslog_user }} {% endif %}/usr/local/scripts/{{ hardennginx_reporting_template | basename }} 2>&1 | {% if ansible_distribution == 'Ubuntu' %}sudo -u {{ syslog_user }} {% endif %}tee {{ hardennginx_reporting_dest }}/nginx-report-$(date +%Y%m%d) >/dev/null"
     insertafter: '^\tprerotate$'
     mode: '0644'
+    validate: 'logrotate -d %s'
 
 - name: Ensure right permissions for logs dir
   ansible.builtin.file:
@@ -33,3 +34,4 @@
     line: "\tsu root {{ harden_nginx_syslog_dir_group | default(varlog_group) }}"
     insertbefore: '^}$'
     mode: '0644'
+    validate: 'logrotate -d %s'
