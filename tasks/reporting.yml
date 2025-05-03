@@ -12,14 +12,6 @@
     dest: "/usr/local/scripts/{{ hardennginx_reporting_template | basename }}"
     mode: '0755'
 
-- name: Add nginx report in logrotate
-  ansible.builtin.lineinfile:  # noqa no-tabs
-    dest: /etc/logrotate.d/nginx
-    line: "\t\ttest ! -x /usr/local/scripts/{{ hardennginx_reporting_template | basename }} || {% if ansible_distribution == 'Ubuntu' %}sudo -u {{ syslog_user }} {% endif %}/usr/local/scripts/{{ hardennginx_reporting_template | basename }} 2>&1 | {% if ansible_distribution == 'Ubuntu' %}sudo -u {{ syslog_user }} {% endif %}tee {{ hardennginx_reporting_dest }}/nginx-report-$(date +%Y%m%d) >/dev/null"
-    insertafter: '^\tprerotate$'
-    mode: '0644'
-    validate: 'logrotate -d %s'
-
 - name: Ensure right permissions for logs dir
   ansible.builtin.file:
     dest: /var/log/nginx
@@ -27,11 +19,3 @@
     mode: '0755'
     owner: root
     group: "{{ harden_nginx_syslog_dir_group | default(varlog_group) }}"
-
-- name: Ensure right permissions for logs dir in logrotate
-  ansible.builtin.lineinfile:
-    dest: /etc/logrotate.d/nginx
-    line: "\tsu root {{ harden_nginx_syslog_dir_group | default(varlog_group) }}"
-    insertbefore: '^}$'
-    mode: '0644'
-    validate: 'logrotate -d %s'

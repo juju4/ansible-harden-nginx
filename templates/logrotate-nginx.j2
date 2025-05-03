@@ -13,7 +13,9 @@
     create 0640 www-data adm
     sharedscripts
     prerotate
+{% if hardennginx_reporting | bool %}
         test ! -x /usr/local/scripts/nginx_report.sh || sudo -u syslog /usr/local/scripts/nginx_report.sh 2>&1 | sudo -u syslog tee /var/tmp/nginx-report-$(date +%Y%m%d) >/dev/null
+{% endif %}
         if [ -d /etc/logrotate.d/httpd-prerotate ]; then \
             run-parts /etc/logrotate.d/httpd-prerotate; \
         fi \
