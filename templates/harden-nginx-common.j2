@@ -36,7 +36,7 @@ location ~ /csp/log {
 {% endif %}
 
 # below is included in following statement
-location ~* \.(inc|old|svn|git|pub|sec|gpg|sql|sqlite|swp|bak|orig|disabled|env)$ {
+location ~* \.(inc|old|svn|git|pub|sec|gpg|sql|sqlite|swp|bak|orig|disabled|env|aws|docker|kube)$ {
     deny all;
 }
 
@@ -90,7 +90,7 @@ if ($http_user_agent ~ (msnbot|Purebot|Baiduspider|Lipperhey|Mail.Ru|scrapbot) )
     return 403;
 }
 
-if ($http_user_agent ~* "morfeus fucking scanner|ZmEu") {
+if ($http_user_agent ~* "morfeus fucking scanner|ZmEu|l9explore") {
     return 403;
 }
 
