@@ -8,16 +8,6 @@
   when: >
     not (ansible_virtualization_type is defined and (ansible_virtualization_type == "docker"))
 
-- name: Copy certificate files to needed locations
-  ansible.builtin.copy:
-    src: "{{ item.s }}"
-    dest: "{{ item.d }}"
-    mode: "{{ item.m }}"
-    remote_src: true
-  loop:
-    - { s: "/root/{{ site_server_name }}.crt", d: "{{ hardenwebserver_ssl_cert | default(ssl_fullchain) }}", m: '0644' }
-    - { s: "/root/{{ site_server_name }}.key", d: "{{ hardenwebserver_ssl_key | default(ssl_privkey) }}", m: '0600' }
-
 - name: Restart nginx
   ansible.builtin.systemd:
     name: nginx

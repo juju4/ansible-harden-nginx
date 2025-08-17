@@ -77,9 +77,6 @@
         STEPDEBUG: '1'
       register: stepca_cert
       until: stepca_cert is success
-      notify:
-        - Copy certificate files to needed locations
-        - "Restart {{ hardenwebserver_service | default('nginx') }}"
 
 - name: Step-ca provisioner password file
   when: >
@@ -96,12 +93,21 @@
         chdir: /root
         # if want to renew certificate, can't skip on file existence
         creates: "/root/{{ site_server_name }}.crt"
-      notify:
-        - Copy certificate files to needed locations
-        - "Restart {{ hardenwebserver_service | default('nginx') }}"
 
-- name: Flush handlers
-  ansible.builtin.meta: flush_handlers
+- name: Copy certificate files to needed locations
+  ansible.builtin.copy:
+    src: "{{ item.s }}"
+    dest: "{{ item.d }}"
+    mode: "{{ item.m }}"
+    remote_src: true
+  loop:
+    - { s: "/root/{{ site_server_name }}.crt", d: "{{ hardenwebserver_ssl_cert | default(ssl_fullchain) }}", m: '0644' }
+    - { s: "/root/{{ site_server_name }}.key", d: "{{ hardenwebserver_ssl_key | default(ssl_privkey) }}", m: '0600' }
+  notify:
+    - "Restart {{ hardenwebserver_service | default('nginx') }}"
+  when:
+    # Else can overwrite current certificate with an expired one
+    - not has_stepca_cert.stat.exists or hardenwebserver_stepca_force_issue | bool
 
 - name: Import certificate-stepca-autorenewal
   ansible.builtin.import_tasks: certificate-stepca-autorenewal.yml
