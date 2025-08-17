@@ -100,5 +100,8 @@
         - Copy certificate files to needed locations
         - "Restart {{ hardenwebserver_service | default('nginx') }}"
 
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers
+
 - name: Import certificate-stepca-autorenewal
   ansible.builtin.import_tasks: certificate-stepca-autorenewal.yml
