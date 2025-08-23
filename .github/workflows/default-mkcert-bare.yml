@@ -31,7 +31,7 @@ jobs:
       SUITE: default-mkcert
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           path: juju4.harden_nginx
       - name: Set up Python
