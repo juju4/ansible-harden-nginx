@@ -49,7 +49,7 @@ hardenwebserver_acme_download_root_ca: false
 hardenwebserver_acme_download_root_ca_url: https://example.com/roots.pem
 # Note: san for step-ca command should be without 'DNS:' or 'IP:' else seen as 'URI:'
 #   `echo | openssl s_client -connect HOST:443 -showcerts | openssl x509 -noout -text`
-# hardenwebserver_target_host_san:
+hardenwebserver_target_host_san: []
 ## staging or production url
 # hardenwebserver_letsencrypt_acme_dir: 'https://acme-staging.api.letsencrypt.org/directory'
 # hardenwebserver_letsencrypt_acme_dir: 'https://acme-v01.api.letsencrypt.org/directory'
