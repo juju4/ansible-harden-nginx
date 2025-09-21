@@ -19,7 +19,9 @@
 
 - name: Import csp-report
   ansible.builtin.import_tasks: csp-report.yml
-  when: harden_nginx_cspreport_template is defined and harden_nginx_cspreport_template|string
+  when:
+    - harden_nginx_cspreport_template is defined
+    - harden_nginx_cspreport_template | length > 0
 
 - name: Import systemd-nginx
   ansible.builtin.import_tasks: systemd-nginx.yml
