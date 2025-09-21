@@ -9,6 +9,8 @@
 
     hardenwebserver_cert: stepca
     smallstep_ca_init_args: "--name=Smallstep --dns=localhost --address=localhost:8443 --provisioner=smallstep@{{ ansible_domain }} --provisioner-password-file=/tmp/provisioner_password --password-file=/var/lib/step/.password --with-ca-url=https://localhost:8443"
+    # no san as using token
+    stepca_args: '--ca-url=https://localhost:8443 --root=/var/lib/step/.step/certs/root_ca.crt'
     hardenwebserver_sites:
       - server_name: host1.internal
         listen: ''
