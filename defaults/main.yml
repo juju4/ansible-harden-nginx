@@ -62,6 +62,7 @@ certbot_args: "-m {{ hardenwebserver_letsencrypt_email }} --agree-tos --domains 
 # hardenwebserver_cert: stepca
 hardenwebserver_stepca_host: stepcaserver
 stepca_pass_file: /tmp/provisioner_password
+stepca_host_provisioner_passfile:
 stepca_args: '--ca-url=https://localhost:8443 --root=/var/lib/step/.step/certs/root_ca.crt --san=localhost --san=127.0.0.1 --san=::1'
 # this will force issue a certificate even if one exists (file existence, expired or not)
 hardenwebserver_stepca_force_issue: false
