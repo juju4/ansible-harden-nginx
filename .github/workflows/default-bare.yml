@@ -28,7 +28,7 @@ jobs:
             experimental: false
             suite: default
           - os: ubuntu-24.04
-            experimental: false
+            experimental: true
             suite: default-multisites
     env:
       ANSIBLE_CALLBACKS_ENABLED: profile_tasks

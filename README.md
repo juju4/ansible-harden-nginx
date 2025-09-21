@@ -104,6 +104,8 @@ Maybe because of uBlock Origin browser extension: [Block CSP reports. Enabled by
 
 * when using step-ca and creating certificate, getting "client GET https://<SERVER>:8443/provisioners?limit=100 failed: Forbidden": check that you are not blocked at a proxy level, either with no_proxy env, either allowed at proxy level.
 
+* ci default-multisites failing with "error allocating terminal: open /dev/tty: no such device or address": https://github.com/smallstep/cli/issues/674, https://github.com/smallstep/cli/issues/502 both opened
+
 ## Extras
 
 * If you want to warn users who use old browsers, the following projects are among the options to add little warnings: (browser-update.org)[https://browser-update.org/], (outdatedbrowser.com)[http://outdatedbrowser.com/]
