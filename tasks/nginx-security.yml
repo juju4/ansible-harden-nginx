@@ -127,6 +127,7 @@
         site_httpsname: "{{ outer_item.server_name }}-https"
         harden_nginx_http_listen: "{{ outer_item.listen | default(omit) }}"
         harden_nginx_https_listen: "{{ outer_item.listen | default(omit) }}"
+        harden_nginx_https_port: "{{ outer_item.listen_port | default('443') }}"
         hardenwebserver_https_template: "{{ outer_item.site_template }}"
         hardenwebserver_cert: "{{ outer_item.cert_type }}"
         cert_san: "{{ outer_item.cert_san }}"

@@ -7,7 +7,7 @@ server {
 # https://bugs.launchpad.net/ubuntu/+source/nginx/+bug/1552949
     # Nginx >= 1.9.5
     listen {{ harden_nginx_https_port | default('443') }} ssl;
-    listen [::]:{{ harden_nginx_https_port | default('443') }} ssl;
+    # listen [::]:{{ harden_nginx_https_port | default('443') }} ssl;
 {% elif harden_nginx_https_listen == '' %}
     listen {{ harden_nginx_https_port | default('443') }} ssl http2;
 {% else %}
