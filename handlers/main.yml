@@ -8,6 +8,15 @@
   when: >
     not (ansible_virtualization_type is defined and (ansible_virtualization_type == "docker"))
 
+- name: Ensure certificates and log files are accessible to www-data
+  ansible.posix.acl:
+    path: "{{ item.p }}"
+    entity: "{{ www_user }}"
+    etype: user
+    permissions: "{{ item.perm }}"
+    state: present
+  with_items: "{{ hardenwebserver_systemd_files_acl }}"
+
 - name: Restart nginx
   ansible.builtin.systemd:
     name: nginx

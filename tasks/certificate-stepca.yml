@@ -104,6 +104,7 @@
     - { s: "/root/{{ site_server_name }}.crt", d: "{{ hardenwebserver_ssl_cert | default(ssl_fullchain) }}", m: '0644' }
     - { s: "/root/{{ site_server_name }}.key", d: "{{ hardenwebserver_ssl_key | default(ssl_privkey) }}", m: '0600' }
   notify:
+    - Ensure certificates and log files are accessible to www-data
     - "Restart {{ hardenwebserver_service | default('nginx') }}"
   when:
     # Else can overwrite current certificate with an expired one

@@ -81,7 +81,7 @@
 - name: Debian | https
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   block:
-    - name: Nginx https configuration
+    - name: Debian | Nginx https configuration
       ansible.builtin.template:
         src: "{{ hardenwebserver_https_template }}"
         dest: "{{ apache_sitedir }}/{{ site_httpsname }}"
@@ -134,7 +134,7 @@
         insertbefore: "^\tlocation / {"
       when: hardenwebserver_http_redirect_to_https
 
-- name: Nginx https configuration
+- name: RedHat | Nginx https configuration
   ansible.builtin.template:
     src: "{{ hardenwebserver_https_template }}"
     dest: "{{ apache_sitedir }}/{{ site_httpsname }}.conf"
