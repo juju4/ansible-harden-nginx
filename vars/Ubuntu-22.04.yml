@@ -14,7 +14,9 @@ _hardenwebserver_rootdir: /var/www/html
 hardenwebserver_nginx_naxsi: true
 nginx_conf_suffix: '.conf'
 
-python_pip: python3-pip
+python_pip:
+  - python3-pip
+  - python3-virtualenv
 
 hardenwebserver_packages:
   - python3-passlib
