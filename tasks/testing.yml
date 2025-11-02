@@ -10,11 +10,12 @@
   ansible.builtin.pip:
     name: gixy
     state: present
+    virtualenv: /usr/local/share/venv-gixy
 
 - name: Validate nginx config with gixy
   ansible.builtin.shell: |
     set -o pipefail
-    gixy /etc/nginx/nginx.conf | tee /var/log/gixy.log
+    /usr/local/share/venv-gixy/bin/gixy /etc/nginx/nginx.conf | tee /var/log/gixy.log
   args:
     executable: /bin/bash
     creates: /var/log/gixy.log
