@@ -1,8 +1,8 @@
 ---
 
-- name: Ensure pip is available
+- name: Ensure python dependencies are available
   ansible.builtin.package:
-    name: "{{ python_pip | default('python-pip') }}"
+    name: "{{ python_pip | default(['python3-pip', 'python3-virtualenv']) }}"
     state: present
 
 # https://github.com/yandex/gixy
