@@ -77,6 +77,13 @@
     - harden-nginx-common
     - harden-nginx-fastcgi_params
 
+- name: Ensure openssl is present
+  ansible.builtin.package:
+    name: "{{ openssl_pkgs | default(['openssl', 'python3-pip', 'python3-setuptools', 'python3-openssl']) }}"
+    state: present
+  register: pkg_result
+  until: pkg_result is success
+
 ## size should be >= certificate key size
 - name: Generate ssl dhparam key
   # command: "openssl dhparam -out {{ ssl_privatedir }}/dhparam4.pem 4096 creates=/etc/nginx/ssl/dhparam4.pem"
