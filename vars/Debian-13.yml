@@ -1,0 +1,39 @@
+---
+
+ssl_user: ssl-cert
+ssl_dir: /etc/ssl
+ssl_privatedir: /etc/ssl/private
+
+www_user: www-data
+apache_svc: nginx
+apache_confdir: /etc/nginx/conf.d
+apache_sitedir: /etc/nginx/sites-available
+apacheconf: /etc/nginx/nginx.conf
+apachedefault: /etc/nginx/sites-available/default
+_hardenwebserver_rootdir: /var/www/html
+hardenwebserver_nginx_naxsi: true
+nginx_conf_suffix: '.conf'
+
+python_pip: python3-pip
+
+hardenwebserver_packages:
+  - python3-passlib
+  - "{{ hardenwebserver_nginx_debian_pkg }}"
+  - acl
+  ## for Docker & netstat call in serverspec
+  - net-tools
+
+harden_nginx_php:
+  - php-fpm
+php_confext: ini
+harden_nginx_phpdir: /etc/php/8.4
+_harden_nginx_php_variants: "{{ harden_nginx_php_variants | default(['fpm', 'cli']) }}"
+snuffleupagus_pkgs:
+  - php8.4-dev
+phpfpm_svc: php8.4-fpm
+
+mkcert_deps:
+  - libnss3-tools
+
+varlog_group: adm
+syslog_user: ''
