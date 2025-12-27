@@ -10,7 +10,11 @@
     compress
     delaycompress
     notifempty
+{% if ansible_os_family == "RedHat" %}
+    create 0640 root root
+{% else %}
     create 0640 www-data adm
+{% endif %}
     sharedscripts
     prerotate
 {% if hardennginx_reporting | bool %}
