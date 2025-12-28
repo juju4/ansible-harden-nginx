@@ -13,7 +13,7 @@
     state: present
     update_cache: yes
     cache_valid_time: 3600
-  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+  when: ansible_facts['distribution'] == 'Debian' or ansible_facts['distribution'] == 'Ubuntu'
   register: pkg_result
   until: pkg_result is success
 
@@ -22,7 +22,7 @@
     name: cryptography
     state: present
     executable: "{{ hardenwebserver_nginx_cryptography | default('pip3') }}"
-  when: ansible_distribution == 'Ubuntu' and ansible_distribution_major_version|int < 24
+  when: ansible_facts['distribution'] == 'Ubuntu' and ansible_facts['distribution_major_version']|int < 24
 
 - name: Ensure target directory exists
   ansible.builtin.file:
@@ -62,5 +62,5 @@
   ansible.builtin.file:
     path: "{{ ssl_privatedir }}/{{ site_server_name }}.key"
     owner: "root"
-    group: "{% if ansible_os_family == 'Debian' %}ssl-cert{% else %}root{% endif %}"
+    group: "{% if ansible_facts['os_family'] == 'Debian' %}ssl-cert{% else %}root{% endif %}"
     mode: '0440'

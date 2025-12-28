@@ -32,7 +32,7 @@
   when: >
     hardenwebserver_cert is defined and
     (hardenwebserver_cert == 'letsencrypt' or hardenwebserver_cert == 'certbot') and
-    (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+    (ansible_facts['distribution'] == 'Debian' or ansible_facts['distribution'] == 'Ubuntu')
   block:
     - name: Debian | Set debian default
       ansible.builtin.template:
@@ -64,7 +64,7 @@
   when: >
     hardenwebserver_cert is defined and
     (hardenwebserver_cert == 'letsencrypt' or hardenwebserver_cert == 'certbot') and
-    (ansible_os_family == 'RedHat')
+    (ansible_facts['os_family'] == 'RedHat')
   block:
     - name: Redhat | ensure nginx default/http site present
       ansible.builtin.file:
@@ -79,7 +79,7 @@
   when: hardenwebserver_cert is defined and hardenwebserver_cert == 'certbot'
 
 - name: Debian | https
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  when: (ansible_facts['distribution'] == 'Debian' or ansible_facts['distribution'] == 'Ubuntu')
   block:
     - name: Debian | Nginx https configuration
       ansible.builtin.template:
@@ -101,7 +101,7 @@
       when: hardenwebserver_https_noconfig is not defined or not hardenwebserver_https_noconfig | bool
 
 - name: Debian
-  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+  when: ansible_facts['distribution'] == 'Debian' or ansible_facts['distribution'] == 'Ubuntu'
   block:
     - name: Debian | nginx remove default site from enabled
       ansible.builtin.file:
@@ -143,4 +143,4 @@
     mode: '0644'
   notify:
     - Restart nginx
-  when: ansible_os_family == "RedHat"
+  when: ansible_facts['os_family'] == "RedHat"

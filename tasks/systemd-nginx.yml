@@ -35,7 +35,7 @@
     path: /run/nginx
     state: directory
     mode: '0755'
-    owner: "{% if ansible_os_family == 'RedHat' %}nginx{% else %}www-data{% endif %}"
+    owner: "{% if ansible_facts['os_family'] == 'RedHat' %}nginx{% else %}www-data{% endif %}"
 
 - name: Ensure directories exists
   ansible.builtin.file:

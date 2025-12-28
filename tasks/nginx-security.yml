@@ -21,7 +21,7 @@
 - name: HTTP Public Key Pinning (HPKP) hash extraction
   ansible.builtin.shell: |
     set -o pipefail
-    openssl req -in {{ ssl_dir }}/{{ ansible_fqdn }}.csr -pubkey -noout |
+    openssl req -in {{ ssl_dir }}/{{ ansible_facts['fqdn'] }}.csr -pubkey -noout |
       openssl rsa -pubin -outform der |
       openssl dgst -sha256 -binary |
       openssl enc -base64
@@ -56,7 +56,7 @@
     mode: '0644'
   when: >
     hardenwebserver_nginx_debian_pkg == 'nginx-full' or
-    (ansible_os_family == 'RedHat' and ansible_distribution_major_version | int > 7)
+    (ansible_facts['os_family'] == 'RedHat' and ansible_facts['distribution_major_version'] | int > 7)
 
 - name: Ensure extra configs are present
   ansible.builtin.template:

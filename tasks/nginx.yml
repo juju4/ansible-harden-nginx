@@ -4,7 +4,7 @@
   ansible.builtin.apt:
     update_cache: yes
     cache_valid_time: 3600
-  when: ansible_os_family == 'Debian'
+  when: ansible_facts['os_family'] == 'Debian'
   register: pkg_result
   until: pkg_result is success
 
@@ -28,7 +28,7 @@
   when: hardenwebserver_nginx_systemd_hardening
 
 - name: RedHat7
-  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == '7'
+  when: ansible_facts['os_family'] == "RedHat" and ansible_facts['distribution_major_version'] == '7'
   block:
     - name: Centos7 | systemd reload - workaround
       ansible.builtin.command: systemctl daemon-reload  # noqa no-changed-when command-instead-of-module

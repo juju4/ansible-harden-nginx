@@ -10,7 +10,7 @@
   register: has_step_cli
 - name: Debian | Install small step
   when:
-    - ansible_os_family == 'Debian'
+    - ansible_facts['os_family'] == 'Debian'
     - not has_step_cli.stat.exists
   block:
     - name: Debian | Set fact
@@ -31,7 +31,7 @@
 
 - name: RedHat | Install small step
   when:
-    - ansible_os_family == 'RedHat'
+    - ansible_facts['os_family'] == 'RedHat'
     - not has_step_cli.stat.exists
   block:
     - name: RedHat | Set fact
