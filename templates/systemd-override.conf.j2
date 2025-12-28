@@ -3,7 +3,7 @@
 # http://web.archive.org/web/20200527053030/https://medium.com/@nickodell/sandboxing-nginx-with-systemd-80441923c555
 [Service]
 # Run fully unprivileged
-{% if ansible_os_family == 'RedHat' %}
+{% if ansible_facts['os_family'] == 'RedHat' %}
 User=nginx
 Group=nginx
 {% else %}
@@ -21,7 +21,7 @@ PrivateTmp=true
 PrivateDevices=yes
 ProtectHome=yes
 ProtectSystem=full
-{% if (ansible_os_family == 'RedHat' and ansible_distribution_major_version | int > 7) or (ansible_distribution == "Ubuntu" and ansible_distribution_major_version | int >= 18) %}
+{% if (ansible_facts['os_family'] == 'RedHat' and ansible_facts['distribution_major_version'] | int > 7) or (ansible_facts['distribution'] == "Ubuntu" and ansible_facts['distribution_major_version'] | int >= 18) %}
 InaccessiblePaths=/proc
 ProtectKernelTunables=true
 ProtectKernelModules=yes
@@ -31,11 +31,11 @@ RestrictNamespaces=~user mnt
 LockPersonality=true
 {% endif %}
 RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
-{% if not (ansible_virtualization_type is defined and
-          ansible_virtualization_type == "docker"
+{% if not (ansible_facts['virtualization_type'] is defined and
+          ansible_facts['virtualization_type'] == "docker"
         )
 %}
-{%     if (ansible_os_family == 'RedHat' and ansible_distribution_major_version | int >= 8) or (ansible_distribution == "Ubuntu" and ansible_distribution_major_version | int > 18) %}
+{%     if (ansible_facts['os_family'] == 'RedHat' and ansible_facts['distribution_major_version'] | int >= 8) or (ansible_facts['distribution'] == "Ubuntu" and ansible_facts['distribution_major_version'] | int > 18) %}
 SystemCallFilter=@system-service
 {%     endif %}
 SystemCallFilter=~@debug @mount @cpu-emulation @obsolete @privileged

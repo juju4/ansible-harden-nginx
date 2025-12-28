@@ -3,7 +3,7 @@
 # HTTPS server
 #
 server {
-{% if ansible_distribution_release == 'xenial' %}
+{% if ansible_facts['distribution_release'] == 'xenial' %}
 # https://bugs.launchpad.net/ubuntu/+source/nginx/+bug/1552949
     # Nginx >= 1.9.5
     listen {{ harden_nginx_https_port | default('443') }} ssl;
@@ -25,8 +25,8 @@ server {
 
     include /etc/nginx/harden-nginx-https;
 {% if hardenwebserver_cert is defined and (hardenwebserver_cert == 'selfsigned' or hardenwebserver_cert == 'mkcert') %}
-    ssl_certificate {{ hardenwebserver_ssl_cert | default(ssl_dir + "/" + ansible_fqdn + ".crt") }};
-    ssl_certificate_key {{ hardenwebserver_ssl_key | default(ssl_privatedir + "/" + ansible_fqdn + ".key") }};
+    ssl_certificate {{ hardenwebserver_ssl_cert | default(ssl_dir + "/" + ansible_facts['fqdn'] + ".crt") }};
+    ssl_certificate_key {{ hardenwebserver_ssl_key | default(ssl_privatedir + "/" + ansible_facts['fqdn'] + ".key") }};
 {% else %}
     ssl_certificate {{ hardenwebserver_ssl_cert | default(ssl_fullchain) }};
     ssl_certificate_key {{ hardenwebserver_ssl_key | default(ssl_privkey) }};
@@ -43,7 +43,7 @@ server {
     keepalive_timeout   70;
 
     include /etc/nginx/harden-nginx-common;
-{% if hardenwebserver_nginx_debian_pkg == 'nginx-full' and ansible_distribution == 'Debian' and false %}
+{% if hardenwebserver_nginx_debian_pkg == 'nginx-full' and ansible_facts['distribution'] == 'Debian' and false %}
     include /etc/nginx/harden-nginx-limit_req;
 {% endif %}
 

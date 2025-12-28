@@ -2,7 +2,7 @@
 
 large_client_header_buffers 2 1k;
 client_header_buffer_size 1k;
-{% if not (ansible_os_family == 'RedHat' and ansible_distribution_major_version | int <= 7) and harden_nginx_client_max_body_size | string %}
+{% if not (ansible_facts['os_family'] == 'RedHat' and ansible_facts['distribution_major_version'] | int <= 7) and harden_nginx_client_max_body_size | string %}
 client_max_body_size {{ harden_nginx_client_max_body_size }};
 {% endif %}
 client_body_buffer_size {{ harden_nginx_client_body_buffer_size }};
@@ -14,12 +14,12 @@ add_header X-Frame-Options SAMEORIGIN;
 add_header Strict-Transport-Security "max-age=63072000; includeSubdomains; preload";
 {% endif %}
 ## https://www.w3.org/TR/upgrade-insecure-requests/
-# {{ ansible_os_family }}, {{ ansible_distribution }}, {{ ansible_distribution_major_version }}
-# {{ (ansible_os_family == 'RedHat' and ansible_distribution_major_version|int <= 8) }}
-# {{ (ansible_distribution == 'Ubuntu' and ansible_distribution_major_version|int > 18) }}
-{% if not (ansible_os_family == 'RedHat' and ansible_distribution_major_version|int <= 8) and
- not (ansible_distribution == 'Ubuntu' and ansible_distribution_major_version|int <= 24) and
- not (ansible_distribution == 'Debian' and ansible_distribution_major_version|int <= 13) %}
+# {{ ansible_facts['os_family'] }}, {{ ansible_facts['distribution'] }}, {{ ansible_facts['distribution_major_version'] }}
+# {{ (ansible_facts['os_family'] == 'RedHat' and ansible_facts['distribution_major_version']|int <= 8) }}
+# {{ (ansible_facts['distribution'] == 'Ubuntu' and ansible_facts['distribution_major_version']|int > 18) }}
+{% if not (ansible_facts['os_family'] == 'RedHat' and ansible_facts['distribution_major_version']|int <= 8) and
+ not (ansible_facts['distribution'] == 'Ubuntu' and ansible_facts['distribution_major_version']|int <= 24) and
+ not (ansible_facts['distribution'] == 'Debian' and ansible_facts['distribution_major_version']|int <= 13) %}
 if ($http_upgrade_insecure_requests = "1") {
     add_header Vary Upgrade-Insecure-Requests;
     return 307 https://$host$request_uri;

@@ -1,8 +1,8 @@
 {{ ansible_managed | comment }}
 ## HTTPS common server/virtualhost settings
 
-#ssl_certificate {{ ssl_dir }}/{{ ansible_fqdn }}.crt;
-#ssl_certificate_key {{ ssl_privatedir }}/{{ ansible_fqdn }}.key;
+#ssl_certificate {{ ssl_dir }}/{{ ansible_facts['fqdn'] }}.crt;
+#ssl_certificate_key {{ ssl_privatedir }}/{{ ansible_facts['fqdn'] }}.key;
 
 ssl_session_cache   shared:SSL:10m;
 ssl_session_timeout 10m;
@@ -13,7 +13,7 @@ ssl_ciphers "{{ harden_nginx_sslciphersuite }}";
 ssl_ecdh_curve secp384r1; # Requires nginx >= 1.1.0
 ssl_dhparam {{ ssl_privatedir }}/dhparam4.pem;
 
-{% if ansible_distribution_release == 'xenial' %}
+{% if ansible_facts['distribution_release'] == 'xenial' %}
 {%     if hardenwebserver_nginx_sessiontickets is not defined or not hardenwebserver_nginx_sessiontickets %}
 ssl_session_tickets off; # Requires nginx >= 1.5.9
 {%     else %}
