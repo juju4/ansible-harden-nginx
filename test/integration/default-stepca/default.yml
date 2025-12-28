@@ -17,18 +17,18 @@
           - { p: "/etc/pki/tls/private", perm: rx, m: '0700' }
           - { p: "/var/log/nginx", perm: rwx, m: '0755' }
         hardenwebserver_systemd_files_acl:
-          - { p: "/etc/pki/tls/private/{{ ansible_fqdn }}.key", perm: r }
-          - { p: "/etc/pki/tls/certs/{{ ansible_fqdn }}.crt", perm: r }
-      when: ansible_os_family == "RedHat"
+          - { p: "/etc/pki/tls/private/{{ ansible_facts['fqdn'] }}.key", perm: r }
+          - { p: "/etc/pki/tls/certs/{{ ansible_facts['fqdn'] }}.crt", perm: r }
+      when: ansible_facts['os_family'] == "RedHat"
     - name: Debian | set extra permissions for systemd hardening
       ansible.builtin.set_fact:
         hardenwebserver_systemd_dir_acl:
           - { p: "/etc/ssl/private", perm: rx, m: '0700' }
           - { p: "/var/log/nginx", perm: rwx, m: '0755' }
         hardenwebserver_systemd_files_acl:
-          - { p: "/etc/ssl/private/{{ ansible_fqdn }}.key", perm: r }
-          - { p: "/etc/ssl/certs/{{ ansible_fqdn }}.crt", perm: r }
-      when: ansible_os_family == "Debian"
+          - { p: "/etc/ssl/private/{{ ansible_facts['fqdn'] }}.key", perm: r }
+          - { p: "/etc/ssl/certs/{{ ansible_facts['fqdn'] }}.crt", perm: r }
+      when: ansible_facts['os_family'] == "Debian"
   roles:
     - { role: juju4.redhat_epel, when: ansible_os_family == "RedHat" }
     - imntreal.smallstep_ca

@@ -6,7 +6,7 @@
   become: true
   become_user: root
   when: >
-    not (ansible_virtualization_type is defined and (ansible_virtualization_type == "docker"))
+    not (ansible_facts['virtualization_type'] is defined and (ansible_facts['virtualization_type'] == "docker"))
 
 - name: Ensure certificates and log files are accessible to www-data
   ansible.posix.acl:
@@ -22,7 +22,7 @@
     name: nginx
     state: restarted
   when: >
-    not (ansible_virtualization_type is defined and (ansible_virtualization_type == "docker"))
+    not (ansible_facts['virtualization_type'] is defined and (ansible_facts['virtualization_type'] == "docker"))
 
 - name: Add public file to www dir to fulfill letsencrypt challenge
   ansible.builtin.copy:
@@ -36,14 +36,14 @@
   ansible.builtin.service:
     name: fail2ban
     state: restarted
-  when: not (ansible_virtualization_type is defined and ansible_virtualization_type == "docker")
+  when: not (ansible_facts['virtualization_type'] is defined and ansible_facts['virtualization_type'] == "docker")
 
 - name: Restart php-fpm
   ansible.builtin.systemd:
     name: "{{ phpfpm_svc }}"
     state: restarted
   when: >
-    not (ansible_virtualization_type is defined and (ansible_virtualization_type == "docker"))
+    not (ansible_facts['virtualization_type'] is defined and (ansible_facts['virtualization_type'] == "docker"))
 
 - name: Add to /etc/ca-certificates.conf
   ansible.builtin.lineinfile:
