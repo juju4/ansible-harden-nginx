@@ -25,8 +25,8 @@ hardenwebserver_systemd_dir_acl:
   - { p: /etc/letsencrypt/live, perm: rx, m: '0700' }
   - { p: "/var/log/nginx", perm: rwx, m: '0755' }
 hardenwebserver_systemd_files_acl:
-  - { p: "/etc/ssl/private/{{ ansible_fqdn }}.key", perm: r }
-#  - { p: "/etc/letsencrypt/archive/{{ ansible_fqdn }}/privkey1.pem", perm: r }
+  - { p: "/etc/ssl/private/{{ ansible_facts['fqdn'] }}.key", perm: r }
+#  - { p: "/etc/letsencrypt/archive/{{ ansible_facts['fqdn'] }}/privkey1.pem", perm: r }
 
 ## if defined, restrict webserver listen interface (only support one interface)
 # hardenwebserver_bind: 192.168.1.1
@@ -36,7 +36,7 @@ hardenwebserver_cert: selfsigned
 hardenwebserver_certinfo: '/C=US/ST=CA/L=San Francisco/O=Ansible'
 hardenwebserver_certduration: 1095
 # if get issue, between ansible_fqdn, ansible_hostname...
-hardenwebserver_target_host_cn: "{{ ansible_fqdn }}"
+hardenwebserver_target_host_cn: "{{ ansible_facts['fqdn'] }}"
 ## Ansible v2.2 module. will use hostname fqdn. REQUIRE publicly accessible host w public domain
 # hardenwebserver_cert: letsencrypt
 # path on orchestrator, if empty will be created
@@ -57,8 +57,8 @@ hardenwebserver_letsencrypt_acme_dir: 'https://acme-staging-v02.api.letsencrypt.
 # hardenwebserver_letsencrypt_acme_dir: 'https://acme-v02.api.letsencrypt.org/directory'
 harden_nginx_hpkp_enable: false
 # hardenwebserver_cert: certbot
-certbot_args: "-m {{ hardenwebserver_letsencrypt_email }} --agree-tos --domains {{ ansible_fqdn }}"
-# certbot_args: "--register-unsafely-without-email --agree-tos --domains {{ ansible_fqdn }}"
+certbot_args: "-m {{ hardenwebserver_letsencrypt_email }} --agree-tos --domains {{ ansible_facts['fqdn'] }}"
+# certbot_args: "--register-unsafely-without-email --agree-tos --domains {{ ansible_facts['fqdn'] }}"
 # hardenwebserver_cert: stepca
 hardenwebserver_stepca_host: stepcaserver
 stepca_pass_file: /tmp/provisioner_password
