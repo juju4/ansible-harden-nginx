@@ -10,6 +10,10 @@ server {
     # listen [::]:{{ harden_nginx_https_port | default('443') }} ssl;
 {% elif harden_nginx_https_listen == '' %}
     listen {{ harden_nginx_https_port | default('443') }} ssl http2;
+{% elif harden_nginx_https_listen is iterable %}
+{%     for l in harden_nginx_https_listen %}
+    listen {{ l }}:{{ harden_nginx_https_port | default('443') }} ssl http2;
+{%     endfor %}
 {% else %}
     # Nginx >= 1.9.5
     # listen {{ harden_nginx_https_port | default('443') }} ssl http2;

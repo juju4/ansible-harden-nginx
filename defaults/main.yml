@@ -31,6 +31,7 @@ hardenwebserver_systemd_files_acl:
 ## if defined, restrict webserver listen interface (only support one interface)
 # hardenwebserver_bind: 192.168.1.1
 
+# this can be a string or list (but if list, all same port, even on multisites)
 harden_nginx_https_listen: '[::]'
 hardenwebserver_cert: selfsigned
 hardenwebserver_certinfo: '/C=US/ST=CA/L=San Francisco/O=Ansible'
@@ -143,6 +144,8 @@ hardennginx_etc_hosts_update: false
 hardenwebserver_sites: []
 # hardenwebserver_sites:
 #   - server_name:
+#     listen:
+#     listen_port
 #     site_template:
 #     cert_type:
 #     cert_path:
