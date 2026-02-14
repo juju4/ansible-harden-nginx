@@ -53,6 +53,23 @@
     state: present
   with_items: "{{ hardenwebserver_systemd_dir_acl }}"
 
+- name: Ensure directories are accessible to www-data
+  ansible.posix.acl:
+    path: "{{ item.p }}"
+    entity: "{{ www_user }}"
+    etype: user
+    permissions: "{{ item.perm }}"
+    state: present
+  with_items: "{{ hardenwebserver_systemd_dir_acl }}"
+
+- name: Ensure certificates and log files exists
+  ansible.builtin.file:
+    path: "{{ item.p }}"
+    mode: "{{ item.m | default('0600') }}"
+    owner: "{{ item.o | default(www_user) }}"
+    state: touch
+  loop: "{{ hardenwebserver_systemd_files_acl }}"
+
 - name: Ensure certificates and log files are accessible to www-data
   ansible.posix.acl:
     path: "{{ item.p }}"
