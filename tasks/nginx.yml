@@ -41,8 +41,21 @@
 - name: Flush handlers
   ansible.builtin.meta: flush_handlers
 
-- name: Ensure nginx is enabled and started
-  ansible.builtin.service:
-    name: "{{ apache_svc }}"
-    state: "started"
-    enabled: "yes"
+- name: Service
+  block:
+    - name: Ensure nginx is enabled and started
+      ansible.builtin.service:
+        name: "{{ apache_svc }}"
+        state: "started"
+        enabled: "yes"
+  rescue:
+    - name: Check journalctl
+      ansible.builtin.command:
+        cmd: journalctl -u nginx -n100
+      changed_when: false
+      failed_when: false
+    - name: Ensure nginx is enabled and started (2)
+      ansible.builtin.service:
+        name: "{{ apache_svc }}"
+        state: "started"
+        enabled: "yes"
