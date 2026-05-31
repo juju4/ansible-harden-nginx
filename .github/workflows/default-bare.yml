@@ -14,20 +14,22 @@ jobs:
   build:
     permissions:
       contents: read
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.distribution }}-${{ matrix.version }}
     continue-on-error: ${{ matrix.experimental }}
     strategy:
       fail-fast: false
       max-parallel: 4
       matrix:
         include:
-          - os: ubuntu-24.04
+          - distribution: ubuntu
+            version: '24.04'
+            suite: default
+          - distribution: ubuntu
+            version: '22.04'
             experimental: false
             suite: default
-          - os: ubuntu-22.04
-            experimental: false
-            suite: default
-          - os: ubuntu-24.04
+          - distribution: ubuntu
+            version: '24.04'
             experimental: false
             suite: default-multisites
     env:
