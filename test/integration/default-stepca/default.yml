@@ -28,6 +28,7 @@
         hardenwebserver_systemd_files_acl:
           - { p: "/etc/ssl/private/{{ ansible_facts['fqdn'] }}.key", perm: r }
           - { p: "/etc/ssl/certs/{{ ansible_facts['fqdn'] }}.crt", perm: r }
+          - { p: "/var/log/nginx/access_json.log", perm: rw, o: www-data, m: '0644' }
           - { p: "/var/log/nginx/access-long.log", perm: rw, o: www-data, m: '0644' }
       when: ansible_facts['os_family'] == "Debian"
   roles:
