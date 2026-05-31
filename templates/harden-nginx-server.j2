@@ -18,8 +18,8 @@ add_header Strict-Transport-Security "max-age=63072000; includeSubdomains; prelo
 # {{ (ansible_facts['os_family'] == 'RedHat' and ansible_facts['distribution_major_version']|int <= 8) }}
 # {{ (ansible_facts['distribution'] == 'Ubuntu' and ansible_facts['distribution_major_version']|int > 18) }}
 {% if not (ansible_facts['os_family'] == 'RedHat' and ansible_facts['distribution_major_version']|int <= 8) and
- not (ansible_facts['distribution'] == 'Ubuntu' and ansible_facts['distribution_major_version']|int <= 24) and
- not (ansible_facts['distribution'] == 'Debian' and ansible_facts['distribution_major_version']|int <= 13) %}
+ not (ansible_facts['distribution'] == 'Ubuntu') and
+ not (ansible_facts['distribution'] == 'Debian') %}
 if ($http_upgrade_insecure_requests = "1") {
     add_header Vary Upgrade-Insecure-Requests;
     return 307 https://$host$request_uri;
