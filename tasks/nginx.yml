@@ -27,6 +27,11 @@
   ansible.builtin.import_tasks: systemd-nginx.yml
   when: hardenwebserver_nginx_systemd_hardening
 
+- name: Test nginx config
+  ansible.builtin.command:
+    cmd: nginx -t
+  changed_when: false
+
 - name: RedHat7
   when: ansible_facts['os_family'] == "RedHat" and ansible_facts['distribution_major_version'] == '7'
   block:
