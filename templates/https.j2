@@ -3,7 +3,17 @@
 # HTTPS server
 #
 server {
-{% if ansible_facts['distribution_release'] == 'xenial' %}
+{% if ansible_facts['distribution'] == 'Debian' and ansible_facts['distribution_major_version'] | int >= 13 %}
+    # Nginx >= 1.25.1
+    http2 on;
+{%     if harden_nginx_https_listen is not string and harden_nginx_https_listen is iterable %}
+{%         for l in harden_nginx_https_listen %}
+    listen {{ l }}:{{ harden_nginx_https_port | default('443') }} ssl;
+{%         endfor %}
+{%     else %}
+    listen {{ harden_nginx_https_listen | default('[::]') }}:{{ harden_nginx_https_port | default('443') }} ssl;
+{%     endif %}
+{% elif ansible_facts['distribution_release'] == 'xenial' %}
 # https://bugs.launchpad.net/ubuntu/+source/nginx/+bug/1552949
     # Nginx >= 1.9.5
     listen {{ harden_nginx_https_port | default('443') }} ssl;
