@@ -44,52 +44,127 @@
       register: pkg_result
       until: pkg_result is success
 
-- name: Ensure service cert-renewer@.service is set
-  ansible.builtin.template:
-    src: "{{ hardenwebserver_templates_path | default('') }}systemd-cert-renewer.service.conf.j2"
-    dest: /etc/systemd/system/cert-renewer@.service
-    mode: '0644'
-  notify:
-    - Reload systemd
+- name: Systemd
+  block:
+    - name: Ensure service cert-renewer@.service is set
+      ansible.builtin.template:
+        src: "{{ hardenwebserver_templates_path | default('') }}systemd-cert-renewer.service.conf.j2"
+        dest: /etc/systemd/system/cert-renewer@.service
+        mode: '0644'
+      notify:
+        - Reload systemd
 
-- name: Ensure cert-renewer@nginx-virtualhost service.d exists
-  ansible.builtin.file:
-    path: "/etc/systemd/system/cert-renewer@{{ hardenwebserver_service | default('nginx') }}-{{ site_server_name }}.service.d"
-    state: directory
-    mode: '0755'
-    owner: root
+    - name: Ensure cert-renewer@nginx-virtualhost service.d exists
+      ansible.builtin.file:
+        path: "/etc/systemd/system/cert-renewer@{{ hardenwebserver_service | default('nginx') }}-{{ site_server_name }}.service.d"
+        state: directory
+        mode: '0755'
+        owner: root
 
-- name: Ensure service cert-renewer@nginx is set
-  ansible.builtin.copy:
-    content: |
-      [Service]
-      ; `Environment=` overrides are applied per environment variable. This line does not
-      ; affect any other variables set in the service template.
-      Environment=CERT_LOCATION={{ ssl_fullchain }} \
-                  KEY_LOCATION={{ ssl_privkey }}{% if hardenwebserver_stepcarenew_debug | bool %} \
-                  STEPDEBUG=1 \
-                  GODEBUG=http2debug=2
-      {% endif %}
+    - name: Ensure service cert-renewer@nginx is set
+      ansible.builtin.copy:
+        content: |
+          [Service]
+          ; `Environment=` overrides are applied per environment variable. This line does not
+          ; affect any other variables set in the service template.
+          Environment=CERT_LOCATION={{ ssl_fullchain }} \
+                      KEY_LOCATION={{ ssl_privkey }}{% if hardenwebserver_stepcarenew_debug | bool %} \
+                      STEPDEBUG=1 \
+                      GODEBUG=http2debug=2
+          {% endif %}
 
-      WorkingDirectory=/etc/ssl
+          WorkingDirectory=/etc/ssl
 
-      ; Restart service after the certificate is successfully renewed.
-      ExecStartPost=/usr/bin/systemctl restart {{ hardenwebserver_service | default('nginx') }}.service
-    dest: "/etc/systemd/system/cert-renewer@{{ hardenwebserver_service | default('nginx') }}-{{ site_server_name }}.service.d/override.conf"
-    mode: '0644'
-  notify:
-    - Reload systemd
+          ; Restart service after the certificate is successfully renewed.
+          ExecStartPost=/usr/bin/systemctl restart {{ hardenwebserver_service | default('nginx') }}.service
+        dest: "/etc/systemd/system/cert-renewer@{{ hardenwebserver_service | default('nginx') }}-{{ site_server_name }}.service.d/override.conf"
+        mode: '0644'
+      notify:
+        - Reload systemd
 
-- name: Ensure service cert-renewer@.timer is set
-  ansible.builtin.template:
-    src: "{{ hardenwebserver_templates_path | default('') }}systemd-cert-renewer.timer.conf.j2"
-    dest: /etc/systemd/system/cert-renewer@.timer
-    mode: '0644'
-  notify:
-    - Reload systemd
+    - name: Ensure service cert-renewer@.timer is set
+      ansible.builtin.template:
+        src: "{{ hardenwebserver_templates_path | default('') }}systemd-cert-renewer.timer.conf.j2"
+        dest: /etc/systemd/system/cert-renewer@.timer
+        mode: '0644'
+      notify:
+        - Reload systemd
 
-- name: Ensure service cert-renewer@nginx is enabled
-  ansible.builtin.service:
-    name: "cert-renewer@{{ hardenwebserver_service | default('nginx') }}-{{ site_server_name }}.timer"
-    enabled: yes
-    state: started
+    - name: Ensure service cert-renewer@nginx is enabled
+      ansible.builtin.service:
+        name: "cert-renewer@{{ hardenwebserver_service | default('nginx') }}-{{ site_server_name }}.timer"
+        enabled: yes
+        state: started
+  rescue:
+    - name: Import immutable
+      ansible.builtin.include_tasks: immutable.yml
+      vars:
+        target_dir: "{{ item }}"
+        state: pre
+      loop:
+        - /etc/systemd/system
+        - /etc/systemd/system/cert-renewer@.service
+        - "/etc/systemd/system/cert-renewer@{{ hardenwebserver_service | default('nginx') }}-{{ site_server_name }}.service.d"
+        - "/etc/systemd/system/cert-renewer@{{ hardenwebserver_service | default('nginx') }}-{{ site_server_name }}.service.d/override.conf"
+        - /etc/systemd/system/cert-renewer@.timer
+
+    - name: Ensure service cert-renewer@.service is set (immutable)
+      ansible.builtin.template:
+        src: "{{ hardenwebserver_templates_path | default('') }}systemd-cert-renewer.service.conf.j2"
+        dest: /etc/systemd/system/cert-renewer@.service
+        mode: '0644'
+      notify:
+        - Reload systemd
+
+    - name: Ensure cert-renewer@nginx-virtualhost service.d exists (immutable)
+      ansible.builtin.file:
+        path: "/etc/systemd/system/cert-renewer@{{ hardenwebserver_service | default('nginx') }}-{{ site_server_name }}.service.d"
+        state: directory
+        mode: '0755'
+        owner: root
+
+    - name: Ensure service cert-renewer@nginx is set (immutable)
+      ansible.builtin.copy:
+        content: |
+          [Service]
+          ; `Environment=` overrides are applied per environment variable. This line does not
+          ; affect any other variables set in the service template.
+          Environment=CERT_LOCATION={{ ssl_fullchain }} \
+                      KEY_LOCATION={{ ssl_privkey }}{% if hardenwebserver_stepcarenew_debug | bool %} \
+                      STEPDEBUG=1 \
+                      GODEBUG=http2debug=2
+          {% endif %}
+
+          WorkingDirectory=/etc/ssl
+
+          ; Restart service after the certificate is successfully renewed.
+          ExecStartPost=/usr/bin/systemctl restart {{ hardenwebserver_service | default('nginx') }}.service
+        dest: "/etc/systemd/system/cert-renewer@{{ hardenwebserver_service | default('nginx') }}-{{ site_server_name }}.service.d/override.conf"
+        mode: '0644'
+      notify:
+        - Reload systemd
+
+    - name: Ensure service cert-renewer@.timer is set (immutable)
+      ansible.builtin.template:
+        src: "{{ hardenwebserver_templates_path | default('') }}systemd-cert-renewer.timer.conf.j2"
+        dest: /etc/systemd/system/cert-renewer@.timer
+        mode: '0644'
+      notify:
+        - Reload systemd
+
+    - name: Ensure service cert-renewer@nginx is enabled (immutable)
+      ansible.builtin.service:
+        name: "cert-renewer@{{ hardenwebserver_service | default('nginx') }}-{{ site_server_name }}.timer"
+        enabled: yes
+
+    - name: Import immutable
+      ansible.builtin.include_tasks: immutable.yml
+      vars:
+        target_dir: "{{ item }}"
+        state: post
+      loop:
+        - /etc/systemd/system
+        - /etc/systemd/system/cert-renewer@.service
+        - "/etc/systemd/system/cert-renewer@{{ hardenwebserver_service | default('nginx') }}-{{ site_server_name }}.service.d"
+        - "/etc/systemd/system/cert-renewer@{{ hardenwebserver_service | default('nginx') }}-{{ site_server_name }}.service.d/override.conf"
+        - /etc/systemd/system/cert-renewer@.timer
