@@ -83,6 +83,14 @@
     mode: '0644'
   with_items: "{{ _harden_nginx_php_variants }}"
 
+- name: PHP | session.upload_progress.enabled
+  ansible.builtin.replace:
+    dest: "{{ harden_nginx_phpini | default(harden_nginx_phpdir + '/' + item + '/php.ini') }}"
+    regexp: '^session.upload_progress.enabled =.*'
+    replace: "session.upload_progress.enabled = {{ harden_php_session_upload_progress }}"
+    mode: '0644'
+  with_items: "{{ _harden_nginx_php_variants }}"
+
 - name: PHP | open_basedir
   ansible.builtin.replace:
     dest: "{{ harden_nginx_phpini | default(harden_nginx_phpdir + '/' + item + '/php.ini') }}"

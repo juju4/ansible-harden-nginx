@@ -128,6 +128,7 @@ harden_php_include_path: '/usr/share/php'
 harden_php_session_use_strict_mode: 1
 harden_php_session_cookie_secure: true
 harden_php_session_cookie_httponly: true
+harden_php_session_upload_progress: 0
 harden_php_openbasedir: 'none'
 # harden_php_openbasedir: '/var/www:/dev/urandom:/var/run/mysqld/mysqld.sock'
 # Adapt systemd hardening if php-curl is used
