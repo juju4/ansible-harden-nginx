@@ -80,7 +80,7 @@ if ($http_user_agent ~* sqlmap|nikto|nmap|zgrab|nessus|mysqloit|acunetix|w3af) {
 
 {% if hardenwebserver_block_downloadagents is defined and hardenwebserver_block_downloadagents %}
 ## Block download agent
-if ($http_user_agent ~* LWP::Simple|wget|libwww-perl|curl|python-requests|WinHttpClient|Java|Go-http-client) {
+if ($http_user_agent ~* LWP::Simple|wget|libwww-perl|curl|python-httpx|python-requests|python-urllib|WinHttpClient|Java|Go-http-client) {
     return 403;
 }
 {% endif %}
@@ -93,6 +93,11 @@ if ($http_user_agent ~ (msnbot|Purebot|Baiduspider|Lipperhey|Mail.Ru|scrapbot) )
 if ($http_user_agent ~* "morfeus fucking scanner|ZmEu|l9explore") {
     return 403;
 }
+
+# https://github.com/mthcht/awesome-lists/blob/main/Lists/suspicious_http_user_agents_list.csv
+# https://github.com/mitchellkrogza/nginx-ultimate-bad-bot-blocker/blob/master/_generator_lists/bad-user-agents.list
+# https://github.com/crowdsecurity/sec-lists/blob/master/web/bad_user_agents.txt
+# https://github.com/danielmiessler/SecLists/blob/master/Fuzzing/User-Agents/UserAgents.fuzz.txt
 
 ## Deny referral spam
 if ( $http_referer ~* (jewelry|viagra|nude|girl|nudit|casino|poker|porn|sex|teen|babes) ) {
