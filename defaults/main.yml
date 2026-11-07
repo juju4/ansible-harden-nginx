@@ -135,6 +135,8 @@ harden_php_openbasedir: 'none'
 # (but not installing module)
 hardenwebserver_php_curl_enable: false
 
+harden_nginx_robotstxt_template: robots.txt.j2
+
 # https://www.ietf.org/id/draft-foudil-securitytxt-00.txt
 harden_nginx_securitytxt_template: security.txt.j2
 

@@ -1,0 +1,11 @@
+---
+
+- name: Ensure robots.txt is present
+  ansible.builtin.template:
+    src: "{{ harden_nginx_robotstxt_template }}"
+    dest: "{{ hardenwebserver_rootdir | default(_hardenwebserver_rootdir) }}/robots.txt"
+    mode: '0644'
+    backup: yes
+  when:
+    - harden_nginx_robotstxt_template is defined
+    - harden_nginx_robotstxt_template | length > 0
